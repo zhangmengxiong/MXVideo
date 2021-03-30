@@ -5,10 +5,7 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
+import android.widget.*
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
 import com.mx.video.utils.MXUtils
@@ -65,7 +62,8 @@ abstract class MXVideo @JvmOverloads constructor(
 
     private fun initView() {
         playBtn.setOnClickListener {
-            playPauseImg
+            if (mState == MXPlayState.IDLE) return@setOnClickListener
+
         }
     }
 
@@ -75,12 +73,12 @@ abstract class MXVideo @JvmOverloads constructor(
         start: Boolean = true
     ) {
         stopPlay()
-        setState(MXPlayState.IDLE)
-
         currentSource = source
         mxPlayerClass = clazz ?: MXSystemPlayer::class.java
         if (start) {
             startVideo()
+        } else {
+            setState(MXPlayState.NORMAL)
         }
     }
 
@@ -89,9 +87,14 @@ abstract class MXVideo @JvmOverloads constructor(
         this.mState = state
         when (state) {
             MXPlayState.IDLE -> {
+                playBtn.visibility = View.GONE
             }
             MXPlayState.PREPARING -> {
+                playBtn.visibility = View.GONE
                 mxLoading.visibility = View.VISIBLE
+            }
+            MXPlayState.PREPARED -> {
+                mxLoading.visibility = View.GONE
             }
         }
     }

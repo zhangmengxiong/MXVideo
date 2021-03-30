@@ -10,6 +10,7 @@ data class MXPlaySource(
 
 enum class MXPlayState {
     IDLE,
+    NORMAL,
     PREPARING,
     PREPARED,
     PLAYING,
