@@ -20,3 +20,9 @@ enum class MXPlayState {
     COMPLETE,
     ERROR
 }
+
+enum class MXVideoDisplay {
+    FILL_PARENT,
+    ORIGINAL,
+    FILL_SCROP
+}

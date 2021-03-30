@@ -8,6 +8,10 @@ import android.widget.FrameLayout
 abstract class MXVideo @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
+    companion object {
+        val displayType = MXVideoDisplay.ORIGINAL
+    }
+
     init {
         View.inflate(context, getLayoutId(), this)
     }
