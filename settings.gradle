@@ -1,0 +1,3 @@
+include ':MXVideoLib'
+include ':app'
+rootProject.name = "MXVideo"
