@@ -5,20 +5,9 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.TextureView
 import android.view.View
-import com.mx.video.MXVideo
 
-/**
- *
- * 参照Android系统的VideoView的onMeasure方法
- * <br></br>注意!relativelayout中无法全屏，要嵌套一个linearlayout
- *
- * Referring Android system Video View of onMeasure method
- * <br></br>NOTE! Can not fullscreen relativelayout, to nest a linearlayout
- * Created by Nathen
- * On 2016/06/02 00:01
- */
 class MXTextureView @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : TextureView(context, attrs, defStyleAttr) {
     var currentVideoWidth = 0
     var currentVideoHeight = 0

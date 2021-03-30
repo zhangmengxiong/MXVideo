@@ -3,9 +3,11 @@ package com.mx.video.player
 import android.graphics.SurfaceTexture
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Build
 import android.view.Surface
 import com.mx.video.MXPlaySource
+import com.mx.video.MXVideo
 
 class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     MediaPlayer.OnCompletionListener, MediaPlayer.OnBufferingUpdateListener,
@@ -33,19 +35,29 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
             mediaPlayer.setOnErrorListener(this@MXSystemPlayer)
             mediaPlayer.setOnInfoListener(this@MXSystemPlayer)
             mediaPlayer.setOnVideoSizeChangedListener(this@MXSystemPlayer)
-            val clazz = MediaPlayer::class.java
-            //如果不用反射，没有url和header参数的setDataSource函数
-            //如果不用反射，没有url和header参数的setDataSource函数
-            val method = clazz.getDeclaredMethod(
-                "setDataSource",
-                String::class.java,
-                MutableMap::class.java
-            )
-            method.invoke(
-                mediaPlayer,
-                source.playUrl,
-                source.headerMap
-            )
+            try {
+                val clazz = MediaPlayer::class.java
+                //如果不用反射，没有url和header参数的setDataSource函数
+                val method = clazz.getDeclaredMethod(
+                    "setDataSource",
+//                Context::class.java,
+                    String::class.java,
+                    Map::class.java
+                )
+                method.isAccessible = true
+                method.invoke(
+                    mediaPlayer,
+//                MXVideo.getAppContext(),
+                    source.playUrl,
+                    source.headerMap
+                )
+            } catch (e: Exception) {
+                mediaPlayer.setDataSource(
+                    MXVideo.getAppContext(),
+                    Uri.parse(source.playUrl),
+                    source.headerMap
+                )
+            }
             mediaPlayer.prepareAsync()
             mediaPlayer.setSurface(mSurface)
             this.mediaPlayer = mediaPlayer
@@ -144,7 +156,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     override fun onInfo(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
         when (what) {
             MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> {
-                runInMainThread { getMXVideo()?.onRenderingStart() }
+                runInMainThread { getMXVideo()?.onRenderFirstFrame() }
             }
             MediaPlayer.MEDIA_INFO_BUFFERING_START -> {
                 runInMainThread { getMXVideo()?.onBuffering(true) }

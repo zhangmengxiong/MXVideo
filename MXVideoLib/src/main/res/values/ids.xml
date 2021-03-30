@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="mxSurfaceContainer" type="id" />
+    <item name="mxPlaceImg" type="id" />
+    <item name="mxLoading" type="id" />
+    <item name="mxPlayBtn" type="id" />
+    <item name="mxPlayPauseImg" type="id" />
+</resources>
