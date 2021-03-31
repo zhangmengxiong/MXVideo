@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#ffffff</color>
+    <color name="white_alpha_a5">#a5ffffff</color>
+    <color name="red">#fff85959</color>
+</resources>

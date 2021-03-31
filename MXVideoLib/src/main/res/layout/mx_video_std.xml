@@ -30,12 +30,97 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:padding="10dp">
+        android:padding="10dp"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/mxPlayPauseImg"
             android:layout_width="@dimen/mx_player_icon_width"
             android:layout_height="@dimen/mx_player_icon_width"
             android:src="@drawable/mx_icon_player_pause" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mxBottomLay"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/mx_bg_bottom"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/mxCurrentTimeTxv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="14dp"
+            android:text="00:00"
+            android:textColor="@color/white" />
+
+        <SeekBar
+            android:id="@+id/mxSeekProgress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1.0"
+            android:background="@null"
+            android:max="100"
+            android:maxHeight="1dp"
+            android:minHeight="1dp"
+            android:paddingLeft="12dp"
+            android:paddingTop="8dp"
+            android:paddingRight="12dp"
+            android:paddingBottom="8dp"
+            android:progressDrawable="@drawable/mx_bottom_seek_progress"
+            android:thumb="@drawable/mx_bottom_seek_thumb" />
+
+        <TextView
+            android:id="@+id/mxTotalTimeTxv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textColor="@color/white" />
+
+        <ImageView
+            android:id="@+id/mxFullscreenBtn"
+            android:layout_width="52.5dp"
+            android:layout_height="fill_parent"
+            android:paddingLeft="14dp"
+            android:paddingRight="14dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/mx_icon_full_screen"
+            android:tint="@color/white" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mxRetryLay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="视频加载失败！"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/retry_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/mx_btn_retry"
+            android:paddingLeft="9dp"
+            android:paddingTop="4dp"
+            android:paddingRight="9dp"
+            android:paddingBottom="4dp"
+            android:text="点击重试"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
     </LinearLayout>
 </FrameLayout>

@@ -5,4 +5,9 @@
     <item name="mxLoading" type="id" />
     <item name="mxPlayBtn" type="id" />
     <item name="mxPlayPauseImg" type="id" />
+    <item name="mxCurrentTimeTxv" type="id" />
+    <item name="mxSeekProgress" type="id" />
+    <item name="mxTotalTimeTxv" type="id" />
+    <item name="mxFullscreenBtn" type="id" />
+    <item name="mxBottomLay" type="id" />
 </resources>
