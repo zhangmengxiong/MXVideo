@@ -20,7 +20,6 @@ enum class MXPlayState {
 }
 
 enum class MXVideoDisplay {
-    FILL_PARENT,
-    ORIGINAL,
-    FILL_SCROP
+    FILL_PARENT, // 填充宽高
+    CENTER_CROP // 根据视频宽高自适应
 }

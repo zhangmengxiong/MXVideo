@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black">
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/mxSurfaceContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical" />
 
     <ImageView
         android:id="@+id/mxPlaceImg"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
 
     <ProgressBar
         android:id="@+id/mxLoading"
         android:layout_width="@dimen/mx_player_icon_width"
         android:layout_height="@dimen/mx_player_icon_width"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         android:indeterminateDrawable="@drawable/mx_progress_loading"
         android:visibility="gone" />
 
@@ -26,7 +29,7 @@
         android:id="@+id/mxPlayBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         android:padding="10dp">
 
         <ImageView
@@ -35,4 +38,4 @@
             android:layout_height="@dimen/mx_player_icon_width"
             android:src="@drawable/mx_icon_player_pause" />
     </LinearLayout>
-</RelativeLayout>
+</FrameLayout>

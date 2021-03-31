@@ -1,12 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.mx.video.MXVideoStd
-        android:id="@+id/mxVideoStd"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="250dp" />
-</LinearLayout>
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.mx.video.MXVideoStd
+            android:id="@+id/mxVideoStd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <RadioGroup
+            android:id="@+id/fillTypeRG"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <RadioButton
+                android:id="@+id/fill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FILL_PARENT" />
+
+            <RadioButton
+                android:id="@+id/centerCrop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CENTER_CROP" />
+        </RadioGroup>
+    </LinearLayout>
+</ScrollView>

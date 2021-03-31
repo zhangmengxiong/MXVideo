@@ -14,7 +14,6 @@ abstract class MXVideo @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
     companion object {
-        val displayType = MXVideoDisplay.ORIGINAL
         var mContext: Context? = null
         fun getAppContext() = mContext!!
     }
@@ -23,8 +22,8 @@ abstract class MXVideo @JvmOverloads constructor(
         mContext = context.applicationContext
     }
 
-    private val surfaceContainer: FrameLayout by lazy {
-        findViewById(R.id.mxSurfaceContainer) ?: FrameLayout(context)
+    private val surfaceContainer: LinearLayout by lazy {
+        findViewById(R.id.mxSurfaceContainer) ?: LinearLayout(context)
     }
 
     private val placeImg: ImageView by lazy {
@@ -53,6 +52,7 @@ abstract class MXVideo @JvmOverloads constructor(
     private var mxPlayerClass: Class<*>? = null
     private var mxPlayer: IMXPlayer? = null
     private var textureView: MXTextureView? = null // 当前TextureView
+    private var displayType: MXVideoDisplay = MXVideoDisplay.CENTER_CROP
     private var seekWhenPlay: Int = 0
 
     init {
@@ -108,6 +108,13 @@ abstract class MXVideo @JvmOverloads constructor(
         }
     }
 
+    fun setDisplayType(type: MXVideoDisplay) {
+        if (displayType != type) {
+            this.displayType = type
+            textureView?.setDisplayType(type)
+        }
+    }
+
     abstract fun getLayoutId(): Int
 
 
@@ -131,9 +138,13 @@ abstract class MXVideo @JvmOverloads constructor(
         val textureView = MXTextureView(context.applicationContext)
         surfaceContainer.addView(
             textureView,
-            LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, Gravity.CENTER)
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
         )
         textureView.surfaceTextureListener = mxPlayer
+        textureView.setDisplayType(displayType)
         this.textureView = textureView
     }
 
