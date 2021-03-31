@@ -1,14 +1,13 @@
 package com.mx.video
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import android.util.AttributeSet
 import android.view.View
 import android.view.WindowManager
 import android.widget.*
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
+import com.mx.video.utils.MXTicket
 import com.mx.video.utils.MXUtils
 
 abstract class MXVideo @JvmOverloads constructor(
@@ -57,8 +56,6 @@ abstract class MXVideo @JvmOverloads constructor(
         findViewById(R.id.mxBottomLay) ?: LinearLayout(context)
     }
 
-    protected val mHandler = Handler(Looper.getMainLooper())
-
     /**
      * 播放状态
      */
@@ -72,19 +69,71 @@ abstract class MXVideo @JvmOverloads constructor(
     private var displayType: MXVideoDisplay = MXVideoDisplay.CENTER_CROP
     private var seekWhenPlay: Int = 0
 
+    private val timeTicket = MXTicket()
+
     init {
         View.inflate(context, getLayoutId(), this)
         initView()
+        setState(MXPlayState.IDLE)
     }
 
     private fun initView() {
         playBtn.setOnClickListener {
-            if (mState == MXPlayState.IDLE) return@setOnClickListener
+            val player = mxPlayer
+            when (mState) {
+                MXPlayState.PLAYING -> {
+                    if (player != null) {
+                        player.pause()
+                        setState(MXPlayState.PAUSE)
+                    }
+                }
+                MXPlayState.PAUSE -> {
+                    if (player != null) {
+                        player.start()
+                        setState(MXPlayState.PLAYING)
+                    }
+                }
+                MXPlayState.COMPLETE -> {
+
+                }
+            }
+
+        }
+        surfaceContainer.setOnClickListener {
+            if (mState !in arrayOf(
+                    MXPlayState.PLAYING,
+                    MXPlayState.PAUSE
+                )
+            ) return@setOnClickListener
+            if (playBtn.isShown) {
+                playBtn.visibility = View.GONE
+                mxBottomLay.visibility = View.GONE
+            } else {
+                playBtn.visibility = View.VISIBLE
+                mxBottomLay.visibility = View.VISIBLE
+            }
         }
 
         mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
         mxRetryLay.setOnClickListener {
             startVideo()
+        }
+        timeTicket.setTicketRun(300) {
+            val player = mxPlayer ?: return@setTicketRun
+            if (mState in arrayOf(
+                    MXPlayState.PREPARED,
+                    MXPlayState.PREPARING,
+                    MXPlayState.PLAYING,
+                    MXPlayState.PAUSE
+                ) && player.isPlaying() && !onSeekBarListener.isUserInSeek
+            ) {
+                val duration = player.getDuration()
+                val position = player.getCurrentPosition()
+                mxSeekProgress.max = duration
+                mxSeekProgress.progress = position
+                mxCurrentTimeTxv.text = MXUtils.stringForTime(position)
+                mxTotalTimeTxv.text = MXUtils.stringForTime(duration)
+            }
         }
     }
 
@@ -151,6 +200,12 @@ abstract class MXVideo @JvmOverloads constructor(
                 playPauseImg.setImageResource(R.drawable.mx_icon_player_play)
                 startTimerTicket()
             }
+            MXPlayState.PLAYING -> {
+                playPauseImg.setImageResource(R.drawable.mx_icon_player_pause)
+            }
+            MXPlayState.PAUSE -> {
+                playPauseImg.setImageResource(R.drawable.mx_icon_player_play)
+            }
             MXPlayState.ERROR -> {
                 mxRetryLay.visibility = View.VISIBLE
                 playBtn.visibility = View.GONE
@@ -184,14 +239,14 @@ abstract class MXVideo @JvmOverloads constructor(
         val constructor = clazz.getConstructor()
         val player = (constructor.newInstance() as IMXPlayer)
         mxPlayer = player
+        player.setSource(source)
         player.setMXVideo(this)
-        addTextureView()
+        addTextureView(player)
         MXUtils.findWindows(context)?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        player.prepare(source)
         setState(MXPlayState.PREPARING)
     }
 
-    fun addTextureView() {
+    private fun addTextureView(player: IMXPlayer) {
         MXUtils.log("addTextureView")
         surfaceContainer.removeAllViews()
         val textureView = MXTextureView(context.applicationContext)
@@ -202,7 +257,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
         )
-        textureView.surfaceTextureListener = mxPlayer
+        textureView.surfaceTextureListener = player
         textureView.setDisplayType(displayType)
         this.textureView = textureView
     }
@@ -212,6 +267,7 @@ abstract class MXVideo @JvmOverloads constructor(
         val player = mxPlayer ?: return
         setState(MXPlayState.PREPARED)
         player.start()
+        setState(MXPlayState.PLAYING)
         if (seekWhenPlay > 0) {
             player.seekTo(seekWhenPlay)
             seekWhenPlay = 0
@@ -224,7 +280,7 @@ abstract class MXVideo @JvmOverloads constructor(
     }
 
     fun setBufferProgress(percent: Int) {
-        MXUtils.log("setBufferProgress:$percent")
+//        MXUtils.log("setBufferProgress:$percent")
     }
 
     fun onSeekComplete() {
@@ -257,34 +313,11 @@ abstract class MXVideo @JvmOverloads constructor(
     }
 
     private fun startTimerTicket() {
-        mHandler.post(ticketRun)
+        timeTicket.start()
     }
 
-
-    private val ticketRun = object : Runnable {
-        override fun run() {
-            val player = mxPlayer ?: return
-            try {
-                if (mState in arrayOf(
-                        MXPlayState.PREPARED,
-                        MXPlayState.PREPARING,
-                        MXPlayState.PLAYING,
-                        MXPlayState.PAUSE
-                    ) && player.isPlaying() && !onSeekBarListener.isUserInSeek
-                ) {
-                    val duration = player.getDuration()
-                    val position = player.getCurrentPosition()
-                    mxSeekProgress.max = duration
-                    mxSeekProgress.progress = position
-                    mxCurrentTimeTxv.text = MXUtils.stringForTime(position)
-                    mxTotalTimeTxv.text = MXUtils.stringForTime(duration)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                mHandler.removeCallbacksAndMessages(null)
-                mHandler.postDelayed(this, 300)
-            }
-        }
+    private fun stopTimerTicket() {
+        timeTicket.stop()
     }
+
 }

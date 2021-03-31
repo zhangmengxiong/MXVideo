@@ -19,8 +19,12 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
         runInThread { mediaPlayer?.start() }
     }
 
-    override fun prepare(source: MXPlaySource) {
+    override fun setSource(source: MXPlaySource) {
         mPlaySource = source
+    }
+
+    override fun prepare() {
+        val source = mPlaySource ?: return
         release()
         initHandler()
         runInThread {
@@ -40,14 +44,12 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
                 //如果不用反射，没有url和header参数的setDataSource函数
                 val method = clazz.getDeclaredMethod(
                     "setDataSource",
-//                Context::class.java,
                     String::class.java,
                     Map::class.java
                 )
                 method.isAccessible = true
                 method.invoke(
                     mediaPlayer,
-//                MXVideo.getAppContext(),
                     source.playUrl,
                     source.headerMap
                 )
@@ -107,22 +109,16 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
         }
     }
 
-    override fun setSurface(surface: Surface?) {
-    }
-
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
-        if (this.mediaPlayer != null) {
-            this.mSurface = Surface(surface)
-            mediaPlayer?.setSurface(mSurface)
-        } else {
-
-        }
+        this.mSurface = Surface(surface)
+        prepare()
     }
 
     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
     }
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean {
+        this.mSurface = null
         return false
     }
 

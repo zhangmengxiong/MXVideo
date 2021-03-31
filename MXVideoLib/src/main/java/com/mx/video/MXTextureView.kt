@@ -37,7 +37,6 @@ class MXTextureView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        MXUtils.log("onMeasure " + " [" + this.hashCode() + "] ")
         var widthMeasureSpec = widthMeasureSpec
         var heightMeasureSpec = heightMeasureSpec
 

@@ -62,7 +62,9 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
 
     abstract fun start()
 
-    abstract fun prepare(source: MXPlaySource)
+    abstract fun setSource(source: MXPlaySource)
+
+    abstract fun prepare()
 
     abstract fun pause()
 
@@ -94,9 +96,4 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      * 设置播放速度
      */
     abstract fun setSpeed(speed: Float)
-
-    /**
-     * 设置绘制Surface
-     */
-    abstract fun setSurface(surface: Surface?)
 }
