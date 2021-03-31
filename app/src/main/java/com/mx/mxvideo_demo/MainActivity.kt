@@ -3,7 +3,7 @@ package com.mx.mxvideo_demo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.mx.video.MXPlaySource
-import com.mx.video.MXVideoDisplay
+import com.mx.video.MXScale
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -29,9 +29,9 @@ class MainActivity : AppCompatActivity() {
         }
         fillTypeRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.fill) {
-                mxVideoStd.setDisplayType(MXVideoDisplay.FILL_PARENT)
+                mxVideoStd.setDisplayType(MXScale.FILL_PARENT)
             } else {
-                mxVideoStd.setDisplayType(MXVideoDisplay.CENTER_CROP)
+                mxVideoStd.setDisplayType(MXScale.CENTER_CROP)
             }
         }
     }

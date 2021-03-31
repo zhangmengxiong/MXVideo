@@ -6,14 +6,11 @@ import java.lang.Exception
 class MXTicket {
     private val mHandler = Handler()
     private var isTicketStart = false
-    private var ticketTimeDiff = 300L
+    private var timeDiff = 300L
     private var runnable: Runnable? = null
-    fun setTicketRun(ticketTimeDiff: Long = 300, runnable: Runnable) {
+    fun setTicketRun(timeDiff: Long = 300, runnable: Runnable) {
         this.runnable = runnable
-        this.ticketTimeDiff = ticketTimeDiff
-        if (isTicketStart) {
-            mHandler.post(ticketRun)
-        }
+        this.timeDiff = timeDiff
     }
 
     fun start() {
@@ -35,7 +32,7 @@ class MXTicket {
                 runnable?.run()
             } catch (e: Exception) {
             } finally {
-                mHandler.postDelayed(this, ticketTimeDiff)
+                mHandler.postDelayed(this, timeDiff)
             }
         }
     }

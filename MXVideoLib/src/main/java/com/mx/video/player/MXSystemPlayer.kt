@@ -25,7 +25,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
     override fun prepare() {
         val source = mPlaySource ?: return
-        release()
+        releaseNow()
         initHandler()
         runInThread {
             val mediaPlayer = MediaPlayer()
@@ -61,7 +61,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
                 )
             }
             mediaPlayer.prepareAsync()
-            mediaPlayer.setSurface(mSurface)
+            mediaPlayer.setSurface(Surface(mSurface))
             this.mediaPlayer = mediaPlayer
         }
     }
@@ -79,14 +79,25 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun release() {
+        super.release() // 释放父类资源，必不可少
+
         val mediaPlayer = mediaPlayer
         this.mediaPlayer = null
+        mSurface = null
 
         runInThread {
             mediaPlayer?.setSurface(null)
             mediaPlayer?.release()
             quitHandler()
         }
+    }
+
+    private fun releaseNow() {
+        val mediaPlayer = mediaPlayer
+        this.mediaPlayer = null
+        mediaPlayer?.setSurface(null)
+        mediaPlayer?.release()
+        quitHandler()
     }
 
     override fun getCurrentPosition(): Int {
@@ -110,15 +121,18 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
-        this.mSurface = Surface(surface)
-        prepare()
+        if (mSurface == null) {
+            mSurface = surface
+            prepare()
+        } else {
+            mTextureView?.surfaceTexture = mSurface
+        }
     }
 
     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
     }
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean {
-        this.mSurface = null
         return false
     }
 

@@ -2,7 +2,6 @@ package com.mx.video
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.TextureView
 import android.view.View
 import com.mx.video.utils.MXUtils
@@ -12,7 +11,7 @@ class MXTextureView @JvmOverloads constructor(
 ) : TextureView(context, attrs, defStyleAttr) {
     private var mVideoWidth = 0
     private var mVideoHeight = 0
-    private var displayType = MXVideoDisplay.CENTER_CROP
+    private var displayType = MXScale.CENTER_CROP
 
     fun setVideoSize(mVideoWidth: Int, mVideoHeight: Int) {
         if (this.mVideoWidth != mVideoWidth || this.mVideoHeight != mVideoHeight) {
@@ -22,7 +21,7 @@ class MXTextureView @JvmOverloads constructor(
         }
     }
 
-    fun setDisplayType(type: MXVideoDisplay) {
+    fun setDisplayType(type: MXScale) {
         if (displayType != type) {
             displayType = type
             requestLayout()
@@ -48,7 +47,7 @@ class MXTextureView @JvmOverloads constructor(
         var parentHeight = (parent as View).measuredHeight
         var parentWidth = (parent as View).measuredWidth
         if (parentWidth != 0 && parentHeight != 0 && videoWidth != 0 && videoHeight != 0) {
-            if (displayType === MXVideoDisplay.FILL_PARENT) {
+            if (displayType === MXScale.FILL_PARENT) {
                 if (viewRotation == 90 || viewRotation == 270) {
                     val tempSize = parentWidth
                     parentWidth = parentHeight
@@ -123,7 +122,7 @@ class MXTextureView @JvmOverloads constructor(
             height = (widthSpecSize * (9 / 16f)).toInt()
         }
         if (parentWidth != 0 && parentHeight != 0 && videoWidth != 0 && videoHeight != 0) {
-            if (displayType == MXVideoDisplay.CENTER_CROP) {
+            if (displayType == MXScale.CENTER_CROP) {
                 if (viewRotation == 90 || viewRotation == 270) {
                     val tempSize = parentWidth
                     parentWidth = parentHeight

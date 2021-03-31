@@ -3,6 +3,7 @@ package com.mx.video
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.*
 import com.mx.video.player.IMXPlayer
@@ -14,6 +15,7 @@ abstract class MXVideo @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
     companion object {
+        private val parentMap = HashMap<Int, MXParentView>()
         var mContext: Context? = null
         fun getAppContext() = mContext!!
     }
@@ -55,18 +57,25 @@ abstract class MXVideo @JvmOverloads constructor(
     private val mxBottomLay: LinearLayout by lazy {
         findViewById(R.id.mxBottomLay) ?: LinearLayout(context)
     }
+    private val mxFullscreenBtn: ImageView by lazy {
+        findViewById(R.id.mxFullscreenBtn) ?: ImageView(context)
+    }
+
+    private val viewId = generateViewId()
 
     /**
      * 播放状态
      */
-    var mState = MXPlayState.IDLE
+    var mState = MXState.IDLE
+        private set
+    var mScreen = MXScreen.SMALL
         private set
 
     var currentSource: MXPlaySource? = null
     private var mxPlayerClass: Class<*>? = null
     private var mxPlayer: IMXPlayer? = null
     private var textureView: MXTextureView? = null // 当前TextureView
-    private var displayType: MXVideoDisplay = MXVideoDisplay.CENTER_CROP
+    private var displayType: MXScale = MXScale.CENTER_CROP
     private var seekWhenPlay: Int = 0
 
     private val timeTicket = MXTicket()
@@ -74,26 +83,26 @@ abstract class MXVideo @JvmOverloads constructor(
     init {
         View.inflate(context, getLayoutId(), this)
         initView()
-        setState(MXPlayState.IDLE)
+        setState(MXState.IDLE)
     }
 
     private fun initView() {
         playBtn.setOnClickListener {
             val player = mxPlayer
             when (mState) {
-                MXPlayState.PLAYING -> {
+                MXState.PLAYING -> {
                     if (player != null) {
                         player.pause()
-                        setState(MXPlayState.PAUSE)
+                        setState(MXState.PAUSE)
                     }
                 }
-                MXPlayState.PAUSE -> {
+                MXState.PAUSE -> {
                     if (player != null) {
                         player.start()
-                        setState(MXPlayState.PLAYING)
+                        setState(MXState.PLAYING)
                     }
                 }
-                MXPlayState.COMPLETE -> {
+                MXState.COMPLETE -> {
 
                 }
             }
@@ -101,8 +110,8 @@ abstract class MXVideo @JvmOverloads constructor(
         }
         surfaceContainer.setOnClickListener {
             if (mState !in arrayOf(
-                    MXPlayState.PLAYING,
-                    MXPlayState.PAUSE
+                    MXState.PLAYING,
+                    MXState.PAUSE
                 )
             ) return@setOnClickListener
             if (playBtn.isShown) {
@@ -114,17 +123,23 @@ abstract class MXVideo @JvmOverloads constructor(
             }
         }
 
-        mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
         mxRetryLay.setOnClickListener {
             startVideo()
+        }
+        mxFullscreenBtn.setOnClickListener {
+            if (mScreen == MXScreen.SMALL) {
+                switchToScreen(MXScreen.FULL)
+            } else {
+                switchToScreen(MXScreen.SMALL)
+            }
         }
         timeTicket.setTicketRun(300) {
             val player = mxPlayer ?: return@setTicketRun
             if (mState in arrayOf(
-                    MXPlayState.PREPARED,
-                    MXPlayState.PREPARING,
-                    MXPlayState.PLAYING,
-                    MXPlayState.PAUSE
+                    MXState.PREPARED,
+                    MXState.PREPARING,
+                    MXState.PLAYING,
+                    MXState.PAUSE
                 ) && player.isPlaying() && !onSeekBarListener.isUserInSeek
             ) {
                 val duration = player.getDuration()
@@ -172,41 +187,42 @@ abstract class MXVideo @JvmOverloads constructor(
         if (start) {
             startVideo()
         } else {
-            setState(MXPlayState.NORMAL)
+            setState(MXState.NORMAL)
         }
     }
 
-    private fun setState(state: MXPlayState) {
+    private fun setState(state: MXState) {
         MXUtils.log("setState  ${state.name}")
         this.mState = state
         when (state) {
-            MXPlayState.IDLE -> {
+            MXState.IDLE -> {
                 playBtn.visibility = View.GONE
                 mxRetryLay.visibility = View.GONE
             }
-            MXPlayState.NORMAL -> {
+            MXState.NORMAL -> {
                 mxRetryLay.visibility = View.GONE
                 playBtn.visibility = View.VISIBLE
                 playPauseImg.setImageResource(R.drawable.mx_icon_player_play)
             }
-            MXPlayState.PREPARING -> {
+            MXState.PREPARING -> {
                 mxRetryLay.visibility = View.GONE
                 playBtn.visibility = View.GONE
                 mxLoading.visibility = View.VISIBLE
             }
-            MXPlayState.PREPARED -> {
+            MXState.PREPARED -> {
                 mxRetryLay.visibility = View.GONE
                 mxLoading.visibility = View.GONE
                 playPauseImg.setImageResource(R.drawable.mx_icon_player_play)
                 startTimerTicket()
+                mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
             }
-            MXPlayState.PLAYING -> {
+            MXState.PLAYING -> {
                 playPauseImg.setImageResource(R.drawable.mx_icon_player_pause)
             }
-            MXPlayState.PAUSE -> {
+            MXState.PAUSE -> {
                 playPauseImg.setImageResource(R.drawable.mx_icon_player_play)
             }
-            MXPlayState.ERROR -> {
+            MXState.ERROR -> {
                 mxRetryLay.visibility = View.VISIBLE
                 playBtn.visibility = View.GONE
                 mxLoading.visibility = View.GONE
@@ -224,7 +240,7 @@ abstract class MXVideo @JvmOverloads constructor(
         }
     }
 
-    fun setDisplayType(type: MXVideoDisplay) {
+    fun setDisplayType(type: MXScale) {
         this.displayType = type
         textureView?.setDisplayType(type)
     }
@@ -240,13 +256,13 @@ abstract class MXVideo @JvmOverloads constructor(
         val player = (constructor.newInstance() as IMXPlayer)
         mxPlayer = player
         player.setSource(source)
-        player.setMXVideo(this)
-        addTextureView(player)
+        val textureView = addTextureView(player)
+        player.setMXVideo(this,textureView)
         MXUtils.findWindows(context)?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        setState(MXPlayState.PREPARING)
+        setState(MXState.PREPARING)
     }
 
-    private fun addTextureView(player: IMXPlayer) {
+    private fun addTextureView(player: IMXPlayer): MXTextureView {
         MXUtils.log("addTextureView")
         surfaceContainer.removeAllViews()
         val textureView = MXTextureView(context.applicationContext)
@@ -260,14 +276,15 @@ abstract class MXVideo @JvmOverloads constructor(
         textureView.surfaceTextureListener = player
         textureView.setDisplayType(displayType)
         this.textureView = textureView
+        return textureView
     }
 
     fun onPrepared() {
         MXUtils.log("onPrepared")
         val player = mxPlayer ?: return
-        setState(MXPlayState.PREPARED)
+        setState(MXState.PREPARED)
         player.start()
-        setState(MXPlayState.PLAYING)
+        setState(MXState.PLAYING)
         if (seekWhenPlay > 0) {
             player.seekTo(seekWhenPlay)
             seekWhenPlay = 0
@@ -276,7 +293,7 @@ abstract class MXVideo @JvmOverloads constructor(
 
     fun onCompletion() {
         MXUtils.log("onCompletion")
-        setState(MXPlayState.COMPLETE)
+        setState(MXState.COMPLETE)
     }
 
     fun setBufferProgress(percent: Int) {
@@ -289,7 +306,7 @@ abstract class MXVideo @JvmOverloads constructor(
 
     fun onError() {
         MXUtils.log("onError")
-        setState(MXPlayState.ERROR)
+        setState(MXState.ERROR)
     }
 
     fun onBuffering(start: Boolean) {
@@ -320,4 +337,36 @@ abstract class MXVideo @JvmOverloads constructor(
         timeTicket.stop()
     }
 
+    private fun switchToScreen(screen: MXScreen) {
+        val windows = MXUtils.findWindowsDecorView(context) ?: return
+        if (mScreen == screen) return
+        when (screen) {
+            MXScreen.FULL -> {
+                mxFullscreenBtn.setImageResource(R.drawable.mx_icon_small_screen)
+                if (parentMap.containsKey(viewId)) {
+                    return
+                }
+                val parent = (parent as ViewGroup?) ?: return
+                val index = parent.indexOfChild(this)
+                val layoutParams = layoutParams
+                parent.removeView(this)
+                parentMap[viewId] = MXParentView(index, parent, layoutParams)
+
+                val fullLayout = LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+                )
+                windows.addView(this, fullLayout)
+                mScreen = MXScreen.FULL
+                MXUtils.setFullScreen(context)
+            }
+            MXScreen.SMALL -> {
+                mxFullscreenBtn.setImageResource(R.drawable.mx_icon_full_screen)
+                val parentItem = parentMap.remove(viewId) ?: return
+                windows.removeView(this)
+                parentItem.parentViewGroup.addView(this, parentItem.index, parentItem.layoutParams)
+                mScreen = MXScreen.SMALL
+                MXUtils.recoverFullScreen(context)
+            }
+        }
+    }
 }

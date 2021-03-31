@@ -1,5 +1,7 @@
 package com.mx.video
 
+import android.view.ViewGroup
+
 data class MXPlaySource(
     val playUrl: String, // 播放源
     val title: String = "", // 标题
@@ -8,7 +10,7 @@ data class MXPlaySource(
     val isLooping: Boolean = false // 是否循环播放
 )
 
-enum class MXPlayState {
+enum class MXState {
     IDLE,
     NORMAL,
     PREPARING,
@@ -19,7 +21,18 @@ enum class MXPlayState {
     ERROR
 }
 
-enum class MXVideoDisplay {
+enum class MXScale {
     FILL_PARENT, // 填充宽高
     CENTER_CROP // 根据视频宽高自适应
 }
+
+enum class MXScreen {
+    FULL, // 全屏
+    SMALL  // 小屏
+}
+
+data class MXParentView(
+    val index: Int,
+    val parentViewGroup: ViewGroup,
+    val layoutParams: ViewGroup.LayoutParams
+)

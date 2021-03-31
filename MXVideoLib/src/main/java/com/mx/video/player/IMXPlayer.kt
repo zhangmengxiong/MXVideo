@@ -1,16 +1,20 @@
 package com.mx.video.player
 
+import android.graphics.SurfaceTexture
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
-import android.view.Surface
 import android.view.TextureView
 import com.mx.video.MXPlaySource
+import com.mx.video.MXTextureView
 import com.mx.video.MXVideo
 import java.lang.Exception
 
 abstract class IMXPlayer : TextureView.SurfaceTextureListener {
-    var mSurface: Surface? = null
+    companion object {
+        var mSurface: SurfaceTexture? = null
+    }
+
     var mHandler: Handler? = null
     var mThreadHandler: Handler? = null
     private var threadHandler: HandlerThread? = null
@@ -54,10 +58,11 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
 
 
     private var mMxVideo: MXVideo? = null
-
+    protected var mTextureView: MXTextureView? = null
     fun getMXVideo() = mMxVideo
-    fun setMXVideo(video: MXVideo?) {
+    fun setMXVideo(video: MXVideo, textureView: MXTextureView) {
         mMxVideo = video
+        mTextureView = textureView
     }
 
     abstract fun start()
@@ -78,7 +83,10 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     /**
      * 释放资源
      */
-    abstract fun release()
+    open fun release(){
+        mMxVideo = null
+        mTextureView = null
+    }
 
     /**
      * 获取当前播放时间，单位：秒
