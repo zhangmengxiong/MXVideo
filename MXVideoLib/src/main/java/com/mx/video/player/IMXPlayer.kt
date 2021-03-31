@@ -15,6 +15,13 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         var mSurface: SurfaceTexture? = null
     }
 
+    private var isActive = false
+
+    /**
+     * 播放器是否可用
+     */
+    fun isActive() = isActive
+
     var mHandler: Handler? = null
     var mThreadHandler: Handler? = null
     private var threadHandler: HandlerThread? = null
@@ -63,6 +70,7 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     fun setMXVideo(video: MXVideo, textureView: MXTextureView) {
         mMxVideo = video
         mTextureView = textureView
+        isActive = true
     }
 
     abstract fun start()
@@ -83,7 +91,8 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     /**
      * 释放资源
      */
-    open fun release(){
+    open fun release() {
+        isActive = false
         mMxVideo = null
         mTextureView = null
     }

@@ -24,7 +24,9 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun prepare() {
+        if (!isActive()) return
         val source = mPlaySource ?: return
+        val surface = mSurface ?: return
         releaseNow()
         initHandler()
         runInThread {
@@ -61,20 +63,23 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
                 )
             }
             mediaPlayer.prepareAsync()
-            mediaPlayer.setSurface(Surface(mSurface))
+            mediaPlayer.setSurface(Surface(surface))
             this.mediaPlayer = mediaPlayer
         }
     }
 
     override fun pause() {
+        if (!isActive()) return
         runInThread { mediaPlayer?.pause() }
     }
 
     override fun isPlaying(): Boolean {
+        if (!isActive()) return false
         return mediaPlayer?.isPlaying ?: false
     }
 
     override fun seekTo(time: Int) {
+        if (!isActive()) return
         runInThread { mediaPlayer?.seekTo(time * 1000) }
     }
 
@@ -109,10 +114,12 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun setVolume(leftVolume: Float, rightVolume: Float) {
+        if (!isActive()) return
         mediaPlayer?.setVolume(leftVolume, rightVolume)
     }
 
     override fun setSpeed(speed: Float) {
+        if (!isActive()) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val pp = mediaPlayer?.playbackParams ?: return
             pp.speed = speed
@@ -121,6 +128,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
+        if (!isActive()) return
         if (mSurface == null) {
             mSurface = surface
             prepare()
@@ -140,22 +148,27 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun onPrepared(mp: MediaPlayer?) {
+        if (!isActive()) return
         runInMainThread { getMXVideo()?.onPrepared() }
     }
 
     override fun onCompletion(mp: MediaPlayer?) {
+        if (!isActive()) return
         runInMainThread { getMXVideo()?.onCompletion() }
     }
 
     override fun onBufferingUpdate(mp: MediaPlayer?, percent: Int) {
+        if (!isActive()) return
         runInMainThread { getMXVideo()?.setBufferProgress(percent) }
     }
 
     override fun onSeekComplete(mp: MediaPlayer?) {
+        if (!isActive()) return
         runInMainThread { getMXVideo()?.onSeekComplete() }
     }
 
     override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
+        if (!isActive()) return true
         runInMainThread {
             getMXVideo()?.onError()
             release()
@@ -164,6 +177,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun onInfo(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
+        if (!isActive()) return true
         when (what) {
             MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> {
                 runInMainThread { getMXVideo()?.onRenderFirstFrame() }
@@ -179,6 +193,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun onVideoSizeChanged(mp: MediaPlayer?, width: Int, height: Int) {
+        if (!isActive()) return
         runInMainThread { getMXVideo()?.onVideoSizeChanged(width, height) }
     }
 }
