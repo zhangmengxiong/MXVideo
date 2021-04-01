@@ -44,5 +44,32 @@
                 android:layout_height="wrap_content"
                 android:text="CENTER_CROP" />
         </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/ratioRG"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <RadioButton
+                android:id="@+id/ratioEmpty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="无" />
+
+            <RadioButton
+                android:id="@+id/ratio_16_9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="16:9" />
+
+            <RadioButton
+                android:id="@+id/ratio_4_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4:3" />
+        </RadioGroup>
     </LinearLayout>
 </ScrollView>

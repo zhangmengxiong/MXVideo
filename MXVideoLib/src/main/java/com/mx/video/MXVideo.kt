@@ -1,6 +1,7 @@
 package com.mx.video
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
@@ -69,10 +70,8 @@ abstract class MXVideo @JvmOverloads constructor(
     /**
      * 播放状态
      */
-    var mState = MXState.IDLE
-        private set
-    var mScreen = MXScreen.SMALL
-        private set
+    private var mState = MXState.IDLE
+    private var mScreen = MXScreen.SMALL
 
     var currentSource: MXPlaySource? = null
     private var mxPlayerClass: Class<*>? = null
@@ -87,6 +86,7 @@ abstract class MXVideo @JvmOverloads constructor(
         View.inflate(context, getLayoutId(), this)
         initView()
         setState(MXState.IDLE)
+        setBackgroundColor(Color.GRAY)
     }
 
     private fun initView() {
@@ -286,8 +286,6 @@ abstract class MXVideo @JvmOverloads constructor(
         )
         textureView.surfaceTextureListener = player
         this.textureView = textureView
-        this.minimumWidth = 0
-        this.minimumHeight = 0
         return textureView
     }
 
@@ -339,8 +337,11 @@ abstract class MXVideo @JvmOverloads constructor(
 
     fun stopPlay() {
         MXUtils.log("stopPlay")
-        mxPlayer?.release()
         surfaceContainer.removeAllViews()
+        val player = mxPlayer
+        textureView = null
+        mxPlayer = null
+        player?.release()
     }
 
     private fun startTimerTicket() {
@@ -349,6 +350,33 @@ abstract class MXVideo @JvmOverloads constructor(
 
     private fun stopTimerTicket() {
         timeTicket.stop()
+    }
+
+    private var dimensionRatio: Double = 0.0
+
+    /**
+     * 设置View的宽高比
+     */
+    fun setDimensionRatio(ratio: Double) {
+        if (ratio != dimensionRatio) {
+            this.dimensionRatio = ratio
+            requestLayout()
+        }
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        if (dimensionRatio > 0.0 && mScreen == MXScreen.SMALL
+            && MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY
+        ) {
+            val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+            val measureSpec = MeasureSpec.makeMeasureSpec(
+                (widthSize / dimensionRatio).toInt(),
+                MeasureSpec.EXACTLY
+            )
+            super.onMeasure(widthMeasureSpec, measureSpec)
+        } else {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        }
     }
 
     private fun switchToScreen(screen: MXScreen) {
@@ -378,8 +406,6 @@ abstract class MXVideo @JvmOverloads constructor(
                 val parentItem = parentMap.remove(viewIndexId) ?: return
                 windows.removeView(this)
                 parentItem.parentViewGroup.addView(this, parentItem.index, parentItem.layoutParams)
-                this.minimumWidth = parentItem.width
-                this.minimumHeight = parentItem.height
                 requestLayout()
 
                 mScreen = MXScreen.SMALL
