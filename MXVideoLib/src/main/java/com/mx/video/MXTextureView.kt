@@ -43,10 +43,10 @@ class MXTextureView @JvmOverloads constructor(
 
         val videoWidth = mVideoWidth
         val videoHeight = mVideoHeight
-        var videoRatio = 16 / 9f
+        var videoRatio = 16.0 / 9.0
 
         if (videoWidth > 0 && videoHeight > 0 && widthSize > 0 && heightSize > 0) {
-            videoRatio = videoWidth.toFloat() / videoHeight
+            videoRatio = videoWidth.toDouble() / videoHeight
         } else {
             // 默认16：9
             setMeasuredDimension(widthSize, (widthSize / videoRatio).toInt())
@@ -78,7 +78,7 @@ class MXTextureView @JvmOverloads constructor(
                         height = heightSize
                         if (width > widthSize) {
                             width = widthSize
-                            height = (height * (widthSize.toFloat() / width)).toInt()
+                            height = (height * (widthSize.toDouble() / width)).toInt()
                         }
                     }
                 } else if (widthMode == MeasureSpec.EXACTLY) {
