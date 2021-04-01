@@ -3,6 +3,7 @@ package com.mx.video
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -11,6 +12,7 @@ import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
 import com.mx.video.utils.MXDelay
 import com.mx.video.utils.MXTicket
+import com.mx.video.utils.MXTouchHelp
 import com.mx.video.utils.MXUtils
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -95,6 +97,7 @@ abstract class MXVideo @JvmOverloads constructor(
 
     private val timeTicket = MXTicket()
     private val timeDelay = MXDelay()
+    private val touchHelp = MXTouchHelp(context)
 
     init {
         View.inflate(context, getLayoutId(), this)
@@ -110,21 +113,15 @@ abstract class MXVideo @JvmOverloads constructor(
                 return@setOnClickListener
             }
             val player = mxPlayer
-            when (mState) {
-                MXState.PLAYING -> {
-                    if (player != null) {
-                        player.pause()
-                        setState(MXState.PAUSE)
-                    }
+            if (mState == MXState.PLAYING) {
+                if (player != null) {
+                    player.pause()
+                    setState(MXState.PAUSE)
                 }
-                MXState.PAUSE -> {
-                    if (player != null) {
-                        player.start()
-                        setState(MXState.PLAYING)
-                    }
-                }
-                MXState.COMPLETE -> {
-
+            } else if (mState == MXState.PAUSE) {
+                if (player != null) {
+                    player.start()
+                    setState(MXState.PLAYING)
                 }
             }
         }
@@ -146,6 +143,29 @@ abstract class MXVideo @JvmOverloads constructor(
                 mxBottomLay.visibility = View.VISIBLE
                 mxTopLay.visibility = View.VISIBLE
                 timeDelay.start()
+            }
+        }
+        surfaceContainer.setOnTouchListener { view, motionEvent ->
+            if (mState == MXState.PLAYING) {
+                touchHelp.onTouch(motionEvent)
+            }
+            return@setOnTouchListener false
+        }
+
+        touchHelp.setOnTouchAction {
+            when (it) {
+                MotionEvent.ACTION_DOWN -> {
+                    mxPlaceImg.visibility = View.GONE
+                    mxRetryLay.visibility = View.GONE
+                    mxPlayBtn.visibility = View.GONE
+                    mxLoading.visibility = View.GONE
+                    mxBottomLay.visibility = View.VISIBLE
+                    mxTopLay.visibility = View.GONE
+                    mxReplayLay.visibility = View.GONE
+                }
+                MotionEvent.ACTION_UP  -> {
+                    timeDelay.start()
+                }
             }
         }
 
@@ -460,6 +480,11 @@ abstract class MXVideo @JvmOverloads constructor(
         } else {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         }
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        touchHelp.setSize(w, h)
     }
 
     private fun switchToScreen(screen: MXScreen) {
