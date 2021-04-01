@@ -35,14 +35,14 @@ abstract class MXVideo @JvmOverloads constructor(
         findViewById(R.id.mxSurfaceContainer) ?: LinearLayout(context)
     }
 
-    private val placeImg: ImageView by lazy {
+    private val mxPlaceImg: ImageView by lazy {
         findViewById(R.id.mxPlaceImg) ?: ImageView(context)
     }
     private val mxLoading: ProgressBar by lazy {
         findViewById(R.id.mxLoading) ?: ProgressBar(context)
     }
 
-    private val playBtn: LinearLayout by lazy {
+    private val mxPlayBtn: LinearLayout by lazy {
         findViewById(R.id.mxPlayBtn) ?: LinearLayout(context)
     }
     private val mxRetryLay: LinearLayout by lazy {
@@ -73,6 +73,9 @@ abstract class MXVideo @JvmOverloads constructor(
     private val mxTopLay: LinearLayout by lazy {
         findViewById(R.id.mxTopLay) ?: LinearLayout(context)
     }
+    private val mxReplayLay: LinearLayout by lazy {
+        findViewById(R.id.mxReplayLay) ?: LinearLayout(context)
+    }
     private val mxFullscreenBtn: ImageView by lazy {
         findViewById(R.id.mxFullscreenBtn) ?: ImageView(context)
     }
@@ -101,7 +104,7 @@ abstract class MXVideo @JvmOverloads constructor(
     }
 
     private fun initView() {
-        playBtn.setOnClickListener {
+        mxPlayBtn.setOnClickListener {
             if (currentSource == null) {
                 Toast.makeText(context, "请设置播放地址！", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -132,13 +135,15 @@ abstract class MXVideo @JvmOverloads constructor(
                     MXState.PAUSE
                 )
             ) return@setOnClickListener
-            if (playBtn.isShown) {
-                playBtn.visibility = View.GONE
-                mxBottomLay.visibility = View.GONE
-                mxTopLay.visibility = View.GONE
-                timeDelay.stop()
+            if (mxPlayBtn.isShown) {
+                if (mState == MXState.PLAYING) {
+                    mxPlayBtn.visibility = View.GONE
+                    mxBottomLay.visibility = View.GONE
+                    mxTopLay.visibility = View.GONE
+                    timeDelay.stop()
+                }
             } else {
-                playBtn.visibility = View.VISIBLE
+                mxPlayBtn.visibility = View.VISIBLE
                 mxBottomLay.visibility = View.VISIBLE
                 mxTopLay.visibility = View.VISIBLE
                 timeDelay.start()
@@ -163,7 +168,7 @@ abstract class MXVideo @JvmOverloads constructor(
         timeDelay.setDelayRun(8000) {
             if (!isShown) return@setDelayRun
 
-            playBtn.visibility = View.GONE
+            mxPlayBtn.visibility = View.GONE
             mxBottomLay.visibility = View.GONE
             mxTopLay.visibility = View.GONE
         }
@@ -233,47 +238,83 @@ abstract class MXVideo @JvmOverloads constructor(
         this.mState = state
         when (state) {
             MXState.IDLE -> {
-                playBtn.visibility = View.VISIBLE
+                mxPlaceImg.visibility = View.VISIBLE
+                mxPlayBtn.visibility = View.VISIBLE
                 playPauseImg.setImageResource(R.drawable.mx_icon_player_play)
                 mxRetryLay.visibility = View.GONE
                 mxBottomLay.visibility = View.GONE
                 mxTopLay.visibility = View.GONE
+                mxReplayLay.visibility = View.GONE
             }
             MXState.NORMAL -> {
+                mxPlaceImg.visibility = View.VISIBLE
                 mxRetryLay.visibility = View.GONE
                 mxBottomLay.visibility = View.GONE
                 mxTopLay.visibility = View.GONE
-                playBtn.visibility = View.VISIBLE
+                mxReplayLay.visibility = View.GONE
+                mxPlayBtn.visibility = View.VISIBLE
                 playPauseImg.setImageResource(R.drawable.mx_icon_player_play)
             }
             MXState.PREPARING -> {
+                mxPlaceImg.visibility = View.VISIBLE
                 mxRetryLay.visibility = View.GONE
-                playBtn.visibility = View.GONE
+                mxPlayBtn.visibility = View.GONE
                 mxLoading.visibility = View.VISIBLE
                 mxBottomLay.visibility = View.GONE
                 mxTopLay.visibility = View.GONE
+                mxReplayLay.visibility = View.GONE
             }
             MXState.PREPARED -> {
-                mxRetryLay.visibility = View.GONE
-                mxLoading.visibility = View.GONE
-                mxBottomLay.visibility = View.GONE
-                mxTopLay.visibility = View.GONE
                 playPauseImg.setImageResource(R.drawable.mx_icon_player_play)
-                startTimerTicket()
                 mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
+                mxPlaceImg.visibility = View.GONE
+                mxLoading.visibility = View.GONE
+                mxPlayBtn.visibility = View.GONE
+                mxTopLay.visibility = View.GONE
+                mxBottomLay.visibility = View.GONE
+                mxRetryLay.visibility = View.GONE
+                mxReplayLay.visibility = View.GONE
+                startTimerTicket()
             }
             MXState.PLAYING -> {
                 playPauseImg.setImageResource(R.drawable.mx_icon_player_pause)
+                mxPlaceImg.visibility = View.GONE
+                mxLoading.visibility = View.GONE
+//                mxPlayBtn.visibility = View.GONE
+//                mxTopLay.visibility = View.GONE
+//                mxBottomLay.visibility = View.GONE
+                mxRetryLay.visibility = View.GONE
+                mxReplayLay.visibility = View.GONE
+                timeDelay.start()
             }
             MXState.PAUSE -> {
                 playPauseImg.setImageResource(R.drawable.mx_icon_player_play)
+                mxPlaceImg.visibility = View.GONE
+                mxLoading.visibility = View.GONE
+                mxPlayBtn.visibility = View.VISIBLE
+                mxTopLay.visibility = View.VISIBLE
+                mxBottomLay.visibility = View.VISIBLE
+                mxRetryLay.visibility = View.GONE
+                mxReplayLay.visibility = View.GONE
+                timeDelay.stop()
             }
             MXState.ERROR -> {
-                mxRetryLay.visibility = View.VISIBLE
-                playBtn.visibility = View.GONE
+                mxPlaceImg.visibility = View.VISIBLE
                 mxLoading.visibility = View.GONE
-                mxBottomLay.visibility = View.GONE
+                mxPlayBtn.visibility = View.GONE
                 mxTopLay.visibility = View.GONE
+                mxBottomLay.visibility = View.GONE
+                mxRetryLay.visibility = View.VISIBLE
+                mxReplayLay.visibility = View.GONE
+            }
+            MXState.COMPLETE -> {
+                mxPlaceImg.visibility = View.VISIBLE
+                mxLoading.visibility = View.GONE
+                mxPlayBtn.visibility = View.GONE
+                mxTopLay.visibility = View.GONE
+                mxBottomLay.visibility = View.GONE
+                mxRetryLay.visibility = View.GONE
+                mxReplayLay.visibility = View.VISIBLE
             }
         }
         mxReturnBtn.visibility = if (mScreen == MXScreen.FULL) View.VISIBLE else View.GONE

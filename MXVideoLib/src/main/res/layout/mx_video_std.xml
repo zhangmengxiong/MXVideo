@@ -38,13 +38,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:padding="10dp">
+        android:padding="10dp"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/mxPlayPauseImg"
             android:layout_width="@dimen/mx_player_icon_width"
             android:layout_height="@dimen/mx_player_icon_width"
-            android:padding="3dp"
             android:src="@drawable/mx_icon_player_play" />
     </LinearLayout>
 
@@ -65,7 +65,7 @@
             android:paddingHorizontal="14dp"
             android:paddingVertical="15dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/icon_mx_return"
+            android:src="@drawable/mx_icon_return"
             android:tint="@color/white"
             android:visibility="gone" />
 
@@ -164,6 +164,30 @@
             android:paddingRight="9dp"
             android:paddingBottom="4dp"
             android:text="点击重试"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mxReplayLay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="@dimen/mx_player_icon_width_small"
+            android:layout_height="@dimen/mx_player_icon_width_small"
+            android:src="@drawable/mx_icon_replay" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="重新播放"
             android:textColor="@android:color/white"
             android:textSize="14sp" />
     </LinearLayout>
