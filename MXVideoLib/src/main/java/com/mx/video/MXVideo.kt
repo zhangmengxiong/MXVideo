@@ -92,6 +92,7 @@ abstract class MXVideo @JvmOverloads constructor(
     private fun initView() {
         playBtn.setOnClickListener {
             if (currentSource == null) {
+                Toast.makeText(context, "请设置播放地址！", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             val player = mxPlayer
@@ -285,6 +286,8 @@ abstract class MXVideo @JvmOverloads constructor(
         )
         textureView.surfaceTextureListener = player
         this.textureView = textureView
+        this.minimumWidth = 0
+        this.minimumHeight = 0
         return textureView
     }
 
