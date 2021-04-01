@@ -34,5 +34,7 @@ enum class MXScreen {
 data class MXParentView(
     val index: Int,
     val parentViewGroup: ViewGroup,
-    val layoutParams: ViewGroup.LayoutParams
+    val layoutParams: ViewGroup.LayoutParams,
+    val width: Int,
+    val height: Int
 )

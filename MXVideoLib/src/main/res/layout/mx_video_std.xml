@@ -11,7 +11,12 @@
         android:layout_height="match_parent"
         android:animateLayoutChanges="false"
         android:gravity="center"
-        android:orientation="vertical" />
+        android:orientation="vertical">
+
+        <com.mx.video.MXTextureView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/mxPlaceImg"

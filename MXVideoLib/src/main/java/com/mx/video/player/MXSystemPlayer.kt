@@ -41,27 +41,13 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
             mediaPlayer.setOnErrorListener(this@MXSystemPlayer)
             mediaPlayer.setOnInfoListener(this@MXSystemPlayer)
             mediaPlayer.setOnVideoSizeChangedListener(this@MXSystemPlayer)
-            try {
-                val clazz = MediaPlayer::class.java
-                //如果不用反射，没有url和header参数的setDataSource函数
-                val method = clazz.getDeclaredMethod(
-                    "setDataSource",
-                    String::class.java,
-                    Map::class.java
-                )
-                method.isAccessible = true
-                method.invoke(
-                    mediaPlayer,
-                    source.playUrl,
-                    source.headerMap
-                )
-            } catch (e: Exception) {
-                mediaPlayer.setDataSource(
-                    MXVideo.getAppContext(),
-                    Uri.parse(source.playUrl),
-                    source.headerMap
-                )
-            }
+
+            mediaPlayer.setDataSource(
+                MXVideo.getAppContext(),
+                Uri.parse(source.playUrl),
+                source.headerMap
+            )
+
             mediaPlayer.prepareAsync()
             mediaPlayer.setSurface(Surface(surface))
             this.mediaPlayer = mediaPlayer
@@ -170,7 +156,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
         if (!isActive()) return true
         runInMainThread {
-            getMXVideo()?.onError()
+            getMXVideo()?.onError("what = $what    extra = $extra")
             release()
         }
         return true

@@ -10,11 +10,13 @@ import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
 import com.mx.video.utils.MXTicket
 import com.mx.video.utils.MXUtils
+import java.util.concurrent.atomic.AtomicInteger
 
 abstract class MXVideo @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
     companion object {
+        private val videoViewIndex = AtomicInteger(1)
         private val parentMap = HashMap<Int, MXParentView>()
         var mContext: Context? = null
         fun getAppContext() = mContext!!
@@ -24,6 +26,9 @@ abstract class MXVideo @JvmOverloads constructor(
         mContext = context.applicationContext
     }
 
+    private var mVideoWidth: Int = 1280
+    private var mVideoHeight: Int = 720
+    private val viewIndexId = videoViewIndex.incrementAndGet()
     private val surfaceContainer: LinearLayout by lazy {
         findViewById(R.id.mxSurfaceContainer) ?: LinearLayout(context)
     }
@@ -60,8 +65,6 @@ abstract class MXVideo @JvmOverloads constructor(
     private val mxFullscreenBtn: ImageView by lazy {
         findViewById(R.id.mxFullscreenBtn) ?: ImageView(context)
     }
-
-    private val viewId = generateViewId()
 
     /**
      * 播放状态
@@ -248,8 +251,8 @@ abstract class MXVideo @JvmOverloads constructor(
     abstract fun getLayoutId(): Int
 
 
-    fun startVideo() {
-        MXUtils.log("startVideo")
+    private fun startVideo() {
+        MXUtils.log("startVideo ${currentSource?.playUrl}")
         val clazz = mxPlayerClass ?: return
         val source = currentSource ?: return
         val constructor = clazz.getConstructor()
@@ -257,7 +260,7 @@ abstract class MXVideo @JvmOverloads constructor(
         mxPlayer = player
         player.setSource(source)
         val textureView = addTextureView(player)
-        player.setMXVideo(this,textureView)
+        player.setMXVideo(this, textureView)
         MXUtils.findWindows(context)?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setState(MXState.PREPARING)
     }
@@ -266,6 +269,7 @@ abstract class MXVideo @JvmOverloads constructor(
         MXUtils.log("addTextureView")
         surfaceContainer.removeAllViews()
         val textureView = MXTextureView(context.applicationContext)
+        textureView.setVideoSize(mVideoWidth, mVideoHeight)
         surfaceContainer.addView(
             textureView,
             LinearLayout.LayoutParams(
@@ -304,8 +308,8 @@ abstract class MXVideo @JvmOverloads constructor(
         MXUtils.log("onSeekComplete")
     }
 
-    fun onError() {
-        MXUtils.log("onError")
+    fun onError(error: String?) {
+        MXUtils.log("onError  $error")
         setState(MXState.ERROR)
     }
 
@@ -320,6 +324,8 @@ abstract class MXVideo @JvmOverloads constructor(
 
     fun onVideoSizeChanged(width: Int, height: Int) {
         MXUtils.log("onVideoSizeChanged $width x $height")
+        mVideoWidth = width
+        mVideoHeight = height
         textureView?.setVideoSize(width, height)
     }
 
@@ -343,14 +349,14 @@ abstract class MXVideo @JvmOverloads constructor(
         when (screen) {
             MXScreen.FULL -> {
                 mxFullscreenBtn.setImageResource(R.drawable.mx_icon_small_screen)
-                if (parentMap.containsKey(viewId)) {
+                if (parentMap.containsKey(viewIndexId)) {
                     return
                 }
                 val parent = (parent as ViewGroup?) ?: return
                 val index = parent.indexOfChild(this)
                 val layoutParams = layoutParams
                 parent.removeView(this)
-                parentMap[viewId] = MXParentView(index, parent, layoutParams)
+                parentMap[viewIndexId] = MXParentView(index, parent, layoutParams, width, height)
 
                 val fullLayout = LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
@@ -361,9 +367,13 @@ abstract class MXVideo @JvmOverloads constructor(
             }
             MXScreen.SMALL -> {
                 mxFullscreenBtn.setImageResource(R.drawable.mx_icon_full_screen)
-                val parentItem = parentMap.remove(viewId) ?: return
+                val parentItem = parentMap.remove(viewIndexId) ?: return
                 windows.removeView(this)
                 parentItem.parentViewGroup.addView(this, parentItem.index, parentItem.layoutParams)
+                this.minimumWidth = parentItem.width
+                this.minimumHeight = parentItem.height
+                requestLayout()
+
                 mScreen = MXScreen.SMALL
                 MXUtils.recoverFullScreen(context)
             }
