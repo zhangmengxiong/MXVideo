@@ -90,7 +90,7 @@ class MXTextureView @JvmOverloads constructor(
                 }
             }
         }
-        MXUtils.log("${displayType.name} specMode=$widthMode x $heightMode  specSize=$widthSize x $heightSize  videoSize=$videoWidth x $videoWidth  size=$width x $height")
+        MXUtils.log("${displayType.name} specMode=$widthMode x $heightMode  specSize=$widthSize x $heightSize  videoSize=$videoWidth x $videoHeight  size=$width x $height")
         setMeasuredDimension(width, height)
     }
 }

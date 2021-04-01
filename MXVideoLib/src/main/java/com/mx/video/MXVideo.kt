@@ -9,6 +9,7 @@ import android.view.WindowManager
 import android.widget.*
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
+import com.mx.video.utils.MXDelay
 import com.mx.video.utils.MXTicket
 import com.mx.video.utils.MXUtils
 import java.util.concurrent.atomic.AtomicInteger
@@ -90,6 +91,7 @@ abstract class MXVideo @JvmOverloads constructor(
     private var seekWhenPlay: Int = 0
 
     private val timeTicket = MXTicket()
+    private val timeDelay = MXDelay()
 
     init {
         View.inflate(context, getLayoutId(), this)
@@ -134,10 +136,12 @@ abstract class MXVideo @JvmOverloads constructor(
                 playBtn.visibility = View.GONE
                 mxBottomLay.visibility = View.GONE
                 mxTopLay.visibility = View.GONE
+                timeDelay.stop()
             } else {
                 playBtn.visibility = View.VISIBLE
                 mxBottomLay.visibility = View.VISIBLE
                 mxTopLay.visibility = View.VISIBLE
+                timeDelay.start()
             }
         }
 
@@ -156,7 +160,15 @@ abstract class MXVideo @JvmOverloads constructor(
                 switchToScreen(MXScreen.SMALL)
             }
         }
+        timeDelay.setDelayRun(8000) {
+            if (!isShown) return@setDelayRun
+
+            playBtn.visibility = View.GONE
+            mxBottomLay.visibility = View.GONE
+            mxTopLay.visibility = View.GONE
+        }
         timeTicket.setTicketRun(300) {
+            if (!isShown) return@setTicketRun
             val player = mxPlayer ?: return@setTicketRun
             if (mState in arrayOf(
                     MXState.PREPARED,
