@@ -82,6 +82,12 @@ class MXTextureView @JvmOverloads constructor(
                             height *= scale
                         }
                     }
+                } else if (widthMode == MeasureSpec.EXACTLY) {
+                    width = widthSize
+                    height = (widthSize / videoRatio).toInt()
+                } else if (heightMode == MeasureSpec.EXACTLY) {
+                    width = (heightSize * videoRatio).toInt()
+                    height = heightSize
                 }
             }
         }

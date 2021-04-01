@@ -91,6 +91,9 @@ abstract class MXVideo @JvmOverloads constructor(
 
     private fun initView() {
         playBtn.setOnClickListener {
+            if (currentSource == null) {
+                return@setOnClickListener
+            }
             val player = mxPlayer
             when (mState) {
                 MXState.PLAYING -> {
@@ -199,7 +202,8 @@ abstract class MXVideo @JvmOverloads constructor(
         this.mState = state
         when (state) {
             MXState.IDLE -> {
-                playBtn.visibility = View.GONE
+                playBtn.visibility = View.VISIBLE
+                playPauseImg.setImageResource(R.drawable.mx_icon_player_play)
                 mxRetryLay.visibility = View.GONE
             }
             MXState.NORMAL -> {
@@ -270,6 +274,8 @@ abstract class MXVideo @JvmOverloads constructor(
         surfaceContainer.removeAllViews()
         val textureView = MXTextureView(context.applicationContext)
         textureView.setVideoSize(mVideoWidth, mVideoHeight)
+        textureView.setDisplayType(displayType)
+
         surfaceContainer.addView(
             textureView,
             LinearLayout.LayoutParams(
@@ -278,7 +284,6 @@ abstract class MXVideo @JvmOverloads constructor(
             )
         )
         textureView.surfaceTextureListener = player
-        textureView.setDisplayType(displayType)
         this.textureView = textureView
         return textureView
     }
