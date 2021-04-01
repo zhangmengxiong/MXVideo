@@ -54,7 +54,7 @@
         android:layout_height="@dimen/mx_top_layout_height"
         android:layout_gravity="top"
         android:background="@drawable/mx_bg_top"
-        android:backgroundTint="@color/mx_bottom_layout_color"
+        android:backgroundTint="@color/mx_player_color_top_layout"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -66,7 +66,7 @@
             android:paddingVertical="15dp"
             android:scaleType="centerCrop"
             android:src="@drawable/mx_icon_return"
-            android:tint="@color/white"
+            android:tint="@color/mx_player_color_important"
             android:visibility="gone" />
 
         <TextView
@@ -79,7 +79,7 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textColor="@color/white"
+            android:textColor="@color/mx_player_color_important"
             android:textSize="14sp" />
     </LinearLayout>
 
@@ -89,7 +89,7 @@
         android:layout_height="@dimen/mx_bottom_layout_height"
         android:layout_gravity="bottom"
         android:background="@drawable/mx_bg_bottom"
-        android:backgroundTint="@color/mx_bottom_layout_color"
+        android:backgroundTint="@color/mx_player_color_bottom_layout"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -99,7 +99,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="14dp"
             android:text="00:00"
-            android:textColor="@color/white" />
+            android:textColor="@color/mx_player_color_important" />
 
         <SeekBar
             android:id="@+id/mxSeekProgress"
@@ -123,7 +123,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="00:00"
-            android:textColor="@color/white" />
+            android:textColor="@color/mx_player_color_important" />
 
         <ImageView
             android:id="@+id/mxFullscreenBtn"
@@ -133,7 +133,7 @@
             android:paddingRight="14dp"
             android:scaleType="centerInside"
             android:src="@drawable/mx_icon_full_screen"
-            android:tint="@color/white" />
+            android:tint="@color/mx_player_color_important" />
     </LinearLayout>
 
     <LinearLayout
@@ -150,7 +150,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="视频加载失败！"
-            android:textColor="@android:color/white"
+            android:textColor="@color/mx_player_color_important"
             android:textSize="14sp" />
 
         <TextView
@@ -158,13 +158,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:background="@drawable/mx_btn_retry"
+            android:background="@drawable/mx_bg_btn_retry"
             android:paddingLeft="9dp"
             android:paddingTop="4dp"
             android:paddingRight="9dp"
             android:paddingBottom="4dp"
             android:text="点击重试"
-            android:textColor="@android:color/white"
+            android:textColor="@color/mx_player_color_important"
             android:textSize="14sp" />
     </LinearLayout>
 
@@ -181,14 +181,15 @@
         <ImageView
             android:layout_width="@dimen/mx_player_icon_width_small"
             android:layout_height="@dimen/mx_player_icon_width_small"
-            android:src="@drawable/mx_icon_replay" />
+            android:src="@drawable/mx_icon_replay"
+            android:tint="@color/mx_player_color_important" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="重新播放"
-            android:textColor="@android:color/white"
+            android:textColor="@color/mx_player_color_important"
             android:textSize="14sp" />
     </LinearLayout>
 </FrameLayout>

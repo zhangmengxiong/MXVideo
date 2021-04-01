@@ -127,7 +127,6 @@ abstract class MXVideo @JvmOverloads constructor(
 
                 }
             }
-
         }
         surfaceContainer.setOnClickListener {
             if (mState !in arrayOf(
