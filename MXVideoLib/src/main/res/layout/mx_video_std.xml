@@ -9,7 +9,7 @@
         android:id="@+id/mxSurfaceContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:animateLayoutChanges="false"
+        android:animateLayoutChanges="true"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -24,10 +24,11 @@
         android:layout_height="match_parent"
         android:layout_gravity="center" />
 
+
     <ProgressBar
         android:id="@+id/mxLoading"
-        android:layout_width="@dimen/mx_player_icon_width"
-        android:layout_height="@dimen/mx_player_icon_width"
+        android:layout_width="@dimen/mx_player_loading_width"
+        android:layout_height="@dimen/mx_player_loading_width"
         android:layout_gravity="center"
         android:indeterminateDrawable="@drawable/mx_progress_loading"
         android:visibility="gone" />
@@ -43,18 +44,54 @@
             android:id="@+id/mxPlayPauseImg"
             android:layout_width="@dimen/mx_player_icon_width"
             android:layout_height="@dimen/mx_player_icon_width"
+            android:padding="3dp"
             android:src="@drawable/mx_icon_player_play" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mxTopLay"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/mx_top_layout_height"
+        android:layout_gravity="top"
+        android:background="@drawable/mx_bg_top"
+        android:backgroundTint="@color/mx_bottom_layout_color"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/mxReturnBtn"
+            android:layout_width="@dimen/mx_top_layout_height"
+            android:layout_height="fill_parent"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="15dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/icon_mx_return"
+            android:tint="@color/white"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/mxTitleTxv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/mxBottomLay"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/mx_bottom_layout_height"
         android:layout_gravity="bottom"
         android:background="@drawable/mx_bg_bottom"
+        android:backgroundTint="@color/mx_bottom_layout_color"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:visibility="gone">
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/mxCurrentTimeTxv"
@@ -90,7 +127,7 @@
 
         <ImageView
             android:id="@+id/mxFullscreenBtn"
-            android:layout_width="52.5dp"
+            android:layout_width="@dimen/mx_bottom_layout_height"
             android:layout_height="fill_parent"
             android:paddingLeft="14dp"
             android:paddingRight="14dp"

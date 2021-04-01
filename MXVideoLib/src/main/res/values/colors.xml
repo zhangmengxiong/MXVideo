@@ -3,4 +3,5 @@
     <color name="white">#ffffff</color>
     <color name="white_alpha_a5">#a5ffffff</color>
     <color name="red">#fff85959</color>
+    <color name="mx_bottom_layout_color">#000000</color>
 </resources>

@@ -77,9 +77,8 @@ class MXTextureView @JvmOverloads constructor(
                         width = (heightSize * videoRatio).toInt()
                         height = heightSize
                         if (width > widthSize) {
-                            val scale = widthSize / width
                             width = widthSize
-                            height *= scale
+                            height = (height * (widthSize.toFloat() / width)).toInt()
                         }
                     }
                 } else if (widthMode == MeasureSpec.EXACTLY) {
@@ -91,7 +90,7 @@ class MXTextureView @JvmOverloads constructor(
                 }
             }
         }
-        MXUtils.log("${displayType.name} specMode=$widthMode x $heightMode  specSize=$widthSize x $heightSize  size=$width x $height")
+        MXUtils.log("${displayType.name} specMode=$widthMode x $heightMode  specSize=$widthSize x $heightSize  videoSize=$videoWidth x $videoWidth  size=$width x $height")
         setMeasuredDimension(width, height)
     }
 }

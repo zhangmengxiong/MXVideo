@@ -51,17 +51,26 @@ abstract class MXVideo @JvmOverloads constructor(
     private val playPauseImg: ImageView by lazy {
         findViewById(R.id.mxPlayPauseImg) ?: ImageView(context)
     }
+    private val mxReturnBtn: ImageView by lazy {
+        findViewById(R.id.mxReturnBtn) ?: ImageView(context)
+    }
     private val mxCurrentTimeTxv: TextView by lazy {
         findViewById(R.id.mxCurrentTimeTxv) ?: TextView(context)
     }
     private val mxTotalTimeTxv: TextView by lazy {
         findViewById(R.id.mxTotalTimeTxv) ?: TextView(context)
     }
+    private val mxTitleTxv: TextView by lazy {
+        findViewById(R.id.mxTitleTxv) ?: TextView(context)
+    }
     private val mxSeekProgress: SeekBar by lazy {
         findViewById(R.id.mxSeekProgress) ?: SeekBar(context)
     }
     private val mxBottomLay: LinearLayout by lazy {
         findViewById(R.id.mxBottomLay) ?: LinearLayout(context)
+    }
+    private val mxTopLay: LinearLayout by lazy {
+        findViewById(R.id.mxTopLay) ?: LinearLayout(context)
     }
     private val mxFullscreenBtn: ImageView by lazy {
         findViewById(R.id.mxFullscreenBtn) ?: ImageView(context)
@@ -124,9 +133,11 @@ abstract class MXVideo @JvmOverloads constructor(
             if (playBtn.isShown) {
                 playBtn.visibility = View.GONE
                 mxBottomLay.visibility = View.GONE
+                mxTopLay.visibility = View.GONE
             } else {
                 playBtn.visibility = View.VISIBLE
                 mxBottomLay.visibility = View.VISIBLE
+                mxTopLay.visibility = View.VISIBLE
             }
         }
 
@@ -137,6 +148,11 @@ abstract class MXVideo @JvmOverloads constructor(
             if (mScreen == MXScreen.SMALL) {
                 switchToScreen(MXScreen.FULL)
             } else {
+                switchToScreen(MXScreen.SMALL)
+            }
+        }
+        mxReturnBtn.setOnClickListener {
+            if (mScreen == MXScreen.FULL) {
                 switchToScreen(MXScreen.SMALL)
             }
         }
@@ -191,6 +207,8 @@ abstract class MXVideo @JvmOverloads constructor(
         stopPlay()
         currentSource = source
         mxPlayerClass = clazz ?: MXSystemPlayer::class.java
+
+        mxTitleTxv.text = source.title
         if (start) {
             startVideo()
         } else {
@@ -206,9 +224,13 @@ abstract class MXVideo @JvmOverloads constructor(
                 playBtn.visibility = View.VISIBLE
                 playPauseImg.setImageResource(R.drawable.mx_icon_player_play)
                 mxRetryLay.visibility = View.GONE
+                mxBottomLay.visibility = View.GONE
+                mxTopLay.visibility = View.GONE
             }
             MXState.NORMAL -> {
                 mxRetryLay.visibility = View.GONE
+                mxBottomLay.visibility = View.GONE
+                mxTopLay.visibility = View.GONE
                 playBtn.visibility = View.VISIBLE
                 playPauseImg.setImageResource(R.drawable.mx_icon_player_play)
             }
@@ -216,10 +238,14 @@ abstract class MXVideo @JvmOverloads constructor(
                 mxRetryLay.visibility = View.GONE
                 playBtn.visibility = View.GONE
                 mxLoading.visibility = View.VISIBLE
+                mxBottomLay.visibility = View.GONE
+                mxTopLay.visibility = View.GONE
             }
             MXState.PREPARED -> {
                 mxRetryLay.visibility = View.GONE
                 mxLoading.visibility = View.GONE
+                mxBottomLay.visibility = View.GONE
+                mxTopLay.visibility = View.GONE
                 playPauseImg.setImageResource(R.drawable.mx_icon_player_play)
                 startTimerTicket()
                 mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
@@ -235,8 +261,10 @@ abstract class MXVideo @JvmOverloads constructor(
                 playBtn.visibility = View.GONE
                 mxLoading.visibility = View.GONE
                 mxBottomLay.visibility = View.GONE
+                mxTopLay.visibility = View.GONE
             }
         }
+        mxReturnBtn.visibility = if (mScreen == MXScreen.FULL) View.VISIBLE else View.GONE
     }
 
     fun seekTo(seek: Int) {
@@ -399,6 +427,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 )
                 windows.addView(this, fullLayout)
                 mScreen = MXScreen.FULL
+                mxReturnBtn.visibility = View.VISIBLE
                 MXUtils.setFullScreen(context)
             }
             MXScreen.SMALL -> {
@@ -409,6 +438,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 requestLayout()
 
                 mScreen = MXScreen.SMALL
+                mxReturnBtn.visibility = View.GONE
                 MXUtils.recoverFullScreen(context)
             }
         }
