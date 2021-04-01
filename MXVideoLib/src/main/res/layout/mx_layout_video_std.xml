@@ -27,8 +27,8 @@
 
     <ProgressBar
         android:id="@+id/mxLoading"
-        android:layout_width="@dimen/mx_player_loading_width"
-        android:layout_height="@dimen/mx_player_loading_width"
+        android:layout_width="@dimen/mx_player_size_loading_width"
+        android:layout_height="@dimen/mx_player_size_loading_width"
         android:layout_gravity="center"
         android:indeterminateDrawable="@drawable/mx_progress_loading"
         android:visibility="gone" />
@@ -43,15 +43,15 @@
 
         <ImageView
             android:id="@+id/mxPlayPauseImg"
-            android:layout_width="@dimen/mx_player_icon_width"
-            android:layout_height="@dimen/mx_player_icon_width"
+            android:layout_width="@dimen/mx_player_size_icon_width"
+            android:layout_height="@dimen/mx_player_size_icon_width"
             android:src="@drawable/mx_icon_player_play" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/mxTopLay"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/mx_top_layout_height"
+        android:layout_height="@dimen/mx_player_size_top_layout_height"
         android:layout_gravity="top"
         android:background="@drawable/mx_bg_top"
         android:backgroundTint="@color/mx_player_color_top_layout"
@@ -60,7 +60,7 @@
 
         <ImageView
             android:id="@+id/mxReturnBtn"
-            android:layout_width="@dimen/mx_top_layout_height"
+            android:layout_width="@dimen/mx_player_size_top_layout_height"
             android:layout_height="fill_parent"
             android:paddingHorizontal="14dp"
             android:paddingVertical="15dp"
@@ -86,7 +86,7 @@
     <LinearLayout
         android:id="@+id/mxBottomLay"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/mx_bottom_layout_height"
+        android:layout_height="@dimen/mx_player_size_bottom_layout_height"
         android:layout_gravity="bottom"
         android:background="@drawable/mx_bg_bottom"
         android:backgroundTint="@color/mx_player_color_bottom_layout"
@@ -127,7 +127,7 @@
 
         <ImageView
             android:id="@+id/mxFullscreenBtn"
-            android:layout_width="@dimen/mx_bottom_layout_height"
+            android:layout_width="@dimen/mx_player_size_bottom_layout_height"
             android:layout_height="fill_parent"
             android:paddingLeft="14dp"
             android:paddingRight="14dp"
@@ -179,8 +179,8 @@
         android:visibility="gone">
 
         <ImageView
-            android:layout_width="@dimen/mx_player_icon_width_small"
-            android:layout_height="@dimen/mx_player_icon_width_small"
+            android:layout_width="@dimen/mx_player_size_icon_width_small"
+            android:layout_height="@dimen/mx_player_size_icon_width_small"
             android:src="@drawable/mx_icon_replay"
             android:tint="@color/mx_player_color_important" />
 
