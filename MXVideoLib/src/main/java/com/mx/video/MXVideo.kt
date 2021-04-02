@@ -1,5 +1,6 @@
 package com.mx.video
 
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
@@ -19,6 +20,7 @@ abstract class MXVideo @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
     companion object {
+        private var hasWifiDialogShow = false
         private val videoViewIndex = AtomicInteger(1)
         private val parentMap = HashMap<Int, MXParentView>()
         var mContext: Context? = null
@@ -82,7 +84,7 @@ abstract class MXVideo @JvmOverloads constructor(
     private fun initView() {
         viewProvider.mxPlayBtn.setOnClickListener {
             if (currentSource == null) {
-                Toast.makeText(context, "请设置播放地址！", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.mx_play_source_not_set, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             val player = mxPlayer
@@ -281,15 +283,33 @@ abstract class MXVideo @JvmOverloads constructor(
         MXUtils.log("startVideo ${currentSource?.playUrl}")
         val clazz = mxPlayerClass ?: return
         val source = currentSource ?: return
-        val constructor = clazz.getConstructor()
-        val player = (constructor.newInstance() as IMXPlayer)
-        player.setSource(source)
-        val textureView = addTextureView(player)
-        player.setMXVideo(this, textureView)
-        mxPlayer = player
-        playingVideo = this
-        MXUtils.findWindows(context)?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        setState(MXState.PREPARING)
+
+        val startRun = {
+            val constructor = clazz.getConstructor()
+            val player = (constructor.newInstance() as IMXPlayer)
+            player.setSource(source)
+            val textureView = addTextureView(player)
+            player.setMXVideo(this, textureView)
+            mxPlayer = player
+            playingVideo = this
+            MXUtils.findWindows(context)?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            setState(MXState.PREPARING)
+        }
+        if (!MXUtils.isWifiConnected(context) && mxConfig.showTipIfNotWifi && !hasWifiDialogShow) {
+            AlertDialog.Builder(context).apply {
+                setMessage(R.string.mx_play_wifi_notify)
+                setPositiveButton(context.getString(R.string.mx_play_wifi_dialog_continue)) { _, _ ->
+                    hasWifiDialogShow = true
+                    startRun.invoke()
+                }
+                setNegativeButton(context.getString(R.string.mx_play_wifi_dialog_cancel)) { _, _ ->
+                    hasWifiDialogShow = true
+                }
+            }.create().show()
+            return
+        } else {
+            startRun.invoke()
+        }
     }
 
     private fun addTextureView(player: IMXPlayer): MXTextureView {

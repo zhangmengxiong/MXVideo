@@ -4,9 +4,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.BatteryManager
 import android.util.AttributeSet
 import android.widget.ImageView
 import com.mx.video.R
+import com.mx.video.utils.MXUtils
 import java.lang.Exception
 
 class MXBatteryImageView @JvmOverloads constructor(
@@ -31,8 +33,11 @@ class MXBatteryImageView @JvmOverloads constructor(
             if (Intent.ACTION_BATTERY_CHANGED == action) {
                 val level = intent.getIntExtra("level", 0)
                 val scale = intent.getIntExtra("scale", 100)
-                val percent = level * 100 / scale
-                setLevel(percent)
+                val status = intent.getIntExtra("status", BatteryManager.BATTERY_STATUS_UNKNOWN)
+                val percent = (level.toDouble() / scale) * 100.0
+                val isCharging = (status == BatteryManager.BATTERY_STATUS_CHARGING)
+                MXUtils.log("percent=$percent  isCharging=$isCharging")
+                setLevel(percent.toInt(), isCharging)
             }
         }
     }
@@ -50,7 +55,27 @@ class MXBatteryImageView @JvmOverloads constructor(
         super.onDetachedFromWindow()
     }
 
-    private fun setLevel(percent: Int) {
-        setImageResource(levelImage.getOrNull(percent / 20) ?: levelImage[3])
+    private fun setLevel(percent: Int, isCharging: Boolean) {
+        val img = when {
+            isCharging -> {
+                R.drawable.mx_icon_battery_charge
+            }
+            percent in 0..15 -> {
+                R.drawable.mx_icon_battery_v1
+            }
+            percent in 15..40 -> {
+                R.drawable.mx_icon_battery_v2
+            }
+            percent in 40..65 -> {
+                R.drawable.mx_icon_battery_v3
+            }
+            percent in 65..95 -> {
+                R.drawable.mx_icon_battery_v4
+            }
+            else -> {
+                R.drawable.mx_icon_battery_v5
+            }
+        }
+        setImageResource(img)
     }
 }

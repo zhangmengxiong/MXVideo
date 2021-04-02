@@ -26,14 +26,20 @@ class MXViewProvider(private val mxVideo: MXVideo, private val mxConfig: MXConfi
         mxVideo.findViewById(R.id.mxRetryLay) ?: LinearLayout(mxVideo.context)
     }
 
-    val mxPlayPauseImg: ImageView by lazy {
+    private val mxPlayPauseImg: ImageView by lazy {
         mxVideo.findViewById(R.id.mxPlayPauseImg) ?: ImageView(mxVideo.context)
     }
     val mxReturnBtn: ImageView by lazy {
         mxVideo.findViewById(R.id.mxReturnBtn) ?: ImageView(mxVideo.context)
     }
+    private val mxBatteryImg: ImageView by lazy {
+        mxVideo.findViewById(R.id.mxBatteryImg) ?: ImageView(mxVideo.context)
+    }
     val mxCurrentTimeTxv: TextView by lazy {
         mxVideo.findViewById(R.id.mxCurrentTimeTxv) ?: TextView(mxVideo.context)
+    }
+    private val mxSystemTimeTxv: TextView by lazy {
+        mxVideo.findViewById(R.id.mxSystemTimeTxv) ?: TextView(mxVideo.context)
     }
     val mxTotalTimeTxv: TextView by lazy {
         mxVideo.findViewById(R.id.mxTotalTimeTxv) ?: TextView(mxVideo.context)
@@ -76,6 +82,16 @@ class MXViewProvider(private val mxVideo: MXVideo, private val mxConfig: MXConfi
             mxSeekProgress.visibility = View.GONE
         } else {
             mxSeekProgress.visibility = View.VISIBLE
+        }
+        if (!mxConfig.canShowSystemTime) {
+            mxSystemTimeTxv.visibility = View.GONE
+        } else {
+            mxSystemTimeTxv.visibility = View.VISIBLE
+        }
+        if (!mxConfig.canShowBatteryImg) {
+            mxBatteryImg.visibility = View.GONE
+        } else {
+            mxBatteryImg.visibility = View.VISIBLE
         }
         when (state) {
             MXState.IDLE -> {
