@@ -95,14 +95,6 @@ abstract class MXVideo @JvmOverloads constructor(
                 startPlay()
             }
         }
-
-        viewProvider.touchHelp.setHorizontalTouchCall { touchDownPercent, percent ->
-            val duration = mxPlayer?.getDuration() ?: return@setHorizontalTouchCall
-            val position = abs(duration * percent).toInt()
-            viewProvider.mxQuickSeekImg.setImageResource(if (touchDownPercent > percent) R.drawable.mx_icon_seek_left else R.drawable.mx_icon_seek_right)
-            viewProvider.mxQuickSeekTxv.text =
-                MXUtils.stringForTime(position) + "/" + MXUtils.stringForTime(duration)
-        }
     }
 
     /**

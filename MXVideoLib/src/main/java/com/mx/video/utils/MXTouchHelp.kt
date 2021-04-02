@@ -5,14 +5,15 @@ import android.view.MotionEvent
 import android.view.ViewConfiguration
 import kotlin.math.abs
 
-class MXTouchHelp(private val context: Context,private val mxConfig: MXConfig) {
+class MXTouchHelp(private val context: Context, private val mxConfig: MXConfig) {
 
     // 最低滑动距离
     private val minMoveDistance = ViewConfiguration.get(context).scaledTouchSlop * 2
     private var downX = 0f
     private var downY = 0f
-    private var isSeekPosition = false
-    private var isSeekVolume = false
+    private var isSeekHorizontal = false
+    private var isSeekVerticalLeft = false
+    private var isSeekVerticalRight = false
 
     private var isInTouch = false
     fun isInActive() = isInTouch
@@ -24,19 +25,19 @@ class MXTouchHelp(private val context: Context,private val mxConfig: MXConfig) {
         viewHeight = height
     }
 
-    private var touchAction: ((Int) -> Unit)? = null
-    fun setOnTouchAction(call: (Int) -> Unit) {
-        touchAction = call
+    private var onHorizontalListener: OnMXTouchListener? = null
+    fun setHorizontalTouchCall(call: OnMXTouchListener?) {
+        onHorizontalListener = call
     }
 
-    private var onSeekHorizontal: ((touchDownPercent: Float, percent: Float) -> Unit)? = null
-    fun setHorizontalTouchCall(call: (touchDownPercent: Float, percent: Float) -> Unit) {
-        onSeekHorizontal = call
+    private var onVerticalLeftListener: OnMXTouchListener? = null
+    fun setVerticalLeftTouchCall(call: OnMXTouchListener) {
+        onVerticalLeftListener = call
     }
 
-    private var onSeekVertical: ((touchDownPercent: Float, percent: Float) -> Unit)? = null
-    fun setVerticalTouchCall(call: (touchDownPercent: Float, percent: Float) -> Unit) {
-        onSeekVertical = call
+    private var onVerticalRightListener: OnMXTouchListener? = null
+    fun setVerticalRightTouchCall(call: OnMXTouchListener) {
+        onVerticalRightListener = call
     }
 
     fun onTouch(motionEvent: MotionEvent) {
@@ -46,41 +47,73 @@ class MXTouchHelp(private val context: Context,private val mxConfig: MXConfig) {
                 isInTouch = true
                 downX = motionEvent.x
                 downY = motionEvent.y
-                isSeekPosition = false
-                isSeekVolume = false
+                isSeekHorizontal = false
+                isSeekVerticalLeft = false
+                isSeekVerticalRight = false
             }
             MotionEvent.ACTION_MOVE -> {
-                val dx = motionEvent.x - downX
-                val dy = motionEvent.y - downY
-
-                if (!isSeekPosition && !isSeekVolume) {
+                val dpx = downX / viewWidth
+                val dpy = downY / viewHeight
+                if (!isSeekHorizontal && !isSeekVerticalLeft && !isSeekVerticalRight) {
+                    val dx = motionEvent.x - downX
+                    val dy = motionEvent.y - downY
                     if (abs(dx) > minMoveDistance) {
-                        isSeekPosition = true
-                        touchAction?.invoke(MotionEvent.ACTION_DOWN)
+                        isSeekHorizontal = true
+                        onHorizontalListener?.onStart(dpx)
                     } else if (abs(dy) > minMoveDistance) {
-                        isSeekVolume = true
-                        touchAction?.invoke(MotionEvent.ACTION_DOWN)
+                        if (dpy < 0.5f) {
+                            isSeekVerticalLeft = true
+                            onVerticalLeftListener?.onStart(dpy)
+                        } else {
+                            isSeekVerticalRight = true
+                            onVerticalRightListener?.onStart(dpy)
+                        }
                     }
                 } else {
-                    if (isSeekPosition) {
-                        val dpx = downX / viewWidth
-                        val px = motionEvent.x / viewWidth
-                        onSeekHorizontal?.invoke(dpx, px)
-                    } else if (isSeekVolume) {
-                        val dpy = downY / viewHeight
-                        val py = motionEvent.y / viewHeight
-                        onSeekVertical?.invoke(dpy, py)
+                    when {
+                        isSeekHorizontal -> {
+                            val px = motionEvent.x / viewWidth
+                            onHorizontalListener?.onTouchMove(px)
+                        }
+                        isSeekVerticalLeft -> {
+                            val py = motionEvent.y / viewHeight
+                            onVerticalLeftListener?.onTouchMove(py)
+                        }
+                        isSeekVerticalRight -> {
+                            val py = motionEvent.y / viewHeight
+                            onVerticalRightListener?.onTouchMove(py)
+                        }
                     }
-                    touchAction?.invoke(MotionEvent.ACTION_MOVE)
                 }
             }
             MotionEvent.ACTION_OUTSIDE, MotionEvent.ACTION_UP -> {
+                when {
+                    isSeekHorizontal -> {
+                        val px = motionEvent.x / viewWidth
+                        onHorizontalListener?.onEnd(px)
+                    }
+                    isSeekVerticalLeft -> {
+                        val py = motionEvent.y / viewHeight
+                        onVerticalLeftListener?.onEnd(py)
+                    }
+                    isSeekVerticalRight -> {
+                        val py = motionEvent.y / viewHeight
+                        onVerticalRightListener?.onEnd(py)
+                    }
+                }
+
                 isInTouch = false
-                touchAction?.invoke(MotionEvent.ACTION_UP)
-                isSeekPosition = false
-                isSeekVolume = false
             }
         }
     }
 
+    open class OnMXTouchListener {
+        protected var touchDownPercent: Float = 0f
+        open fun onStart(touchDownPercent: Float) {
+            this.touchDownPercent = touchDownPercent
+        }
+
+        open fun onTouchMove(percent: Float) {}
+        open fun onEnd(percent: Float) {}
+    }
 }

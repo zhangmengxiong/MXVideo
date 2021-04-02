@@ -68,7 +68,14 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
     override fun seekTo(time: Int) {
         if (!isActive()) return
-        runInThread { mediaPlayer?.seekTo(time * 1000) }
+
+        runInThread {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                mediaPlayer?.seekTo(time * 1000L, MediaPlayer.SEEK_CLOSEST)
+            } else {
+                mediaPlayer?.seekTo(time * 1000)
+            }
+        }
     }
 
     override fun release() {
