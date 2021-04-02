@@ -30,6 +30,8 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
         releaseNow()
         initHandler()
         runInThread {
+            if (!isActive()) return@runInThread
+
             val mediaPlayer = MediaPlayer()
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
             mediaPlayer.isLooping = source.isLooping
@@ -166,7 +168,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
         if (!isActive()) return true
         when (what) {
             MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> {
-                runInMainThread { getMXVideo()?.onRenderFirstFrame() }
+//                runInMainThread { getMXVideo()?.onRenderFirstFrame() }
             }
             MediaPlayer.MEDIA_INFO_BUFFERING_START -> {
                 runInMainThread { getMXVideo()?.onBuffering(true) }

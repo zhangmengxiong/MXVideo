@@ -71,16 +71,12 @@ class MXTextureView @JvmOverloads constructor(
             }
             MXScale.CENTER_CROP -> {
                 if (widthMode == MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY) {
-                    if (videoWidth / widthSize > videoHeight / heightSize) {
-                        width = widthSize
-                        height = (widthSize / videoRatio).toInt()
-                    } else {
-                        width = (heightSize * videoRatio).toInt()
+                    width = widthSize
+                    height = (widthSize / videoRatio).toInt()
+                    if (height > heightSize) {
+                        val scale = heightSize / height.toDouble()
+                        width = (width * scale).toInt()
                         height = heightSize
-                        if (width > widthSize) {
-                            width = widthSize
-                            height = (height * (widthSize.toDouble() / width)).toInt()
-                        }
                     }
                 } else if (widthMode == MeasureSpec.EXACTLY) {
                     width = widthSize
