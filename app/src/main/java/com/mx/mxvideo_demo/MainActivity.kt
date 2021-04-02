@@ -2,8 +2,10 @@ package com.mx.mxvideo_demo
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.bumptech.glide.Glide
 import com.mx.video.MXPlaySource
 import com.mx.video.MXScale
+import com.mx.video.MXVideo
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -11,8 +13,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        mxVideoStd.setDimensionRatio(16/9.0)
-        mxVideoStd2.setDimensionRatio(16/9.0)
+        mxVideoStd.setDimensionRatio(16 / 9.0)
+        mxVideoStd2.setDimensionRatio(16 / 9.0)
         mxVideoStd.setSource(
             MXPlaySource(
                 ldjVideos.random(),
@@ -25,6 +27,9 @@ class MainActivity : AppCompatActivity() {
                 titles.random()
             ), start = false
         )
+        Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
+        Glide.with(this).load(thumbnails.random()).into(mxVideoStd2.getPosterImageView())
+
         randPlay.setOnClickListener {
             arrayOf(mxVideoStd, mxVideoStd2).random().startPlay()
         }
@@ -46,9 +51,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        if (MXVideo.isFullScreen()) {
+            MXVideo.gotoSmallScreen()
+            return
+        }
+        super.onBackPressed()
+    }
+
     override fun onDestroy() {
-        mxVideoStd2.stopPlay()
-        mxVideoStd.stopPlay()
+        MXVideo.releaseAll()
         super.onDestroy()
     }
 }

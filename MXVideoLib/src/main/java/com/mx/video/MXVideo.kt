@@ -24,10 +24,26 @@ abstract class MXVideo @JvmOverloads constructor(
         fun getAppContext() = mContext!!
 
         private var playingVideo: MXVideo? = null
-        val MX_VIDEO: MXVideo?
-            get() {
-                return playingVideo
-            }
+        fun getMXVideo(): MXVideo? {
+            return playingVideo
+        }
+
+
+        fun isFullScreen(): Boolean {
+            return playingVideo?.mScreen == MXScreen.FULL
+        }
+
+        fun gotoSmallScreen() {
+            playingVideo?.gotoSmallScreen()
+        }
+
+        fun gotoFullScreen() {
+            playingVideo?.gotoFullScreen()
+        }
+
+        fun releaseAll() {
+            playingVideo?.stopPlay()
+        }
     }
 
     init {
@@ -354,6 +370,8 @@ abstract class MXVideo @JvmOverloads constructor(
         setState(MXState.IDLE)
     }
 
+    fun getPosterImageView() = viewProvider.mxPlaceImg
+
     private var dimensionRatio: Double = 0.0
 
     /**
@@ -421,5 +439,26 @@ abstract class MXVideo @JvmOverloads constructor(
                 MXUtils.recoverFullScreen(context)
             }
         }
+    }
+
+    fun isPlaying(): Boolean {
+        return (mState in arrayOf(
+            MXState.PLAYING,
+            MXState.PAUSE,
+            MXState.PREPARING,
+            MXState.PREPARED
+        ))
+    }
+
+    fun isFullScreen(): Boolean {
+        return mScreen == MXScreen.FULL
+    }
+
+    fun gotoSmallScreen() {
+        switchToScreen(MXScreen.SMALL)
+    }
+
+    fun gotoFullScreen() {
+        switchToScreen(MXScreen.FULL)
     }
 }
