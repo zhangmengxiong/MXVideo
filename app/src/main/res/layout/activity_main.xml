@@ -1,81 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycleView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <com.mx.video.MXVideoStd
-            android:id="@+id/mxVideoStd"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <com.mx.video.MXVideoStd
-            android:id="@+id/mxVideoStd2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp" />
-
-        <Button
-            android:id="@+id/randPlay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:padding="10dp"
-            android:text="随机播放" />
-
-        <RadioGroup
-            android:id="@+id/fillTypeRG"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <RadioButton
-                android:id="@+id/fill"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="FILL_PARENT" />
-
-            <RadioButton
-                android:id="@+id/centerCrop"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="CENTER_CROP" />
-        </RadioGroup>
-
-        <RadioGroup
-            android:id="@+id/ratioRG"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <RadioButton
-                android:id="@+id/ratioEmpty"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="无" />
-
-            <RadioButton
-                android:id="@+id/ratio_16_9"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="16:9" />
-
-            <RadioButton
-                android:id="@+id/ratio_4_3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="4:3" />
-        </RadioGroup>
-    </LinearLayout>
-</ScrollView>
+        android:layout_height="match_parent" />
+</LinearLayout>

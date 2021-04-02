@@ -1,6 +1,7 @@
 package com.mx.video
 
 import android.view.ViewGroup
+import java.io.Serializable
 
 data class MXPlaySource(
     val playUrl: String, // 播放源
@@ -8,9 +9,9 @@ data class MXPlaySource(
     val headerMap: MutableMap<String, String> = HashMap(), // 请求头部
     val isOnlineSource: Boolean = true, // 是否在线资源
     val isLooping: Boolean = false // 是否循环播放
-)
+) : Serializable
 
-enum class MXState {
+enum class MXState : Serializable {
     IDLE,
     NORMAL,
     PREPARING,
@@ -21,12 +22,12 @@ enum class MXState {
     ERROR
 }
 
-enum class MXScale {
+enum class MXScale : Serializable {
     FILL_PARENT, // 填充宽高
     CENTER_CROP // 根据视频宽高自适应
 }
 
-enum class MXScreen {
+enum class MXScreen : Serializable {
     FULL, // 全屏
     NORMAL  // 小屏
 }
@@ -37,9 +38,9 @@ data class MXParentView(
     val layoutParams: ViewGroup.LayoutParams,
     val width: Int,
     val height: Int
-)
+) : Serializable
 
-class MXConfig {
+class MXConfig : Serializable {
     var canSeekByUser = true // 是否可以通过滑动或者进度条调整进度
     var canFullScreen = true // 是否支持全屏
     var canShowSystemTime = true // 是否显示右上角的时间
