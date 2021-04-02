@@ -1,12 +1,13 @@
-package com.mx.video.utils
+package com.mx.video.views
 
 import android.view.View
 import android.widget.*
 import com.mx.video.MXState
 import com.mx.video.MXVideo
 import com.mx.video.R
+import com.mx.video.utils.MXConfig
 
-class MXViewProvider(private val mxVideo: MXVideo) {
+class MXViewProvider(private val mxVideo: MXVideo, private val mxConfig: MXConfig) {
     val mxSurfaceContainer: LinearLayout by lazy {
         mxVideo.findViewById(R.id.mxSurfaceContainer) ?: LinearLayout(mxVideo.context)
     }
@@ -66,6 +67,16 @@ class MXViewProvider(private val mxVideo: MXVideo) {
     }
 
     fun setState(state: MXState) {
+        if (!mxConfig.canFullScreen) {
+            mxFullscreenBtn.visibility = View.GONE
+        } else {
+            mxFullscreenBtn.visibility = View.VISIBLE
+        }
+        if (!mxConfig.canSeekByUser) {
+            mxSeekProgress.visibility = View.GONE
+        } else {
+            mxSeekProgress.visibility = View.VISIBLE
+        }
         when (state) {
             MXState.IDLE -> {
                 mxPlaceImg.visibility = View.VISIBLE

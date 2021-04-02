@@ -11,6 +11,7 @@ import android.widget.*
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
 import com.mx.video.utils.*
+import com.mx.video.views.MXViewProvider
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.abs
 
@@ -24,11 +25,6 @@ abstract class MXVideo @JvmOverloads constructor(
         fun getAppContext() = mContext!!
 
         private var playingVideo: MXVideo? = null
-        fun getMXVideo(): MXVideo? {
-            return playingVideo
-        }
-
-
         fun isFullScreen(): Boolean {
             return playingVideo?.mScreen == MXScreen.FULL
         }
@@ -67,10 +63,12 @@ abstract class MXVideo @JvmOverloads constructor(
     private var displayType: MXScale = MXScale.CENTER_CROP
     private var seekWhenPlay: Int = 0
 
+
+    private val mxConfig = MXConfig()
     private val timeTicket = MXTicket()
     private val timeDelay = MXDelay()
-    private val touchHelp = MXTouchHelp(context)
-    private val viewProvider by lazy { MXViewProvider(this) }
+    private val touchHelp by lazy { MXTouchHelp(context, mxConfig) }
+    private val viewProvider by lazy { MXViewProvider(this, mxConfig) }
 
     init {
         View.inflate(context, getLayoutId(), this)
@@ -78,6 +76,8 @@ abstract class MXVideo @JvmOverloads constructor(
         setState(MXState.IDLE)
         setBackgroundColor(Color.GRAY)
     }
+
+    fun getConfig() = mxConfig
 
     private fun initView() {
         viewProvider.mxPlayBtn.setOnClickListener {

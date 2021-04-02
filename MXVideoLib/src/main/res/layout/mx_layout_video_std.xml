@@ -83,6 +83,28 @@
             android:singleLine="true"
             android:textColor="@color/mx_player_color_important"
             android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <com.mx.video.views.MXBatteryImageView
+                android:layout_width="@dimen/mx_player_size_battery_width"
+                android:layout_height="@dimen/mx_player_size_battery_height"
+                android:scaleType="centerCrop"
+                android:tint="@color/mx_player_color_important" />
+
+            <com.mx.video.views.MXTimeTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="00:00"
+                android:textColor="@color/mx_player_color_important"
+                android:textSize="12sp" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout

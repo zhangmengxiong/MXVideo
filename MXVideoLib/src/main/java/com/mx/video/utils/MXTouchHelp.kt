@@ -5,8 +5,10 @@ import android.view.MotionEvent
 import android.view.ViewConfiguration
 import kotlin.math.abs
 
-class MXTouchHelp(private val context: Context) {    // 最低滑动距离
-    private val minMoveDistance = ViewConfiguration.get(context).scaledTouchSlop
+class MXTouchHelp(private val context: Context,private val mxConfig: MXConfig) {
+
+    // 最低滑动距离
+    private val minMoveDistance = ViewConfiguration.get(context).scaledTouchSlop * 2
     private var downX = 0f
     private var downY = 0f
     private var isSeekPosition = false
@@ -54,10 +56,11 @@ class MXTouchHelp(private val context: Context) {    // 最低滑动距离
                 if (!isSeekPosition && !isSeekVolume) {
                     if (abs(dx) > minMoveDistance) {
                         isSeekPosition = true
+                        touchAction?.invoke(MotionEvent.ACTION_DOWN)
                     } else if (abs(dy) > minMoveDistance) {
                         isSeekVolume = true
+                        touchAction?.invoke(MotionEvent.ACTION_DOWN)
                     }
-                    touchAction?.invoke(MotionEvent.ACTION_DOWN)
                 } else {
                     if (isSeekPosition) {
                         val dpx = downX / viewWidth
