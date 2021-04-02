@@ -9,18 +9,19 @@ import com.mx.video.MXPlaySource
 import com.mx.video.MXTextureView
 import com.mx.video.MXVideo
 import java.lang.Exception
+import java.util.concurrent.atomic.AtomicBoolean
 
 abstract class IMXPlayer : TextureView.SurfaceTextureListener {
-    companion object {
-        var mSurface: SurfaceTexture? = null
-    }
+    protected var mSurfaceTexture: SurfaceTexture? = null
+    protected var mTextureView: MXTextureView? = null
 
-    private var isActive = false
+    private var mMxVideo: MXVideo? = null
+    private val isActive = AtomicBoolean(false)
 
     /**
      * 播放器是否可用
      */
-    fun isActive() = isActive
+    fun isActive() = isActive.get()
 
     var mHandler: Handler? = null
     var mThreadHandler: Handler? = null
@@ -63,14 +64,14 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         mThreadHandler?.post(run)
     }
 
+    fun getMXVideo(): MXVideo? {
+        return if (isActive.get()) mMxVideo else null
+    }
 
-    private var mMxVideo: MXVideo? = null
-    protected var mTextureView: MXTextureView? = null
-    fun getMXVideo() = mMxVideo
     fun setMXVideo(video: MXVideo, textureView: MXTextureView) {
         mMxVideo = video
         mTextureView = textureView
-        isActive = true
+        isActive.set(true)
     }
 
     abstract fun start()
@@ -92,7 +93,7 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      * 释放资源
      */
     open fun release() {
-        isActive = false
+        isActive.set(false)
         mMxVideo = null
         mTextureView = null
     }

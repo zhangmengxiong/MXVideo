@@ -38,14 +38,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:padding="10dp"
         android:visibility="gone">
 
         <ImageView
             android:id="@+id/mxPlayPauseImg"
             android:layout_width="@dimen/mx_player_size_icon_width"
             android:layout_height="@dimen/mx_player_size_icon_width"
-            android:src="@drawable/mx_icon_player_play" />
+            android:src="@drawable/mx_icon_player_play"
+            android:tint="@color/mx_player_color_important" />
     </LinearLayout>
 
     <LinearLayout

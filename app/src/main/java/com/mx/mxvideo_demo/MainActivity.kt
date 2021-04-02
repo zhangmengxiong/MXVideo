@@ -11,13 +11,22 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        mxVideoStd.setDimensionRatio(16/9.0)
+        mxVideoStd2.setDimensionRatio(16/9.0)
+        mxVideoStd.setSource(
+            MXPlaySource(
+                ldjVideos.random(),
+                titles.random()
+            ), start = false
+        )
+        mxVideoStd2.setSource(
+            MXPlaySource(
+                ldjVideos.random(),
+                titles.random()
+            ), start = false
+        )
         randPlay.setOnClickListener {
-            mxVideoStd.setSource(
-                MXPlaySource(
-                    ldjVideos.random(),
-                    titles.random()
-                )
-            )
+            arrayOf(mxVideoStd, mxVideoStd2).random().startPlay()
         }
         fillTypeRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.fill) {
@@ -38,6 +47,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        mxVideoStd2.stopPlay()
         mxVideoStd.stopPlay()
         super.onDestroy()
     }

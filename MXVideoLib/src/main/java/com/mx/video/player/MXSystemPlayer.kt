@@ -26,7 +26,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     override fun prepare() {
         if (!isActive()) return
         val source = mPlaySource ?: return
-        val surface = mSurface ?: return
+        val surface = mSurfaceTexture ?: return
         releaseNow()
         initHandler()
         runInThread {
@@ -74,7 +74,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
         val mediaPlayer = mediaPlayer
         this.mediaPlayer = null
-        mSurface = null
+        mSurfaceTexture = null
 
         runInThread {
             mediaPlayer?.setSurface(null)
@@ -115,11 +115,11 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
         if (!isActive()) return
-        if (mSurface == null) {
-            mSurface = surface
+        if (mSurfaceTexture == null) {
+            mSurfaceTexture = surface
             prepare()
         } else {
-            mTextureView?.surfaceTexture = mSurface
+            mTextureView?.surfaceTexture = mSurfaceTexture
         }
     }
 
