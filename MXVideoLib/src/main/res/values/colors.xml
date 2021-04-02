@@ -5,4 +5,5 @@
     <color name="mx_player_color_progress">#fff85959</color>
     <color name="mx_player_color_bottom_layout">#000000</color>
     <color name="mx_player_color_top_layout">#000000</color>
+    <color name="mx_player_color_float_bg">#99000000</color>
 </resources>

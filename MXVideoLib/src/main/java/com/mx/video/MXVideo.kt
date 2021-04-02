@@ -15,6 +15,7 @@ import com.mx.video.utils.MXTicket
 import com.mx.video.utils.MXTouchHelp
 import com.mx.video.utils.MXUtils
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.abs
 
 abstract class MXVideo @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -78,6 +79,15 @@ abstract class MXVideo @JvmOverloads constructor(
     private val mxReplayLay: LinearLayout by lazy {
         findViewById(R.id.mxReplayLay) ?: LinearLayout(context)
     }
+    private val mxQuickSeekLay: LinearLayout by lazy {
+        findViewById(R.id.mxQuickSeekLay) ?: LinearLayout(context)
+    }
+    private val mxQuickSeekImg: ImageView by lazy {
+        findViewById(R.id.mxQuickSeekImg) ?: ImageView(context)
+    }
+    private val mxQuickSeekTxv: TextView by lazy {
+        findViewById(R.id.mxQuickSeekTxv) ?: TextView(context)
+    }
     private val mxFullscreenBtn: ImageView by lazy {
         findViewById(R.id.mxFullscreenBtn) ?: ImageView(context)
     }
@@ -126,27 +136,26 @@ abstract class MXVideo @JvmOverloads constructor(
             }
         }
         surfaceContainer.setOnClickListener {
-            if (mState !in arrayOf(
-                    MXState.PLAYING,
-                    MXState.PAUSE
-                )
-            ) return@setOnClickListener
-            if (mxPlayBtn.isShown) {
-                if (mState == MXState.PLAYING) {
+            if (mState in arrayOf(MXState.PLAYING, MXState.PAUSE)) {
+                if (mxPlayBtn.isShown) {
                     mxPlayBtn.visibility = View.GONE
                     mxBottomLay.visibility = View.GONE
                     mxTopLay.visibility = View.GONE
                     timeDelay.stop()
+                } else {
+                    mxPlayBtn.visibility = View.VISIBLE
+                    mxBottomLay.visibility = View.VISIBLE
+                    mxTopLay.visibility = View.VISIBLE
+                    timeDelay.start()
                 }
-            } else {
-                mxPlayBtn.visibility = View.VISIBLE
-                mxBottomLay.visibility = View.VISIBLE
+            } else if (mScreen == MXScreen.FULL) {
                 mxTopLay.visibility = View.VISIBLE
                 timeDelay.start()
             }
         }
         surfaceContainer.setOnTouchListener { view, motionEvent ->
-            if (mState == MXState.PLAYING) {
+            if (mScreen == MXScreen.FULL && mState == MXState.PLAYING) {
+                // 全屏且正在播放才会触发触摸滑动
                 touchHelp.onTouch(motionEvent)
             }
             return@setOnTouchListener false
@@ -159,14 +168,23 @@ abstract class MXVideo @JvmOverloads constructor(
                     mxRetryLay.visibility = View.GONE
                     mxPlayBtn.visibility = View.GONE
                     mxLoading.visibility = View.GONE
-                    mxBottomLay.visibility = View.VISIBLE
+                    mxBottomLay.visibility = View.GONE
                     mxTopLay.visibility = View.GONE
                     mxReplayLay.visibility = View.GONE
+                    mxQuickSeekLay.visibility = View.VISIBLE
                 }
-                MotionEvent.ACTION_UP  -> {
+                MotionEvent.ACTION_UP -> {
+                    mxQuickSeekLay.visibility = View.GONE
                     timeDelay.start()
                 }
             }
+        }
+        touchHelp.setHorizontalTouchCall { touchDownPercent, percent ->
+            val duration = mxPlayer?.getDuration() ?: return@setHorizontalTouchCall
+            val position = abs(duration * percent).toInt()
+            mxQuickSeekImg.setImageResource(if (touchDownPercent > percent) R.drawable.mx_icon_seek_left else R.drawable.mx_icon_seek_right)
+            mxQuickSeekTxv.text =
+                MXUtils.stringForTime(position) + "/" + MXUtils.stringForTime(duration)
         }
 
         mxRetryLay.setOnClickListener {
@@ -202,7 +220,7 @@ abstract class MXVideo @JvmOverloads constructor(
                     MXState.PREPARING,
                     MXState.PLAYING,
                     MXState.PAUSE
-                ) && player.isPlaying() && !onSeekBarListener.isUserInSeek
+                ) && player.isPlaying()
             ) {
                 val duration = player.getDuration()
                 val position = player.getCurrentPosition()
@@ -216,7 +234,6 @@ abstract class MXVideo @JvmOverloads constructor(
 
     private val onSeekBarListener = object : SeekBar.OnSeekBarChangeListener {
         var progress = 0
-        var isUserInSeek = false
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
             if (fromUser) {
                 this.progress = progress
@@ -227,14 +244,14 @@ abstract class MXVideo @JvmOverloads constructor(
         override fun onStartTrackingTouch(seekBar: SeekBar?) {
             MXUtils.log("onStartTrackingTouch")
             this.progress = seekBar?.progress ?: return
-            isUserInSeek = true
+            timeTicket.stop()
         }
 
         override fun onStopTrackingTouch(seekBar: SeekBar?) {
             MXUtils.log("onStopTrackingTouch")
             mxCurrentTimeTxv.text = MXUtils.stringForTime(progress)
-            isUserInSeek = false
             seekTo(progress)
+            timeTicket.start()
         }
     }
 
@@ -267,6 +284,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 mxBottomLay.visibility = View.GONE
                 mxTopLay.visibility = View.GONE
                 mxReplayLay.visibility = View.GONE
+                mxQuickSeekLay.visibility = View.GONE
             }
             MXState.NORMAL -> {
                 mxPlaceImg.visibility = View.VISIBLE
@@ -275,6 +293,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 mxTopLay.visibility = View.GONE
                 mxReplayLay.visibility = View.GONE
                 mxPlayBtn.visibility = View.VISIBLE
+                mxQuickSeekLay.visibility = View.GONE
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
             }
             MXState.PREPARING -> {
@@ -285,6 +304,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 mxBottomLay.visibility = View.GONE
                 mxTopLay.visibility = View.GONE
                 mxReplayLay.visibility = View.GONE
+                mxQuickSeekLay.visibility = View.GONE
             }
             MXState.PREPARED -> {
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
@@ -296,6 +316,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 mxBottomLay.visibility = View.GONE
                 mxRetryLay.visibility = View.GONE
                 mxReplayLay.visibility = View.GONE
+                mxQuickSeekLay.visibility = View.GONE
                 startTimerTicket()
             }
             MXState.PLAYING -> {
@@ -307,6 +328,7 @@ abstract class MXVideo @JvmOverloads constructor(
 //                mxBottomLay.visibility = View.GONE
                 mxRetryLay.visibility = View.GONE
                 mxReplayLay.visibility = View.GONE
+                mxQuickSeekLay.visibility = View.GONE
                 timeDelay.start()
             }
             MXState.PAUSE -> {
@@ -318,6 +340,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 mxBottomLay.visibility = View.VISIBLE
                 mxRetryLay.visibility = View.GONE
                 mxReplayLay.visibility = View.GONE
+                mxQuickSeekLay.visibility = View.GONE
                 timeDelay.stop()
             }
             MXState.ERROR -> {
@@ -328,6 +351,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 mxBottomLay.visibility = View.GONE
                 mxRetryLay.visibility = View.VISIBLE
                 mxReplayLay.visibility = View.GONE
+                mxQuickSeekLay.visibility = View.GONE
             }
             MXState.COMPLETE -> {
                 mxPlaceImg.visibility = View.VISIBLE
@@ -337,13 +361,14 @@ abstract class MXVideo @JvmOverloads constructor(
                 mxBottomLay.visibility = View.GONE
                 mxRetryLay.visibility = View.GONE
                 mxReplayLay.visibility = View.VISIBLE
+                mxQuickSeekLay.visibility = View.GONE
             }
         }
         mxReturnBtn.visibility = if (mScreen == MXScreen.FULL) View.VISIBLE else View.GONE
     }
 
     fun seekTo(seek: Int) {
-        MXUtils.log("seekTo")
+        MXUtils.log("seekTo ${MXUtils.stringForTime(seek)}")
         if (mxPlayer?.isPlaying() == true) {
             mxPlayer?.seekTo(seek)
         } else {
@@ -360,15 +385,16 @@ abstract class MXVideo @JvmOverloads constructor(
 
 
     private fun startVideo() {
+        stopPlay()
         MXUtils.log("startVideo ${currentSource?.playUrl}")
         val clazz = mxPlayerClass ?: return
         val source = currentSource ?: return
         val constructor = clazz.getConstructor()
         val player = (constructor.newInstance() as IMXPlayer)
-        mxPlayer = player
         player.setSource(source)
         val textureView = addTextureView(player)
         player.setMXVideo(this, textureView)
+        mxPlayer = player
         MXUtils.findWindows(context)?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setState(MXState.PREPARING)
     }

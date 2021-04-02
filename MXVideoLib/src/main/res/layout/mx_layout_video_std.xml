@@ -56,7 +56,8 @@
         android:background="@drawable/mx_bg_top"
         android:backgroundTint="@color/mx_player_color_top_layout"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/mxReturnBtn"
@@ -91,7 +92,8 @@
         android:background="@drawable/mx_bg_bottom"
         android:backgroundTint="@color/mx_player_color_bottom_layout"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/mxCurrentTimeTxv"
@@ -141,15 +143,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:background="@drawable/mx_bg_float_layout"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="10dp"
+        android:paddingHorizontal="22dp"
+        android:paddingVertical="12dp"
         android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="视频加载失败！"
+            android:text="@string/mx_play_error"
             android:textColor="@color/mx_player_color_important"
             android:textSize="14sp" />
 
@@ -163,7 +167,7 @@
             android:paddingTop="4dp"
             android:paddingRight="9dp"
             android:paddingBottom="4dp"
-            android:text="点击重试"
+            android:text="@string/mx_play_retry"
             android:textColor="@color/mx_player_color_important"
             android:textSize="14sp" />
     </LinearLayout>
@@ -173,9 +177,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:background="@drawable/mx_bg_float_layout"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="10dp"
+        android:paddingHorizontal="22dp"
+        android:paddingVertical="12dp"
         android:visibility="gone">
 
         <ImageView
@@ -188,8 +194,38 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="重新播放"
+            android:text="@string/mx_play_complete_replay"
             android:textColor="@color/mx_player_color_important"
             android:textSize="14sp" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mxQuickSeekLay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/mx_bg_float_layout"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="22dp"
+        android:paddingVertical="12dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/mxQuickSeekImg"
+            android:layout_width="@dimen/mx_player_size_icon_width_small"
+            android:layout_height="@dimen/mx_player_size_icon_width_small"
+            android:src="@drawable/mx_icon_seek_left"
+            android:tint="@color/mx_player_color_important" />
+
+        <TextView
+            android:id="@+id/mxQuickSeekTxv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="00:00/00:00"
+            android:textColor="@color/mx_player_color_important"
+            android:textSize="14sp" />
+    </LinearLayout>
+
 </FrameLayout>

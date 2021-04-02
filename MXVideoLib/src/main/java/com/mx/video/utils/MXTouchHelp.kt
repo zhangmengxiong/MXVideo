@@ -27,13 +27,13 @@ class MXTouchHelp(private val context: Context) {    // 最低滑动距离
         touchAction = call
     }
 
-    private var onSeekHorizontal: ((percent: Float) -> Unit)? = null
-    fun setHorizontalTouchCall(call: (percent: Float) -> Unit) {
+    private var onSeekHorizontal: ((touchDownPercent: Float, percent: Float) -> Unit)? = null
+    fun setHorizontalTouchCall(call: (touchDownPercent: Float, percent: Float) -> Unit) {
         onSeekHorizontal = call
     }
 
-    private var onSeekVertical: ((percent: Float) -> Unit)? = null
-    fun setVerticalTouchCall(call: (percent: Float) -> Unit) {
+    private var onSeekVertical: ((touchDownPercent: Float, percent: Float) -> Unit)? = null
+    fun setVerticalTouchCall(call: (touchDownPercent: Float, percent: Float) -> Unit) {
         onSeekVertical = call
     }
 
@@ -60,11 +60,13 @@ class MXTouchHelp(private val context: Context) {    // 最低滑动距离
                     touchAction?.invoke(MotionEvent.ACTION_DOWN)
                 } else {
                     if (isSeekPosition) {
-                        val px = dx / viewWidth
-                        onSeekHorizontal?.invoke(px)
+                        val dpx = downX / viewWidth
+                        val px = motionEvent.x / viewWidth
+                        onSeekHorizontal?.invoke(dpx, px)
                     } else if (isSeekVolume) {
-                        val py = dy / viewHeight
-                        onSeekVertical?.invoke(py)
+                        val dpy = downY / viewHeight
+                        val py = motionEvent.y / viewHeight
+                        onSeekVertical?.invoke(dpy, py)
                     }
                     touchAction?.invoke(MotionEvent.ACTION_MOVE)
                 }
