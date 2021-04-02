@@ -13,7 +13,7 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <com.mx.video.MXTextureView
+        <com.mx.video.views.MXTextureView
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
@@ -105,7 +105,6 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
                 android:singleLine="true"
-                android:text="00:00"
                 android:textColor="@color/mx_player_color_important"
                 android:textSize="12sp" />
         </LinearLayout>

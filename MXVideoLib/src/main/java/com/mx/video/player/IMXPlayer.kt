@@ -6,9 +6,8 @@ import android.os.HandlerThread
 import android.os.Looper
 import android.view.TextureView
 import com.mx.video.MXPlaySource
-import com.mx.video.MXTextureView
 import com.mx.video.MXVideo
-import java.lang.Exception
+import com.mx.video.views.MXTextureView
 import java.util.concurrent.atomic.AtomicBoolean
 
 abstract class IMXPlayer : TextureView.SurfaceTextureListener {

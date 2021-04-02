@@ -1,8 +1,9 @@
-package com.mx.video
+package com.mx.video.views
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.TextureView
+import com.mx.video.MXScale
 import com.mx.video.utils.MXUtils
 
 class MXTextureView @JvmOverloads constructor(

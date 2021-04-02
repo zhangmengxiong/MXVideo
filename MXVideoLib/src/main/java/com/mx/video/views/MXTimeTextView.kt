@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Handler
 import android.util.AttributeSet
 import android.widget.TextView
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 

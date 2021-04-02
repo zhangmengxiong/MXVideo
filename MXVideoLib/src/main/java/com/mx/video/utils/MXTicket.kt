@@ -1,7 +1,6 @@
 package com.mx.video.utils
 
 import android.os.Handler
-import java.lang.Exception
 
 class MXTicket {
     private val mHandler = Handler()

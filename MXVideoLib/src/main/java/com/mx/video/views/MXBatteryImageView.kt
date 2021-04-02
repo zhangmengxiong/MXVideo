@@ -9,7 +9,6 @@ import android.util.AttributeSet
 import android.widget.ImageView
 import com.mx.video.R
 import com.mx.video.utils.MXUtils
-import java.lang.Exception
 
 class MXBatteryImageView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0

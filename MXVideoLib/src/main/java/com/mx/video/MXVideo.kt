@@ -12,6 +12,7 @@ import android.widget.*
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
 import com.mx.video.utils.*
+import com.mx.video.views.MXTextureView
 import com.mx.video.views.MXViewProvider
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.abs
