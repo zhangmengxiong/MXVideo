@@ -28,7 +28,7 @@ enum class MXScale {
 
 enum class MXScreen {
     FULL, // 全屏
-    SMALL  // 小屏
+    NORMAL  // 小屏
 }
 
 data class MXParentView(
@@ -38,3 +38,13 @@ data class MXParentView(
     val width: Int,
     val height: Int
 )
+
+class MXConfig {
+    var canSeekByUser = true // 是否可以通过滑动或者进度条调整进度
+    var canFullScreen = true // 是否支持全屏
+    var canShowSystemTime = true // 是否显示右上角的时间
+    var canShowBatteryImg = true // 是否显示右上角的电量信息
+    var showTipIfNotWifi = false // 当非WiFi网络是是否弹出提示
+    var gotoNormalScreenWhenComplete = true // 播放完成时如果是全屏，则退出全屏
+    var gotoNormalScreenWhenError = true // 播放错误时如果是全屏，则退出全屏
+}

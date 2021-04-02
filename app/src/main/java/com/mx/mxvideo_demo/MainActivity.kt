@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         if (MXVideo.isFullScreen()) {
-            MXVideo.gotoSmallScreen()
+            MXVideo.gotoNormalScreen()
             return
         }
         super.onBackPressed()

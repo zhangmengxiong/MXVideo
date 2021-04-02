@@ -1,12 +1,8 @@
 package com.mx.video.views
 
-import android.view.MotionEvent
 import android.view.View
 import android.widget.*
-import com.mx.video.MXScreen
-import com.mx.video.MXState
-import com.mx.video.MXVideo
-import com.mx.video.R
+import com.mx.video.*
 import com.mx.video.utils.*
 import kotlin.math.abs
 
@@ -17,9 +13,9 @@ class MXViewProvider(
 
     val timeTicket = MXTicket()
     val timeDelay = MXDelay()
-    val touchHelp by lazy { MXTouchHelp(mxVideo.context, mxConfig) }
+    val touchHelp by lazy { MXTouchHelp(mxVideo.context) }
     var mState: MXState = MXState.IDLE
-    var mScreen: MXScreen = MXScreen.SMALL
+    var mScreen: MXScreen = MXScreen.NORMAL
 
     val mxSurfaceContainer: LinearLayout by lazy {
         mxVideo.findViewById(R.id.mxSurfaceContainer) ?: LinearLayout(mxVideo.context)
@@ -105,6 +101,27 @@ class MXViewProvider(
     private val playingVisible = arrayOf(mxPlayBtn, mxTopLay, mxBottomLay)
 
     fun initView() {
+        mxPlayBtn.setOnClickListener {
+            if (mxVideo.getSource() == null) {
+                Toast.makeText(mxVideo.context, R.string.mx_play_source_not_set, Toast.LENGTH_SHORT)
+                    .show()
+                return@setOnClickListener
+            }
+            val player = mxVideo.getPlayer()
+            if (mState == MXState.PLAYING) {
+                if (player != null) {
+                    player.pause()
+                    setState(MXState.PAUSE)
+                }
+            } else if (mState == MXState.PAUSE) {
+                if (player != null) {
+                    player.start()
+                    setState(MXState.PLAYING)
+                }
+            } else if (mState == MXState.IDLE) {
+                mxVideo.startPlay()
+            }
+        }
         mxSurfaceContainer.setOnClickListener {
             if (mState in arrayOf(MXState.PLAYING, MXState.PAUSE)) {
                 if (mxPlayBtn.isShown) {
@@ -196,15 +213,15 @@ class MXViewProvider(
             mxVideo.startPlay()
         }
         mxFullscreenBtn.setOnClickListener {
-            if (mScreen == MXScreen.SMALL) {
+            if (mScreen == MXScreen.NORMAL) {
                 mxVideo.gotoFullScreen()
             } else {
-                mxVideo.gotoSmallScreen()
+                mxVideo.gotoNormalScreen()
             }
         }
         mxReturnBtn.setOnClickListener {
             if (mScreen == MXScreen.FULL) {
-                mxVideo.gotoSmallScreen()
+                mxVideo.gotoNormalScreen()
             }
         }
     }
@@ -280,7 +297,6 @@ class MXViewProvider(
                         it.visibility = View.GONE
                     }
                 }
-                mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
                 mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
                 timeTicket.start()
             }

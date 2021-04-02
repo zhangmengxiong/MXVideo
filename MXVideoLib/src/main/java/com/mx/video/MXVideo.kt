@@ -2,20 +2,18 @@ package com.mx.video
 
 import android.app.AlertDialog
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.*
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
-import com.mx.video.utils.*
+import com.mx.video.utils.MXUtils
 import com.mx.video.views.MXTextureView
 import com.mx.video.views.MXViewProvider
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.math.abs
 
 abstract class MXVideo @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -32,8 +30,8 @@ abstract class MXVideo @JvmOverloads constructor(
             return playingVideo?.isFullScreen() == true
         }
 
-        fun gotoSmallScreen() {
-            playingVideo?.gotoSmallScreen()
+        fun gotoNormalScreen() {
+            playingVideo?.gotoNormalScreen()
         }
 
         fun gotoFullScreen() {
@@ -67,35 +65,31 @@ abstract class MXVideo @JvmOverloads constructor(
 
     init {
         View.inflate(context, getLayoutId(), this)
-        initView()
+
+        viewProvider.initView()
         viewProvider.setState(MXState.IDLE)
     }
 
+    /**
+     * 获取占位图ImageView
+     */
+    fun getPosterImageView() = viewProvider.mxPlaceImg
+
+    /**
+     * 获取Config
+     */
     fun getConfig() = mxConfig
 
-    private fun initView() {
-        viewProvider.initView()
-        viewProvider.mxPlayBtn.setOnClickListener {
-            if (currentSource == null) {
-                Toast.makeText(context, R.string.mx_play_source_not_set, Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            val player = mxPlayer
-            if (viewProvider.mState == MXState.PLAYING) {
-                if (player != null) {
-                    player.pause()
-                    viewProvider.setState(MXState.PAUSE)
-                }
-            } else if (viewProvider.mState == MXState.PAUSE) {
-                if (player != null) {
-                    player.start()
-                    viewProvider.setState(MXState.PLAYING)
-                }
-            } else if (viewProvider.mState == MXState.IDLE) {
-                startPlay()
-            }
-        }
-    }
+    /**
+     * 获取当前播放源
+     */
+    fun getSource() = currentSource
+
+    /**
+     * 获取播放器
+     */
+    fun getPlayer() = mxPlayer
+
 
     /**
      * 设置播放数据源
@@ -222,6 +216,9 @@ abstract class MXVideo @JvmOverloads constructor(
     fun onCompletion() {
         MXUtils.log("onCompletion")
         viewProvider.setState(MXState.COMPLETE)
+        if (mxConfig.gotoNormalScreenWhenComplete && viewProvider.mScreen == MXScreen.FULL) {
+            gotoNormalScreen()
+        }
     }
 
     /**
@@ -241,6 +238,9 @@ abstract class MXVideo @JvmOverloads constructor(
     fun onError(error: String?) {
         MXUtils.log("onError  $error")
         viewProvider.setState(MXState.ERROR)
+        if (mxConfig.gotoNormalScreenWhenError && viewProvider.mScreen == MXScreen.FULL) {
+            gotoNormalScreen()
+        }
     }
 
     /**
@@ -280,11 +280,6 @@ abstract class MXVideo @JvmOverloads constructor(
         viewProvider.setState(MXState.IDLE)
     }
 
-    /**
-     * 获取占位图ImageView
-     */
-    fun getPosterImageView() = viewProvider.mxPlaceImg
-
     private var dimensionRatio: Double = 0.0
 
     /**
@@ -298,7 +293,7 @@ abstract class MXVideo @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        if (dimensionRatio > 0.0 && viewProvider.mScreen == MXScreen.SMALL
+        if (dimensionRatio > 0.0 && viewProvider.mScreen == MXScreen.NORMAL
             && MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY
         ) {
             val widthSize = MeasureSpec.getSize(widthMeasureSpec)
@@ -343,14 +338,14 @@ abstract class MXVideo @JvmOverloads constructor(
                 viewProvider.mxReturnBtn.visibility = View.VISIBLE
                 MXUtils.setFullScreen(context)
             }
-            MXScreen.SMALL -> {
+            MXScreen.NORMAL -> {
                 viewProvider.mxFullscreenBtn.setImageResource(R.drawable.mx_icon_full_screen)
                 val parentItem = parentMap.remove(viewIndexId) ?: return
                 windows.removeView(this)
                 parentItem.parentViewGroup.addView(this, parentItem.index, parentItem.layoutParams)
                 requestLayout()
 
-                viewProvider.mScreen = MXScreen.SMALL
+                viewProvider.mScreen = MXScreen.NORMAL
                 viewProvider.mxReturnBtn.visibility = View.GONE
                 MXUtils.recoverFullScreen(context)
             }
@@ -380,8 +375,8 @@ abstract class MXVideo @JvmOverloads constructor(
     /**
      * 切换小屏播放
      */
-    fun gotoSmallScreen() {
-        switchToScreen(MXScreen.SMALL)
+    fun gotoNormalScreen() {
+        switchToScreen(MXScreen.NORMAL)
     }
 
     /**
