@@ -84,6 +84,10 @@ class MXViewProvider(
     val mxFullscreenBtn: ImageView by lazy {
         mxVideo.findViewById(R.id.mxFullscreenBtn) ?: ImageView(mxVideo.context)
     }
+
+    /**
+     * 根节点View列表
+     */
     private val allContentView = arrayOf(
         mxPlaceImg,
         mxLoading,
@@ -94,6 +98,10 @@ class MXViewProvider(
         mxReplayLay,
         mxQuickSeekLay
     )
+
+    /**
+     * 播放时点击需要显示的状态
+     */
     private val playingVisible = arrayOf(mxPlayBtn, mxTopLay, mxBottomLay)
 
     fun initView() {
