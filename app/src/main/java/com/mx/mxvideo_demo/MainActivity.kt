@@ -26,8 +26,9 @@ class MainActivity : AppCompatActivity() {
         recycleView.layoutManager = LinearLayoutManager(this)
         recycleView.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(outRect: Rect, itemPosition: Int, parent: RecyclerView) {
-                outRect.top = 10
-                outRect.bottom = 10
+                if (itemPosition > 0) {
+                    outRect.top = 10
+                }
             }
         })
         recycleView.adapter = adapt
@@ -42,7 +43,7 @@ class MainActivity : AppCompatActivity() {
             val mxVideoStd = itemView.findViewById<MXVideoStd>(R.id.mxVideoStd)
             Glide.with(mxVideoStd.context).load(thumbnails.random())
                 .into(mxVideoStd.getPosterImageView())
-            mxVideoStd.setDimensionRatio(16.0 / 9.0)
+//            mxVideoStd.setDimensionRatio(16.0 / 9.0)
             mxVideoStd.setSource(
                 MXPlaySource(record, "" + position, isOnlineSource = true),
                 start = false

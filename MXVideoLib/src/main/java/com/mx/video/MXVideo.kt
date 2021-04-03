@@ -270,7 +270,7 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun stopPlay() {
         MXUtils.log("stopPlay")
-        viewProvider.mxSurfaceContainer.removeAllViews()
+//        viewProvider.mxSurfaceContainer.removeAllViews()
         val player = mxPlayer
         textureView = null
         mxPlayer = null

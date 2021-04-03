@@ -19,6 +19,19 @@
             android:layout_gravity="center" />
     </FrameLayout>
 
+    <ProgressBar
+        android:id="@+id/mxBottomSeekProgress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="bottom"
+        android:alpha="0.7"
+        android:max="100"
+        android:progress="50"
+        android:progressDrawable="@drawable/mx_bottom_progressbar"
+        android:soundEffectsEnabled="false"
+        android:visibility="invisible" />
+
     <ImageView
         android:id="@+id/mxPlaceImg"
         android:layout_width="match_parent"
@@ -33,14 +46,14 @@
         android:layout_height="@dimen/mx_player_size_loading_width"
         android:layout_gravity="center"
         android:indeterminateDrawable="@drawable/mx_progress_loading"
-        android:visibility="gone" />
+        android:visibility="invisible" />
 
     <LinearLayout
         android:id="@+id/mxPlayBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="gone">
+        android:visibility="invisible">
 
         <ImageView
             android:id="@+id/mxPlayPauseImg"
@@ -59,7 +72,7 @@
         android:backgroundTint="@color/mx_player_color_top_layout"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="invisible">
 
         <ImageView
             android:id="@+id/mxReturnBtn"
@@ -70,7 +83,7 @@
             android:scaleType="centerCrop"
             android:src="@drawable/mx_icon_return"
             android:tint="@color/mx_player_color_important"
-            android:visibility="gone" />
+            android:visibility="invisible" />
 
         <TextView
             android:id="@+id/mxTitleTxv"
@@ -121,7 +134,7 @@
         android:backgroundTint="@color/mx_player_color_bottom_layout"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="invisible">
 
         <TextView
             android:id="@+id/mxCurrentTimeTxv"
@@ -129,7 +142,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="14dp"
             android:text="00:00"
-            android:textColor="@color/mx_player_color_important" />
+            android:textColor="@color/mx_player_color_important"
+            android:textStyle="bold" />
 
         <SeekBar
             android:id="@+id/mxSeekProgress"
@@ -153,7 +167,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="00:00"
-            android:textColor="@color/mx_player_color_important" />
+            android:textColor="@color/mx_player_color_important"
+            android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/mxFullscreenBtn"
@@ -176,7 +191,7 @@
         android:orientation="vertical"
         android:paddingHorizontal="22dp"
         android:paddingVertical="12dp"
-        android:visibility="gone">
+        android:visibility="invisible">
 
         <TextView
             android:layout_width="wrap_content"
@@ -210,7 +225,7 @@
         android:orientation="vertical"
         android:paddingHorizontal="22dp"
         android:paddingVertical="12dp"
-        android:visibility="gone">
+        android:visibility="invisible">
 
         <ImageView
             android:layout_width="@dimen/mx_player_size_icon_width_small"
@@ -234,26 +249,38 @@
         android:layout_gravity="center"
         android:background="@drawable/mx_bg_float_layout"
         android:gravity="center"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:paddingHorizontal="22dp"
-        android:paddingVertical="12dp"
-        android:visibility="gone">
-
-        <ImageView
-            android:id="@+id/mxQuickSeekImg"
-            android:layout_width="@dimen/mx_player_size_icon_width_small"
-            android:layout_height="@dimen/mx_player_size_icon_width_small"
-            android:src="@drawable/mx_icon_seek_left"
-            android:tint="@color/mx_player_color_important" />
+        android:paddingVertical="15dp"
+        android:visibility="invisible">
 
         <TextView
-            android:id="@+id/mxQuickSeekTxv"
+            android:id="@+id/mxQuickSeekCurrentTxv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="00:00/00:00"
+            android:text="00:00"
             android:textColor="@color/mx_player_color_important"
-            android:textSize="14sp" />
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="6dp"
+            android:text="/"
+            android:textColor="@color/mx_player_color_important_alpha_a5"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/mxQuickSeekDurationTxv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textColor="@color/mx_player_color_important_alpha_a5"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
     </LinearLayout>
 
 </FrameLayout>

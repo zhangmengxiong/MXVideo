@@ -27,8 +27,11 @@ class MXViewProvider(
     val mxLoading: ProgressBar by lazy {
         mxVideo.findViewById(R.id.mxLoading) ?: ProgressBar(mxVideo.context)
     }
+    val mxBottomSeekProgress: ProgressBar by lazy {
+        mxVideo.findViewById(R.id.mxBottomSeekProgress) ?: ProgressBar(mxVideo.context)
+    }
 
-    val mxPlayBtn: LinearLayout by lazy {
+    private val mxPlayBtn: LinearLayout by lazy {
         mxVideo.findViewById(R.id.mxPlayBtn) ?: LinearLayout(mxVideo.context)
     }
     private val mxRetryLay: LinearLayout by lazy {
@@ -71,11 +74,11 @@ class MXViewProvider(
     private val mxQuickSeekLay: LinearLayout by lazy {
         mxVideo.findViewById(R.id.mxQuickSeekLay) ?: LinearLayout(mxVideo.context)
     }
-    val mxQuickSeekImg: ImageView by lazy {
-        mxVideo.findViewById(R.id.mxQuickSeekImg) ?: ImageView(mxVideo.context)
+    val mxQuickSeekCurrentTxv: TextView by lazy {
+        mxVideo.findViewById(R.id.mxQuickSeekCurrentTxv) ?: TextView(mxVideo.context)
     }
-    val mxQuickSeekTxv: TextView by lazy {
-        mxVideo.findViewById(R.id.mxQuickSeekTxv) ?: TextView(mxVideo.context)
+    val mxQuickSeekDurationTxv: TextView by lazy {
+        mxVideo.findViewById(R.id.mxQuickSeekDurationTxv) ?: TextView(mxVideo.context)
     }
     val mxFullscreenBtn: ImageView by lazy {
         mxVideo.findViewById(R.id.mxFullscreenBtn) ?: ImageView(mxVideo.context)
@@ -125,14 +128,10 @@ class MXViewProvider(
         mxSurfaceContainer.setOnClickListener {
             if (mState in arrayOf(MXState.PLAYING, MXState.PAUSE)) {
                 if (mxPlayBtn.isShown) {
-                    mxPlayBtn.visibility = View.GONE
-                    mxBottomLay.visibility = View.GONE
-                    mxTopLay.visibility = View.GONE
+                    setPlayingControl(false)
                     timeDelay.stop()
                 } else {
-                    mxPlayBtn.visibility = View.VISIBLE
-                    mxBottomLay.visibility = View.VISIBLE
-                    mxTopLay.visibility = View.VISIBLE
+                    setPlayingControl(true)
                     timeDelay.start()
                 }
             } else if (mScreen == MXScreen.FULL) {
@@ -145,9 +144,9 @@ class MXViewProvider(
             if (!mxVideo.isShown || mState != MXState.PLAYING) {
                 return@setDelayRun
             }
-            mxPlayBtn.visibility = View.GONE
-            mxBottomLay.visibility = View.GONE
-            mxTopLay.visibility = View.GONE
+            mxPlayBtn.visibility = View.INVISIBLE
+            mxBottomLay.visibility = View.INVISIBLE
+            mxTopLay.visibility = View.INVISIBLE
         }
         timeTicket.setTicketRun(300) {
             if (!mxVideo.isShown) return@setTicketRun
@@ -162,6 +161,8 @@ class MXViewProvider(
                 val position = mxVideo.getCurrentPosition()
                 mxSeekProgress.max = duration
                 mxSeekProgress.progress = position
+                mxBottomSeekProgress.max = duration
+                mxBottomSeekProgress.progress = position
                 mxCurrentTimeTxv.text = MXUtils.stringForTime(position)
                 mxTotalTimeTxv.text = MXUtils.stringForTime(duration)
             }
@@ -182,7 +183,7 @@ class MXViewProvider(
                     if (it == mxQuickSeekLay) {
                         it.visibility = View.VISIBLE
                     } else {
-                        it.visibility = View.GONE
+                        it.visibility = View.INVISIBLE
                     }
                 }
             }
@@ -191,14 +192,14 @@ class MXViewProvider(
                 if (!mxConfig.canSeekByUser) return
                 val duration = mxVideo.getDuration()
                 val position = abs(duration * percent).toInt()
-                mxQuickSeekImg.setImageResource(if (touchDownPercent > percent) R.drawable.mx_icon_seek_left else R.drawable.mx_icon_seek_right)
-                mxQuickSeekTxv.text =
-                    MXUtils.stringForTime(position) + "/" + MXUtils.stringForTime(duration)
+                mxQuickSeekCurrentTxv.text = MXUtils.stringForTime(position)
+                mxQuickSeekDurationTxv.text = MXUtils.stringForTime(duration)
+                mxBottomSeekProgress.progress = position
             }
 
             override fun onEnd(percent: Float) {
                 if (!mxConfig.canSeekByUser || percent < 0 || percent > 1) return
-                mxQuickSeekLay.visibility = View.GONE
+                mxQuickSeekLay.visibility = View.INVISIBLE
                 val duration = mxVideo.getDuration()
                 val position = abs(duration * percent).toInt()
                 mxVideo.seekTo(position)
@@ -256,18 +257,18 @@ class MXViewProvider(
     fun setState(state: MXState) {
         mState = state
         if (!mxConfig.canFullScreen) {
-            mxFullscreenBtn.visibility = View.GONE
+            mxFullscreenBtn.visibility = View.INVISIBLE
         } else {
             mxFullscreenBtn.visibility = View.VISIBLE
         }
         mxSeekProgress.isEnabled = mxConfig.canSeekByUser
         if (!mxConfig.canShowSystemTime) {
-            mxSystemTimeTxv.visibility = View.GONE
+            mxSystemTimeTxv.visibility = View.INVISIBLE
         } else {
             mxSystemTimeTxv.visibility = View.VISIBLE
         }
         if (!mxConfig.canShowBatteryImg) {
-            mxBatteryImg.visibility = View.GONE
+            mxBatteryImg.visibility = View.INVISIBLE
         } else {
             mxBatteryImg.visibility = View.VISIBLE
         }
@@ -277,7 +278,7 @@ class MXViewProvider(
                     if (it in arrayOf(mxPlaceImg, mxPlayBtn)) {
                         it.visibility = View.VISIBLE
                     } else {
-                        it.visibility = View.GONE
+                        it.visibility = View.INVISIBLE
                     }
                 }
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
@@ -287,7 +288,7 @@ class MXViewProvider(
                     if (it in arrayOf(mxPlaceImg, mxLoading)) {
                         it.visibility = View.VISIBLE
                     } else {
-                        it.visibility = View.GONE
+                        it.visibility = View.INVISIBLE
                     }
                 }
             }
@@ -296,7 +297,7 @@ class MXViewProvider(
                     if (it in arrayOf(mxLoading)) {
                         it.visibility = View.VISIBLE
                     } else {
-                        it.visibility = View.GONE
+                        it.visibility = View.INVISIBLE
                     }
                 }
                 mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
@@ -306,7 +307,7 @@ class MXViewProvider(
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_pause)
                 allContentView.forEach {
                     if (it !in playingVisible) {
-                        it.visibility = View.GONE
+                        it.visibility = View.INVISIBLE
                     }
                 }
                 if (mxConfig.canSeekByUser) {
@@ -319,7 +320,7 @@ class MXViewProvider(
                     if (it in playingVisible) {
                         it.visibility = View.VISIBLE
                     } else {
-                        it.visibility = View.GONE
+                        it.visibility = View.INVISIBLE
                     }
                 }
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
@@ -331,7 +332,7 @@ class MXViewProvider(
                     if (it in arrayOf(mxPlaceImg, mxRetryLay)) {
                         it.visibility = View.VISIBLE
                     } else {
-                        it.visibility = View.GONE
+                        it.visibility = View.INVISIBLE
                     }
                 }
             }
@@ -340,11 +341,16 @@ class MXViewProvider(
                     if (it in arrayOf(mxPlaceImg, mxReplayLay)) {
                         it.visibility = View.VISIBLE
                     } else {
-                        it.visibility = View.GONE
+                        it.visibility = View.INVISIBLE
                     }
                 }
             }
         }
         mxReturnBtn.visibility = if (mScreen == MXScreen.FULL) View.VISIBLE else View.GONE
+    }
+
+    private fun setPlayingControl(show: Boolean) {
+        playingVisible.forEach { it.visibility = if (show) View.VISIBLE else View.INVISIBLE }
+        mxBottomSeekProgress.visibility = if (show) View.INVISIBLE else View.VISIBLE
     }
 }
