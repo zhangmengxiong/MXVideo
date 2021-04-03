@@ -17,8 +17,8 @@ class MXViewProvider(
     var mState: MXState = MXState.IDLE
     var mScreen: MXScreen = MXScreen.NORMAL
 
-    val mxSurfaceContainer: LinearLayout by lazy {
-        mxVideo.findViewById(R.id.mxSurfaceContainer) ?: LinearLayout(mxVideo.context)
+    val mxSurfaceContainer: FrameLayout by lazy {
+        mxVideo.findViewById(R.id.mxSurfaceContainer) ?: FrameLayout(mxVideo.context)
     }
 
     val mxPlaceImg: ImageView by lazy {
@@ -239,6 +239,7 @@ class MXViewProvider(
             if (!mxConfig.canSeekByUser) return
             MXUtils.log("onStartTrackingTouch")
             this.progress = seekBar?.progress ?: return
+            timeDelay.stop()
             timeTicket.stop()
         }
 
@@ -247,6 +248,7 @@ class MXViewProvider(
             MXUtils.log("onStopTrackingTouch")
             mxCurrentTimeTxv.text = MXUtils.stringForTime(progress)
             mxVideo.seekTo(progress)
+            timeDelay.start()
             timeTicket.start()
         }
     }

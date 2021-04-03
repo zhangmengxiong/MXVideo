@@ -3,6 +3,7 @@ package com.mx.video
 import android.app.AlertDialog
 import android.content.Context
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -189,13 +190,10 @@ abstract class MXVideo @JvmOverloads constructor(
         textureView.setVideoSize(mVideoWidth, mVideoHeight)
         textureView.setDisplayType(displayType)
 
-        viewProvider.mxSurfaceContainer.addView(
-            textureView,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
-            )
-        )
+        val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        layoutParams.gravity = Gravity.CENTER
+
+        viewProvider.mxSurfaceContainer.addView(textureView, layoutParams)
         textureView.surfaceTextureListener = player
         this.textureView = textureView
         return textureView
@@ -219,6 +217,9 @@ abstract class MXVideo @JvmOverloads constructor(
         if (mxConfig.gotoNormalScreenWhenComplete && viewProvider.mScreen == MXScreen.FULL) {
             gotoNormalScreen()
         }
+        mxPlayer?.release()
+        MXUtils.findWindows(context)?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        Runtime.getRuntime().gc()
     }
 
     /**

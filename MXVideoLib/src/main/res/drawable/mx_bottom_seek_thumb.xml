@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">
-        <shape android:shape="oval">
+        <shape android:shape="rectangle">
+            <corners android:radius="2.5dp" />
             <solid android:color="@color/mx_player_color_important_alpha_a5" />
-            <size android:width="15dp" android:height="15dp" />
+            <size android:width="10dp" android:height="15dp" />
         </shape>
 
     </item>
     <item>
-        <shape android:shape="oval">
+        <shape android:shape="rectangle">
+            <corners android:radius="2.5dp" />
             <solid android:color="@color/mx_player_color_important" />
-            <size android:width="15dp" android:height="15dp" />
+            <size android:width="10dp" android:height="15dp" />
         </shape>
     </item>
 </selector>

@@ -15,6 +15,7 @@ import com.mx.video.BuildConfig
 import java.util.*
 
 object MXUtils {
+    private val activityFlagMap = HashMap<String, Int?>()
     private var SYSTEM_UI: Int? = null
 
     fun log(any: Any) {
@@ -85,7 +86,10 @@ object MXUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             uiOptions = uiOptions or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         }
-        SYSTEM_UI = activity.window?.decorView?.systemUiVisibility
+
+        val currentActivityId = activity.toString()
+        val currentSystemVisibility = activity.window?.decorView?.systemUiVisibility
+        activityFlagMap[currentActivityId] = currentSystemVisibility
         activity.window?.decorView?.systemUiVisibility = uiOptions
     }
 
@@ -93,6 +97,10 @@ object MXUtils {
         val activity = findActivity(context) ?: return
         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         activity.window?.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        SYSTEM_UI?.let { activity.window?.decorView?.setSystemUiVisibility(it) }
+
+        val currentActivityId = activity.toString()
+        activityFlagMap[currentActivityId]?.let {
+            activity.window?.decorView?.setSystemUiVisibility(it)
+        }
     }
 }

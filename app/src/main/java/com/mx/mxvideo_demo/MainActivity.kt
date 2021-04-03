@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.mx.recycleview.base.BaseSimpleAdapt
+import com.mx.recycleview.base.BaseViewHolder
 import com.mx.video.MXPlaySource
 import com.mx.video.MXScale
 import com.mx.video.MXVideo
@@ -48,6 +49,10 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
+        override fun onViewDetachedFromWindow(holder: BaseViewHolder) {
+            val mxVideoStd = holder.containerView.findViewById<MXVideoStd>(R.id.mxVideoStd)
+            mxVideoStd?.stopPlay()
+        }
 
     }
 
