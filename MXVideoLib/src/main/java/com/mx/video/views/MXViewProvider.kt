@@ -126,16 +126,13 @@ class MXViewProvider(
             }
         }
         mxSurfaceContainer.setOnClickListener {
-            if (mState in arrayOf(MXState.PLAYING, MXState.PAUSE)) {
-                if (mxPlayBtn.isShown) {
-                    setPlayingControl(false)
-                    timeDelay.stop()
-                } else {
-                    setPlayingControl(true)
-                    timeDelay.start()
-                }
-            } else if (mScreen == MXScreen.FULL) {
-                mxTopLay.visibility = View.VISIBLE
+            if (mState == MXState.PAUSE) {
+                setPlayingControl(true)
+                timeDelay.stop()
+                return@setOnClickListener
+            }
+            if (mState == MXState.PLAYING) {
+                setPlayingControl(!mxPlayBtn.isShown)
                 timeDelay.start()
             }
         }

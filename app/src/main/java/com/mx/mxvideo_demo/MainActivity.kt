@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
 
         override fun bindView(position: Int, itemView: View, record: String) {
             val mxVideoStd = itemView.findViewById<MXVideoStd>(R.id.mxVideoStd)
-            Glide.with(mxVideoStd.context).load(thumbnails.random())
+            Glide.with(mxVideoStd.context).load(record)
                 .into(mxVideoStd.getPosterImageView())
 //            mxVideoStd.setDimensionRatio(16.0 / 9.0)
             mxVideoStd.setSource(
