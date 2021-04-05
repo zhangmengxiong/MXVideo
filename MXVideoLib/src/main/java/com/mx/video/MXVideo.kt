@@ -202,7 +202,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 视频已经准备好,但不是已经开始播放!
      */
     fun onPlayerPrepared() {
-        MXUtils.log("onPrepared")
+        MXUtils.log("onPlayerPrepared")
         val player = mxPlayer ?: return
         viewProvider.setState(MXState.PREPARED)
         player.start()
@@ -217,7 +217,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 视频正式开始播放
      */
     fun onPlayerStartPlay() {
-        MXUtils.log("onStartPlay")
+        MXUtils.log("onPlayerStartPlay")
         viewProvider.setState(MXState.PLAYING)
     }
 
@@ -225,7 +225,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 视频播放完成
      */
     fun onPlayerCompletion() {
-        MXUtils.log("onCompletion")
+        MXUtils.log("onPlayerCompletion")
         viewProvider.setState(MXState.COMPLETE)
         if (mxConfig.gotoNormalScreenWhenComplete && viewProvider.mScreen == MXScreen.FULL) {
             gotoNormalScreen()
@@ -240,21 +240,21 @@ abstract class MXVideo @JvmOverloads constructor(
      * @param 0-100
      */
     fun onPlayerBufferProgress(percent: Int) {
-//        MXUtils.log("setBufferProgress:$percent")
+//        MXUtils.log("onPlayerBufferProgress:$percent")
     }
 
     /**
      * 视频快进完成
      */
     fun onPlayerSeekComplete() {
-        MXUtils.log("onSeekComplete")
+        MXUtils.log("onPlayerSeekComplete")
     }
 
     /**
      * 视频播放错误信息
      */
     fun onPlayerError(error: String?) {
-        MXUtils.log("onError  $error")
+        MXUtils.log("onPlayerError  $error")
         viewProvider.setState(MXState.ERROR)
         if (mxConfig.gotoNormalScreenWhenError && viewProvider.mScreen == MXScreen.FULL) {
             gotoNormalScreen()
@@ -268,7 +268,7 @@ abstract class MXVideo @JvmOverloads constructor(
      *  false = 结束缓冲
      */
     fun onPlayerBuffering(start: Boolean) {
-        MXUtils.log("onBuffering:$start")
+        MXUtils.log("onPlayerBuffering:$start")
         viewProvider.mxLoading.visibility = if (start) View.VISIBLE else View.GONE
     }
 
@@ -276,10 +276,11 @@ abstract class MXVideo @JvmOverloads constructor(
      * 视频获得宽高
      */
     fun onPlayerVideoSizeChanged(width: Int, height: Int) {
-        MXUtils.log("onVideoSizeChanged $width x $height")
+        MXUtils.log("onPlayerVideoSizeChanged $width x $height")
         mVideoWidth = width
         mVideoHeight = height
         textureView?.setVideoSize(width, height)
+        postInvalidate()
     }
 
     /**
