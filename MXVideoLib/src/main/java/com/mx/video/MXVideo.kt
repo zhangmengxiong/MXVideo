@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
-import android.widget.LinearLayout
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
 import com.mx.video.utils.MXUtils
@@ -319,6 +318,8 @@ abstract class MXVideo @JvmOverloads constructor(
     private fun switchToScreen(screen: MXScreen) {
         val windows = MXUtils.findWindowsDecorView(context) ?: return
         if (viewProvider.mScreen == screen) return
+        val willChangeOrientation = (currentSource?.canChangeOrientationIfFullScreen == true
+                || mVideoWidth > mVideoHeight)
         when (screen) {
             MXScreen.FULL -> {
                 viewProvider.mxFullscreenBtn.setImageResource(R.drawable.mx_icon_small_screen)
@@ -337,7 +338,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 windows.addView(this, fullLayout)
                 viewProvider.mScreen = MXScreen.FULL
                 viewProvider.mxReturnBtn.visibility = View.VISIBLE
-                MXUtils.setFullScreen(context)
+                MXUtils.setFullScreen(context, willChangeOrientation)
             }
             MXScreen.NORMAL -> {
                 viewProvider.mxFullscreenBtn.setImageResource(R.drawable.mx_icon_full_screen)

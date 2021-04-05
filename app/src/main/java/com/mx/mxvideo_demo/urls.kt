@@ -7,7 +7,7 @@ package com.mx.mxvideo_demo
 val cn = "http://8.136.101.204"
 val us = "http://videos.jzvd.org"
 
-var server_name: String = cn
+var server_name: String = us
 
 val ldjVideos = arrayOf(
     "$server_name/v/ldj/01-ldj.mp4",

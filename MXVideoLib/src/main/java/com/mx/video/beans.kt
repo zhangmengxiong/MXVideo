@@ -8,6 +8,7 @@ data class MXPlaySource(
     val title: String = "", // 标题
     val headerMap: MutableMap<String, String> = HashMap(), // 请求头部
     val isOnlineSource: Boolean = true, // 是否在线资源
+    val canChangeOrientationIfFullScreen: Boolean? = null, // 全屏时是否需要变更Activity方向,如果=null，会自动根据视频宽高来判断
     val isLooping: Boolean = false // 是否循环播放
 ) : Serializable
 

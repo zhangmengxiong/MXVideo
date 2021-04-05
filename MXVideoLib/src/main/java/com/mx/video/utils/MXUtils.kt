@@ -16,6 +16,7 @@ import java.util.*
 
 object MXUtils {
     private val activityFlagMap = HashMap<String, Int?>()
+    private val activityOrientationMap = HashMap<String, Int?>()
     private var SYSTEM_UI: Int? = null
 
     fun log(any: Any) {
@@ -70,9 +71,20 @@ object MXUtils {
         return findActivity(context)?.window?.decorView as ViewGroup?
     }
 
-    fun setFullScreen(context: Context?) {
+    /**
+     * @param context 页面上下文
+     * @param willChangeOrientation 是否需要更改页面方向
+     */
+    fun setFullScreen(context: Context?, willChangeOrientation: Boolean) {
         val activity = findActivity(context) ?: return
-        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+        val currentActivityId = activity.toString()
+
+        if (willChangeOrientation) {
+            activityOrientationMap[currentActivityId] = activity.requestedOrientation
+            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+        } else {
+            activityOrientationMap.remove(currentActivityId)
+        }
         activity.window?.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
@@ -86,8 +98,6 @@ object MXUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             uiOptions = uiOptions or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         }
-
-        val currentActivityId = activity.toString()
         val currentSystemVisibility = activity.window?.decorView?.systemUiVisibility
         activityFlagMap[currentActivityId] = currentSystemVisibility
         activity.window?.decorView?.systemUiVisibility = uiOptions
@@ -95,10 +105,12 @@ object MXUtils {
 
     fun recoverFullScreen(context: Context?) {
         val activity = findActivity(context) ?: return
-        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        activity.window?.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-
         val currentActivityId = activity.toString()
+
+        activity.window?.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        activityOrientationMap[currentActivityId]?.let {
+            activity.requestedOrientation = it
+        }
         activityFlagMap[currentActivityId]?.let {
             activity.window?.decorView?.setSystemUiVisibility(it)
         }
