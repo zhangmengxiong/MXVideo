@@ -79,16 +79,17 @@ object MXUtils {
         val activity = findActivity(context) ?: return
         val currentActivityId = activity.toString()
 
+        activity.window?.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
+
         if (willChangeOrientation) {
             activityOrientationMap[currentActivityId] = activity.requestedOrientation
             activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         } else {
             activityOrientationMap.remove(currentActivityId)
         }
-        activity.window?.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
-        )
 
         var uiOptions = (View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -108,9 +109,11 @@ object MXUtils {
         val currentActivityId = activity.toString()
 
         activity.window?.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+
         activityOrientationMap[currentActivityId]?.let {
             activity.requestedOrientation = it
         }
+
         activityFlagMap[currentActivityId]?.let {
             activity.window?.decorView?.setSystemUiVisibility(it)
         }

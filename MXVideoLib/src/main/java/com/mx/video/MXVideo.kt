@@ -60,7 +60,7 @@ abstract class MXVideo @JvmOverloads constructor(
     private var displayType: MXScale = MXScale.CENTER_CROP
     private var seekWhenPlay: Int = 0
 
-    private val mxConfig = MXConfig()
+    private var mxConfig = MXConfig()
     private val viewProvider by lazy { MXViewProvider(this, mxConfig) }
 
     init {
@@ -198,19 +198,33 @@ abstract class MXVideo @JvmOverloads constructor(
         return textureView
     }
 
-    fun onPrepared() {
+    /**
+     * 视频已经准备好,但不是已经开始播放!
+     */
+    fun onPlayerPrepared() {
         MXUtils.log("onPrepared")
         val player = mxPlayer ?: return
         viewProvider.setState(MXState.PREPARED)
         player.start()
-        viewProvider.setState(MXState.PLAYING)
+
         if (seekWhenPlay > 0) {
             player.seekTo(seekWhenPlay)
             seekWhenPlay = 0
         }
     }
 
-    fun onCompletion() {
+    /**
+     * 视频正式开始播放
+     */
+    fun onPlayerStartPlay() {
+        MXUtils.log("onStartPlay")
+        viewProvider.setState(MXState.PLAYING)
+    }
+
+    /**
+     * 视频播放完成
+     */
+    fun onPlayerCompletion() {
         MXUtils.log("onCompletion")
         viewProvider.setState(MXState.COMPLETE)
         if (mxConfig.gotoNormalScreenWhenComplete && viewProvider.mScreen == MXScreen.FULL) {
@@ -222,20 +236,24 @@ abstract class MXVideo @JvmOverloads constructor(
     }
 
     /**
+     * 视频缓冲进度
      * @param 0-100
      */
-    fun setBufferProgress(percent: Int) {
+    fun onPlayerBufferProgress(percent: Int) {
 //        MXUtils.log("setBufferProgress:$percent")
     }
 
-    fun onSeekComplete() {
+    /**
+     * 视频快进完成
+     */
+    fun onPlayerSeekComplete() {
         MXUtils.log("onSeekComplete")
     }
 
     /**
-     * 错误信息
+     * 视频播放错误信息
      */
-    fun onError(error: String?) {
+    fun onPlayerError(error: String?) {
         MXUtils.log("onError  $error")
         viewProvider.setState(MXState.ERROR)
         if (mxConfig.gotoNormalScreenWhenError && viewProvider.mScreen == MXScreen.FULL) {
@@ -244,20 +262,20 @@ abstract class MXVideo @JvmOverloads constructor(
     }
 
     /**
-     * 缓冲状态变更
+     * 视频缓冲状态变更
      * @param start
      *  true = 开始缓冲
      *  false = 结束缓冲
      */
-    fun onBuffering(start: Boolean) {
+    fun onPlayerBuffering(start: Boolean) {
         MXUtils.log("onBuffering:$start")
         viewProvider.mxLoading.visibility = if (start) View.VISIBLE else View.GONE
     }
 
     /**
-     * 获得视频宽高
+     * 视频获得宽高
      */
-    fun onVideoSizeChanged(width: Int, height: Int) {
+    fun onPlayerVideoSizeChanged(width: Int, height: Int) {
         MXUtils.log("onVideoSizeChanged $width x $height")
         mVideoWidth = width
         mVideoHeight = height
@@ -327,10 +345,13 @@ abstract class MXVideo @JvmOverloads constructor(
                     return
                 }
                 val parent = (parent as ViewGroup?) ?: return
-                val index = parent.indexOfChild(this)
-                val layoutParams = layoutParams
+                val item = MXParentView(
+                    parent.indexOfChild(this),
+                    parent, layoutParams, width, height
+                )
                 parent.removeView(this)
-                parentMap[viewIndexId] = MXParentView(index, parent, layoutParams, width, height)
+                cloneMeToLayout(item)
+                parentMap[viewIndexId] = item
 
                 val fullLayout = LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
@@ -344,13 +365,33 @@ abstract class MXVideo @JvmOverloads constructor(
                 viewProvider.mxFullscreenBtn.setImageResource(R.drawable.mx_icon_full_screen)
                 val parentItem = parentMap.remove(viewIndexId) ?: return
                 windows.removeView(this)
+                parentItem.parentViewGroup.removeViewAt(parentItem.index)
                 parentItem.parentViewGroup.addView(this, parentItem.index, parentItem.layoutParams)
-                requestLayout()
 
                 viewProvider.mScreen = MXScreen.NORMAL
                 viewProvider.mxReturnBtn.visibility = View.GONE
                 MXUtils.recoverFullScreen(context)
             }
+        }
+    }
+
+    private fun cloneMeToLayout(target: MXParentView) {
+        try {
+            val constructor = this::class.java.getConstructor(Context::class.java)
+            val selfClone = constructor.newInstance(context)
+            selfClone.id = this.id
+            selfClone.mVideoWidth = mVideoWidth
+            selfClone.mVideoHeight = mVideoHeight
+            selfClone.currentSource = currentSource?.clone()
+            selfClone.displayType = displayType
+            selfClone.mxPlayerClass = mxPlayerClass
+            selfClone.dimensionRatio = dimensionRatio
+            selfClone.mxConfig = mxConfig.clone()
+            selfClone.minimumWidth = target.width
+            selfClone.minimumHeight = target.height
+            target.parentViewGroup.addView(selfClone, target.index, target.layoutParams)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

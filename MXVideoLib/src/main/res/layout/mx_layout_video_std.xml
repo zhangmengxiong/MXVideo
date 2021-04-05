@@ -10,7 +10,7 @@
         android:id="@+id/mxSurfaceContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:animateLayoutChanges="true"
+        android:animateLayoutChanges="false"
         android:gravity="center"
         android:orientation="vertical"
         android:soundEffectsEnabled="false">

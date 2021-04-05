@@ -144,28 +144,28 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
     override fun onPrepared(mp: MediaPlayer?) {
         if (!isActive()) return
-        runInMainThread { getMXVideo()?.onPrepared() }
+        runInMainThread { getMXVideo()?.onPlayerPrepared() }
     }
 
     override fun onCompletion(mp: MediaPlayer?) {
         if (!isActive()) return
-        runInMainThread { getMXVideo()?.onCompletion() }
+        runInMainThread { getMXVideo()?.onPlayerCompletion() }
     }
 
     override fun onBufferingUpdate(mp: MediaPlayer?, percent: Int) {
         if (!isActive()) return
-        runInMainThread { getMXVideo()?.setBufferProgress(percent) }
+        runInMainThread { getMXVideo()?.onPlayerBufferProgress(percent) }
     }
 
     override fun onSeekComplete(mp: MediaPlayer?) {
         if (!isActive()) return
-        runInMainThread { getMXVideo()?.onSeekComplete() }
+        runInMainThread { getMXVideo()?.onPlayerSeekComplete() }
     }
 
     override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
         if (!isActive()) return true
         runInMainThread {
-            getMXVideo()?.onError("what = $what    extra = $extra")
+            getMXVideo()?.onPlayerError("what = $what    extra = $extra")
             release()
         }
         return true
@@ -175,13 +175,13 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
         if (!isActive()) return true
         when (what) {
             MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> {
-//                runInMainThread { getMXVideo()?.onRenderFirstFrame() }
+                runInMainThread { getMXVideo()?.onPlayerStartPlay() }
             }
             MediaPlayer.MEDIA_INFO_BUFFERING_START -> {
-                runInMainThread { getMXVideo()?.onBuffering(true) }
+                runInMainThread { getMXVideo()?.onPlayerBuffering(true) }
             }
             MediaPlayer.MEDIA_INFO_BUFFERING_END -> {
-                runInMainThread { getMXVideo()?.onBuffering(false) }
+                runInMainThread { getMXVideo()?.onPlayerBuffering(false) }
             }
         }
         return true
@@ -189,6 +189,6 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
     override fun onVideoSizeChanged(mp: MediaPlayer?, width: Int, height: Int) {
         if (!isActive()) return
-        runInMainThread { getMXVideo()?.onVideoSizeChanged(width, height) }
+        runInMainThread { getMXVideo()?.onPlayerVideoSizeChanged(width, height) }
     }
 }
