@@ -227,7 +227,7 @@ class MXViewProvider(
             override fun onTouchMove(percent: Float) {
                 MXUtils.log("percent = $percent")
                 val maxVolume = volumeHelp.getMaxVolume()
-                var targetVolume = volumeHelp.getVolume() + (maxVolume * percent * 0.7).toInt()
+                var targetVolume = volumeHelp.getVolume() + (maxVolume * percent).toInt()
                 if (targetVolume < 0) targetVolume = 0
                 if (targetVolume > maxVolume) targetVolume = maxVolume
 
@@ -238,7 +238,7 @@ class MXViewProvider(
             override fun onEnd(percent: Float) {
                 mxQuickSeekLay.visibility = View.GONE
                 val maxVolume = volumeHelp.getMaxVolume()
-                var targetVolume = volumeHelp.getVolume() + (maxVolume * percent * 0.7).toInt()
+                var targetVolume = volumeHelp.getVolume() + (maxVolume * percent).toInt()
                 if (targetVolume < 0) targetVolume = 0
                 if (targetVolume > maxVolume) targetVolume = maxVolume
 
