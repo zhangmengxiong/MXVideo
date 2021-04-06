@@ -36,6 +36,15 @@ class MXTextureView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        var widthMeasureSpec = widthMeasureSpec
+        var heightMeasureSpec = heightMeasureSpec
+        val rotation = rotation.toInt() % 360
+        if (rotation == 90 || rotation == 270) {
+            val tmp = widthMeasureSpec
+            widthMeasureSpec = heightMeasureSpec
+            heightMeasureSpec = tmp
+        }
+
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
         val widthSize = MeasureSpec.getSize(widthMeasureSpec)
 

@@ -49,6 +49,7 @@ abstract class MXVideo @JvmOverloads constructor(
 
     abstract fun getLayoutId(): Int
 
+    private var mRotation: Int = 0
     private var mVideoWidth: Int = 1280
     private var mVideoHeight: Int = 720
     private val viewIndexId = videoViewIndex.incrementAndGet()
@@ -111,6 +112,11 @@ abstract class MXVideo @JvmOverloads constructor(
         if (start) {
             startVideo()
         }
+    }
+
+    fun setTextureViewRotation(rotation: Int) {
+        mRotation = rotation
+        textureView?.rotation = rotation.toFloat()
     }
 
     /**
@@ -188,6 +194,7 @@ abstract class MXVideo @JvmOverloads constructor(
         val textureView = MXTextureView(context.applicationContext)
         textureView.setVideoSize(mVideoWidth, mVideoHeight)
         textureView.setDisplayType(displayType)
+        textureView.rotation = mRotation.toFloat()
 
         val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         layoutParams.gravity = Gravity.CENTER
@@ -387,6 +394,7 @@ abstract class MXVideo @JvmOverloads constructor(
             selfClone.currentSource = currentSource?.clone()
             selfClone.displayType = displayType
             selfClone.mxPlayerClass = mxPlayerClass
+            selfClone.mRotation = mRotation
             selfClone.dimensionRatio = dimensionRatio
             selfClone.mxConfig = mxConfig.clone()
             selfClone.minimumWidth = target.width

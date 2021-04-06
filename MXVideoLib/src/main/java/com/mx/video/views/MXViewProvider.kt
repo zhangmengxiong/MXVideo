@@ -5,6 +5,7 @@ import android.widget.*
 import com.mx.video.*
 import com.mx.video.utils.*
 import kotlin.math.abs
+import kotlin.math.min
 
 class MXViewProvider(
     private val mxVideo: MXVideo,
@@ -14,6 +15,7 @@ class MXViewProvider(
     val timeTicket = MXTicket()
     val timeDelay = MXDelay()
     val touchHelp by lazy { MXTouchHelp(mxVideo.context) }
+    val volumeHelp by lazy { MXVolumeHelp(mxVideo.context) }
     var mState: MXState = MXState.IDLE
     var mScreen: MXScreen = MXScreen.NORMAL
 
@@ -77,8 +79,8 @@ class MXViewProvider(
     val mxQuickSeekCurrentTxv: TextView by lazy {
         mxVideo.findViewById(R.id.mxQuickSeekCurrentTxv) ?: TextView(mxVideo.context)
     }
-    val mxQuickSeekDurationTxv: TextView by lazy {
-        mxVideo.findViewById(R.id.mxQuickSeekDurationTxv) ?: TextView(mxVideo.context)
+    val mxQuickSeekMaxTxv: TextView by lazy {
+        mxVideo.findViewById(R.id.mxQuickSeekMaxTxv) ?: TextView(mxVideo.context)
     }
     val mxFullscreenBtn: ImageView by lazy {
         mxVideo.findViewById(R.id.mxFullscreenBtn) ?: ImageView(mxVideo.context)
@@ -134,6 +136,7 @@ class MXViewProvider(
             if (mState == MXState.PLAYING) {
                 setPlayingControl(!mxPlayBtn.isShown)
                 timeDelay.start()
+                return@setOnClickListener
             }
         }
 
@@ -173,9 +176,8 @@ class MXViewProvider(
             return@setOnTouchListener false
         }
         touchHelp.setHorizontalTouchCall(object : MXTouchHelp.OnMXTouchListener() {
-            override fun onStart(touchDownPercent: Float) {
-                super.onStart(touchDownPercent)
-                if (!mxConfig.canSeekByUser) return
+            override fun onStart() {
+                if (!mxConfig.canSeekByUser || mState != MXState.PLAYING) return
                 allContentView.forEach {
                     if (it == mxQuickSeekLay) {
                         it.visibility = View.VISIBLE
@@ -186,21 +188,63 @@ class MXViewProvider(
             }
 
             override fun onTouchMove(percent: Float) {
-                if (!mxConfig.canSeekByUser) return
+                if (!mxConfig.canSeekByUser || mState != MXState.PLAYING) return
+
+                MXUtils.log("percent = $percent")
                 val duration = mxVideo.getDuration()
-                val position = abs(duration * percent).toInt()
+                var position = mxVideo.getCurrentPosition() + (min(120, duration) * percent).toInt()
+                if (position < 0) position = 0
+                if (position > duration) position = duration
+
                 mxQuickSeekCurrentTxv.text = MXUtils.stringForTime(position)
-                mxQuickSeekDurationTxv.text = MXUtils.stringForTime(duration)
+                mxQuickSeekMaxTxv.text = MXUtils.stringForTime(duration)
                 mxBottomSeekProgress.progress = position
             }
 
             override fun onEnd(percent: Float) {
-                if (!mxConfig.canSeekByUser || percent < 0 || percent > 1) return
                 mxQuickSeekLay.visibility = View.INVISIBLE
+                if (!mxConfig.canSeekByUser || mState != MXState.PLAYING) return
+
                 val duration = mxVideo.getDuration()
-                val position = abs(duration * percent).toInt()
+                var position = mxVideo.getCurrentPosition() + (min(120, duration) * percent).toInt()
+                if (position < 0) position = 0
+                if (position > duration) position = duration
+
                 mxVideo.seekTo(position)
                 timeDelay.start()
+            }
+        })
+
+        touchHelp.setVerticalRightTouchCall(object : MXTouchHelp.OnMXTouchListener() {
+            override fun onStart() {
+                mxQuickSeekLay.visibility = View.VISIBLE
+                val maxVolume = volumeHelp.getMaxVolume()
+                val curVolume = volumeHelp.getVolume()
+                mxQuickSeekCurrentTxv.text = curVolume.toString()
+                mxQuickSeekMaxTxv.text = maxVolume.toString()
+            }
+
+            override fun onTouchMove(percent: Float) {
+                MXUtils.log("percent = $percent")
+                val maxVolume = volumeHelp.getMaxVolume()
+                val curVolume = volumeHelp.getVolume()
+                var targetVolume = curVolume + (maxVolume * percent).toInt()
+                if (targetVolume < 0) targetVolume = 0
+                if (targetVolume > maxVolume) targetVolume = maxVolume
+
+                mxQuickSeekCurrentTxv.text = targetVolume.toString()
+                mxQuickSeekMaxTxv.text = maxVolume.toString()
+                volumeHelp.setVolume(targetVolume)
+            }
+
+            override fun onEnd(percent: Float) {
+                mxQuickSeekLay.visibility = View.GONE
+                val maxVolume = volumeHelp.getMaxVolume()
+                val curVolume = volumeHelp.getVolume()
+                var targetVolume = curVolume + (maxVolume * percent).toInt()
+                if (targetVolume < 0) targetVolume = 0
+                if (targetVolume > maxVolume) targetVolume = maxVolume
+                volumeHelp.setVolume(targetVolume)
             }
         })
 
@@ -310,6 +354,7 @@ class MXViewProvider(
                 if (mxConfig.canSeekByUser) {
                     mxSeekProgress.isEnabled = true
                 }
+                timeTicket.start()
                 timeDelay.start()
             }
             MXState.PAUSE -> {
@@ -322,11 +367,12 @@ class MXViewProvider(
                 }
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
                 mxSeekProgress.isEnabled = false
+                timeTicket.start()
                 timeDelay.stop()
             }
             MXState.ERROR -> {
                 allContentView.forEach {
-                    if (it in arrayOf(mxPlaceImg, mxRetryLay)) {
+                    if (it in arrayOf(mxPlaceImg, mxRetryLay, mxTopLay)) {
                         it.visibility = View.VISIBLE
                     } else {
                         it.visibility = View.INVISIBLE
@@ -335,7 +381,7 @@ class MXViewProvider(
             }
             MXState.COMPLETE -> {
                 allContentView.forEach {
-                    if (it in arrayOf(mxPlaceImg, mxReplayLay)) {
+                    if (it in arrayOf(mxPlaceImg, mxReplayLay, mxTopLay)) {
                         it.visibility = View.VISIBLE
                     } else {
                         it.visibility = View.INVISIBLE

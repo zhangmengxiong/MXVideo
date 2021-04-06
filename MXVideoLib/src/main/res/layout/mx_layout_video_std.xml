@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
+    android:animateLayoutChanges="false"
     android:background="@android:color/black"
     android:soundEffectsEnabled="false">
 
@@ -303,7 +303,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/mxQuickSeekDurationTxv"
+            android:id="@+id/mxQuickSeekMaxTxv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:soundEffectsEnabled="false"

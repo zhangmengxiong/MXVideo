@@ -54,6 +54,43 @@
                 android:layout_height="wrap_content"
                 android:text="9*16" />
         </RadioGroup>
+        <RadioGroup
+            android:id="@+id/rotationRG"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="视频渲染旋转角度："
+                android:textColor="@color/black" />
+
+            <RadioButton
+                android:id="@+id/rotation0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0度" />
+
+            <RadioButton
+                android:id="@+id/rotation90"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="90度" />
+
+            <RadioButton
+                android:id="@+id/rotation180"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="180度" />
+            <RadioButton
+                android:id="@+id/rotation270"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="270度" />
+        </RadioGroup>
 
         <RadioGroup
             android:id="@+id/fillTypeRG"

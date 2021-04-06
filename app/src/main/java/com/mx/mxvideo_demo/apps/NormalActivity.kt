@@ -60,6 +60,17 @@ class NormalActivity : AppCompatActivity() {
                 mxVideoStd.setDimensionRatio(0.0)
             }
         }
+        rotationRG.setOnCheckedChangeListener { group, checkedId ->
+            if (checkedId == R.id.rotation0) {
+                mxVideoStd.setTextureViewRotation(0)
+            } else if (checkedId == R.id.rotation90) {
+                mxVideoStd.setTextureViewRotation(90)
+            } else if (checkedId == R.id.rotation180) {
+                mxVideoStd.setTextureViewRotation(180)
+            } else if (checkedId == R.id.rotation270) {
+                mxVideoStd.setTextureViewRotation(270)
+            }
+        }
         canSeekRG.setOnCheckedChangeListener { group, checkedId ->
             mxVideoStd.getConfig().canSeekByUser = (checkedId == R.id.canSeekTrue)
         }
