@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.mx.mxvideo_demo.adapts.HomeAdapt
 import com.mx.mxvideo_demo.adapts.SimpleVideoAdapt
+import com.mx.mxvideo_demo.apps.NormalActivity
 import com.mx.mxvideo_demo.apps.RecycleViewActivity
 import com.mx.recycleview.base.BaseSimpleAdapt
 import com.mx.recycleview.base.BaseViewHolder
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
 
         val adapt = HomeAdapt(
             arrayListOf(
+                HomePages("播放器(各种参数切换)", NormalActivity::class.java),
                 HomePages("适配RecycleView", RecycleViewActivity::class.java),
             )
         )
