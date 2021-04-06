@@ -19,6 +19,9 @@ class MXViewProvider(
     var mState: MXState = MXState.IDLE
     var mScreen: MXScreen = MXScreen.NORMAL
 
+    private val mxPlayerRootLay: FrameLayout by lazy {
+        mxVideo.findViewById(R.id.mxPlayerRootLay) ?: FrameLayout(mxVideo.context)
+    }
     val mxSurfaceContainer: FrameLayout by lazy {
         mxVideo.findViewById(R.id.mxSurfaceContainer) ?: FrameLayout(mxVideo.context)
     }
@@ -127,7 +130,7 @@ class MXViewProvider(
                 mxVideo.startPlay()
             }
         }
-        mxSurfaceContainer.setOnClickListener {
+        mxPlayerRootLay.setOnClickListener {
             if (mState == MXState.PAUSE) {
                 setPlayingControl(true)
                 timeDelay.stop()
@@ -168,7 +171,7 @@ class MXViewProvider(
             }
         }
 
-        mxSurfaceContainer.setOnTouchListener { _, motionEvent ->
+        mxPlayerRootLay.setOnTouchListener { _, motionEvent ->
             if (mScreen == MXScreen.FULL && mState == MXState.PLAYING) {
                 // 全屏且正在播放才会触发触摸滑动
                 return@setOnTouchListener touchHelp.onTouch(motionEvent)

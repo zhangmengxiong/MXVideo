@@ -13,10 +13,8 @@ class NormalActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_normal)
-        mxVideoStd.setDimensionRatio(16 / 9.0)
-        Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
-
         randPlay.setOnClickListener {
+            Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
             mxVideoStd.setSource(
                 MXPlaySource(
                     ldjVideos.random(),
@@ -44,6 +42,7 @@ class NormalActivity : AppCompatActivity() {
                 }
             }
         }
+
         fillTypeRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.fill) {
                 mxVideoStd.setDisplayType(MXScale.FILL_PARENT)
@@ -51,6 +50,8 @@ class NormalActivity : AppCompatActivity() {
                 mxVideoStd.setDisplayType(MXScale.CENTER_CROP)
             }
         }
+        centerCrop.performClick()
+
         ratioRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.ratio_16_9) {
                 mxVideoStd.setDimensionRatio(16.0 / 9.0)
@@ -60,6 +61,8 @@ class NormalActivity : AppCompatActivity() {
                 mxVideoStd.setDimensionRatio(0.0)
             }
         }
+        ratioEmpty.performClick()
+
         rotationRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.rotation0) {
                 mxVideoStd.setTextureViewRotation(0)
@@ -71,29 +74,44 @@ class NormalActivity : AppCompatActivity() {
                 mxVideoStd.setTextureViewRotation(270)
             }
         }
+        rotation0.performClick()
+
         canSeekRG.setOnCheckedChangeListener { group, checkedId ->
             mxVideoStd.getConfig().canSeekByUser = (checkedId == R.id.canSeekTrue)
         }
+        canSeekTrue.performClick()
+
         canFullRG.setOnCheckedChangeListener { group, checkedId ->
             mxVideoStd.getConfig().canFullScreen = (checkedId == R.id.canFullTrue)
         }
+        canFullTrue.performClick()
+
         canShowSystemTimeRG.setOnCheckedChangeListener { group, checkedId ->
             mxVideoStd.getConfig().canShowSystemTime = (checkedId == R.id.canShowSystemTimeTrue)
         }
+        canShowSystemTimeTrue.performClick()
+
         canShowBatteryImgRG.setOnCheckedChangeListener { group, checkedId ->
             mxVideoStd.getConfig().canShowBatteryImg = (checkedId == R.id.canShowBatteryImgTrue)
         }
+        canShowBatteryImgTrue.performClick()
+
         showTipIfNotWifiRG.setOnCheckedChangeListener { group, checkedId ->
             mxVideoStd.getConfig().showTipIfNotWifi = (checkedId == R.id.showTipIfNotWifiTrue)
         }
+        showTipIfNotWifiTrue.performClick()
+
         gotoNormalScreenWhenCompleteRG.setOnCheckedChangeListener { group, checkedId ->
             mxVideoStd.getConfig().gotoNormalScreenWhenComplete =
                 (checkedId == R.id.gotoNormalScreenWhenCompleteTrue)
         }
+        gotoNormalScreenWhenCompleteTrue.performClick()
+
         gotoNormalScreenWhenErrorRG.setOnCheckedChangeListener { group, checkedId ->
             mxVideoStd.getConfig().gotoNormalScreenWhenError =
                 (checkedId == R.id.gotoNormalScreenWhenErrorTrue)
         }
+        gotoNormalScreenWhenErrorTrue.performClick()
     }
 
     override fun onBackPressed() {
