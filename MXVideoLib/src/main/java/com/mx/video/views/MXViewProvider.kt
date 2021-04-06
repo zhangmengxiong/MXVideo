@@ -4,7 +4,6 @@ import android.view.View
 import android.widget.*
 import com.mx.video.*
 import com.mx.video.utils.*
-import kotlin.math.abs
 import kotlin.math.min
 
 class MXViewProvider(
@@ -16,6 +15,7 @@ class MXViewProvider(
     val timeDelay = MXDelay()
     val touchHelp by lazy { MXTouchHelp(mxVideo.context) }
     val volumeHelp by lazy { MXVolumeHelp(mxVideo.context) }
+    val brightnessHelp by lazy { MXBrightnessHelp(mxVideo.context) }
     var mState: MXState = MXState.IDLE
     var mScreen: MXScreen = MXScreen.NORMAL
 
@@ -227,7 +227,7 @@ class MXViewProvider(
             override fun onTouchMove(percent: Float) {
                 MXUtils.log("percent = $percent")
                 val maxVolume = volumeHelp.getMaxVolume()
-                var targetVolume = volumeHelp.getVolume() + (maxVolume * percent * 0.5).toInt()
+                var targetVolume = volumeHelp.getVolume() + (maxVolume * percent * 0.7).toInt()
                 if (targetVolume < 0) targetVolume = 0
                 if (targetVolume > maxVolume) targetVolume = maxVolume
 
@@ -238,11 +238,43 @@ class MXViewProvider(
             override fun onEnd(percent: Float) {
                 mxQuickSeekLay.visibility = View.GONE
                 val maxVolume = volumeHelp.getMaxVolume()
-                var targetVolume = volumeHelp.getVolume() + (maxVolume * percent * 0.5).toInt()
+                var targetVolume = volumeHelp.getVolume() + (maxVolume * percent * 0.7).toInt()
                 if (targetVolume < 0) targetVolume = 0
                 if (targetVolume > maxVolume) targetVolume = maxVolume
 
                 volumeHelp.setVolume(targetVolume)
+            }
+        })
+        touchHelp.setVerticalLeftTouchCall(object : MXTouchHelp.OnMXTouchListener() {
+            override fun onStart() {
+                mxQuickSeekLay.visibility = View.VISIBLE
+                val maxBrightness = brightnessHelp.getMaxBrightness()
+                val curBrightness = brightnessHelp.getBrightness()
+                mxQuickSeekCurrentTxv.text = curBrightness.toString()
+                mxQuickSeekMaxTxv.text = maxBrightness.toString()
+            }
+
+            override fun onTouchMove(percent: Float) {
+                MXUtils.log("percent = $percent")
+                val maxBrightness = brightnessHelp.getMaxBrightness()
+                var targetBrightness =
+                    brightnessHelp.getBrightness() + (maxBrightness * percent * 0.7).toInt()
+                if (targetBrightness < 0) targetBrightness = 0
+                if (targetBrightness > maxBrightness) targetBrightness = maxBrightness
+
+                mxQuickSeekCurrentTxv.text = targetBrightness.toString()
+                mxQuickSeekMaxTxv.text = maxBrightness.toString()
+            }
+
+            override fun onEnd(percent: Float) {
+                mxQuickSeekLay.visibility = View.GONE
+                val maxBrightness = brightnessHelp.getMaxBrightness()
+                var targetBrightness =
+                    brightnessHelp.getBrightness() + (maxBrightness * percent * 0.7).toInt()
+                if (targetBrightness < 0) targetBrightness = 0
+                if (targetBrightness > maxBrightness) targetBrightness = maxBrightness
+
+                brightnessHelp.setBrightness(targetBrightness)
             }
         })
 
