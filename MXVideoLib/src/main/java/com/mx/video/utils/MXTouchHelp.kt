@@ -77,12 +77,12 @@ class MXTouchHelp(private val context: Context) {
                             return true
                         }
                         isSeekVerticalLeft -> {
-                            val py = (viewHeight - motionEvent.y) / viewHeight
+                            val py = (downY - motionEvent.y) / viewHeight
                             onVerticalLeftListener?.onTouchMove(py)
                             return true
                         }
                         isSeekVerticalRight -> {
-                            val py = (viewHeight - motionEvent.y) / viewHeight
+                            val py = (downY - motionEvent.y) / viewHeight
                             onVerticalRightListener?.onTouchMove(py)
                             return true
                         }
@@ -97,12 +97,12 @@ class MXTouchHelp(private val context: Context) {
                         return true
                     }
                     isSeekVerticalLeft -> {
-                        val py = (viewHeight - motionEvent.y) / viewHeight
+                        val py = (downY - motionEvent.y) / viewHeight
                         onVerticalLeftListener?.onEnd(py)
                         return true
                     }
                     isSeekVerticalRight -> {
-                        val py = (viewHeight - motionEvent.y) / viewHeight
+                        val py = (downY - motionEvent.y) / viewHeight
                         onVerticalRightListener?.onEnd(py)
                         return true
                     }
