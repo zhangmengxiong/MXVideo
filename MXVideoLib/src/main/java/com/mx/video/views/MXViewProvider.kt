@@ -254,18 +254,18 @@ class MXViewProvider(
     fun setState(state: MXState) {
         mState = state
         if (!mxConfig.canFullScreen) {
-            mxFullscreenBtn.visibility = View.INVISIBLE
+            mxFullscreenBtn.visibility = View.GONE
         } else {
             mxFullscreenBtn.visibility = View.VISIBLE
         }
         mxSeekProgress.isEnabled = mxConfig.canSeekByUser
         if (!mxConfig.canShowSystemTime) {
-            mxSystemTimeTxv.visibility = View.INVISIBLE
+            mxSystemTimeTxv.visibility = View.GONE
         } else {
             mxSystemTimeTxv.visibility = View.VISIBLE
         }
         if (!mxConfig.canShowBatteryImg) {
-            mxBatteryImg.visibility = View.INVISIBLE
+            mxBatteryImg.visibility = View.GONE
         } else {
             mxBatteryImg.visibility = View.VISIBLE
         }
@@ -291,7 +291,7 @@ class MXViewProvider(
             }
             MXState.PREPARED -> {
                 allContentView.forEach {
-                    if (it in arrayOf(mxLoading)) {
+                    if (it in arrayOf(mxLoading, mxPlaceImg)) {
                         it.visibility = View.VISIBLE
                     } else {
                         it.visibility = View.INVISIBLE

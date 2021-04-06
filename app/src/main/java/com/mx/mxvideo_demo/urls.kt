@@ -137,7 +137,10 @@ val videos = arrayOf(
     "$server_name/v/饺子真会.mp4",
     "$server_name/v/饺子真萌.mp4"
 
-    )
+)
+val VIDEO_16x9 = "$server_name/v/ldj/01-ldj.mp4"
+val VIDEO_4x3 = "$server_name/v/饺子主动.mp4"
+val VIDEO_9x16 = "$server_name/v/饺子真会.mp4"
 
 val thumbnails = arrayOf(
     "$server_name/v/饺子主动.jpg",
