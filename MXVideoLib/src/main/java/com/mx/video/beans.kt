@@ -24,14 +24,14 @@ data class MXPlaySource(
 }
 
 enum class MXState : Serializable {
-    IDLE,
-    NORMAL,
-    PREPARING,
-    PREPARED,
-    PLAYING,
-    PAUSE,
-    COMPLETE,
-    ERROR
+    IDLE, // 初始状态
+    NORMAL, // 已设置数据源，但未开始
+    PREPARING, // 视频资源校验准备中
+    PREPARED, // 视频资源校验完成
+    PLAYING, // 播放中
+    PAUSE, // 暂停中
+    COMPLETE, // 播放完成
+    ERROR // 播放错误
 }
 
 enum class MXScale : Serializable {
