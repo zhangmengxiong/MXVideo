@@ -171,7 +171,7 @@ class MXViewProvider(
         mxSurfaceContainer.setOnTouchListener { _, motionEvent ->
             if (mScreen == MXScreen.FULL && mState == MXState.PLAYING) {
                 // 全屏且正在播放才会触发触摸滑动
-                touchHelp.onTouch(motionEvent)
+                return@setOnTouchListener touchHelp.onTouch(motionEvent)
             }
             return@setOnTouchListener false
         }
@@ -227,8 +227,7 @@ class MXViewProvider(
             override fun onTouchMove(percent: Float) {
                 MXUtils.log("percent = $percent")
                 val maxVolume = volumeHelp.getMaxVolume()
-                val curVolume = volumeHelp.getVolume()
-                var targetVolume = curVolume + (maxVolume * percent).toInt()
+                var targetVolume = (maxVolume * percent).toInt()
                 if (targetVolume < 0) targetVolume = 0
                 if (targetVolume > maxVolume) targetVolume = maxVolume
 
@@ -240,10 +239,10 @@ class MXViewProvider(
             override fun onEnd(percent: Float) {
                 mxQuickSeekLay.visibility = View.GONE
                 val maxVolume = volumeHelp.getMaxVolume()
-                val curVolume = volumeHelp.getVolume()
-                var targetVolume = curVolume + (maxVolume * percent).toInt()
+                var targetVolume = (maxVolume * percent).toInt()
                 if (targetVolume < 0) targetVolume = 0
                 if (targetVolume > maxVolume) targetVolume = maxVolume
+
                 volumeHelp.setVolume(targetVolume)
             }
         })
