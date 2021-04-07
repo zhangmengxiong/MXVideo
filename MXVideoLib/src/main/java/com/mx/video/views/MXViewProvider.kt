@@ -139,6 +139,7 @@ class MXViewProvider(
             if (mState == MXState.PLAYING) {
                 setPlayingControl(!mxPlayBtn.isShown)
                 timeDelay.start()
+                timeTicket.start()
                 return@setOnClickListener
             }
         }
@@ -162,12 +163,24 @@ class MXViewProvider(
             ) {
                 val duration = mxVideo.getDuration()
                 val position = mxVideo.getCurrentPosition()
-                mxSeekProgress.max = duration
-                mxSeekProgress.progress = position
-                mxBottomSeekProgress.max = duration
-                mxBottomSeekProgress.progress = position
-                mxCurrentTimeTxv.text = MXUtils.stringForTime(position)
-                mxTotalTimeTxv.text = MXUtils.stringForTime(duration)
+                if (mxSeekProgress.isShown) {
+                    mxSeekProgress.max = duration
+                }
+                if (mxSeekProgress.isShown) {
+                    mxSeekProgress.progress = position
+                }
+                if (mxBottomSeekProgress.isShown) {
+                    mxBottomSeekProgress.max = duration
+                }
+                if (mxBottomSeekProgress.isShown) {
+                    mxBottomSeekProgress.progress = position
+                }
+                if (mxCurrentTimeTxv.isShown) {
+                    mxCurrentTimeTxv.text = MXUtils.stringForTime(position)
+                }
+                if (mxTotalTimeTxv.isShown) {
+                    mxTotalTimeTxv.text = MXUtils.stringForTime(duration)
+                }
             }
         }
 
