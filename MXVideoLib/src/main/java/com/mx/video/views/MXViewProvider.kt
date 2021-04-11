@@ -416,6 +416,8 @@ class MXViewProvider(
                 if (mxConfig.canSeekByUser) {
                     mxSeekProgress.isEnabled = true
                 }
+                setPlayingControl(playingVisible.any { it.isShown })
+
                 timeTicket.start()
                 timeDelay.start()
             }
@@ -457,5 +459,9 @@ class MXViewProvider(
     private fun setPlayingControl(show: Boolean) {
         playingVisible.forEach { it.visibility = if (show) View.VISIBLE else View.GONE }
         mxBottomSeekProgress.visibility = if (show) View.GONE else View.VISIBLE
+    }
+
+    fun refreshStatus() {
+        setState(mState)
     }
 }

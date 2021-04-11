@@ -63,7 +63,7 @@ abstract class MXVideo @JvmOverloads constructor(
     private var displayType: MXScale = MXScale.CENTER_CROP
     private var seekWhenPlay: Int = 0
 
-    private var mxConfig = MXConfig()
+    private val mxConfig = MXConfig()
     private val viewProvider by lazy { MXViewProvider(this, mxConfig) }
 
     init {
@@ -424,7 +424,8 @@ abstract class MXVideo @JvmOverloads constructor(
             selfClone.mxPlayerClass = mxPlayerClass
             selfClone.mRotation = mRotation
             selfClone.dimensionRatio = dimensionRatio
-            selfClone.mxConfig = mxConfig.clone()
+            selfClone.mxConfig.cloneBy(mxConfig)
+            
             selfClone.minimumWidth = target.width
             selfClone.minimumHeight = target.height
             target.parentViewGroup.addView(selfClone, target.index, target.layoutParams)

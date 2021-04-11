@@ -61,15 +61,13 @@ class MXConfig : Serializable {
     var gotoNormalScreenWhenComplete = true // 播放完成时如果是全屏，则退出全屏
     var gotoNormalScreenWhenError = true // 播放错误时如果是全屏，则退出全屏
 
-    fun clone(): MXConfig {
-        val config = MXConfig()
-        config.canSeekByUser = canSeekByUser
-        config.canFullScreen = canFullScreen
-        config.canShowSystemTime = canShowSystemTime
-        config.canShowBatteryImg = canShowBatteryImg
-        config.showTipIfNotWifi = showTipIfNotWifi
-        config.gotoNormalScreenWhenComplete = gotoNormalScreenWhenComplete
-        config.gotoNormalScreenWhenError = gotoNormalScreenWhenError
-        return config
+    fun cloneBy(target: MXConfig) {
+        canSeekByUser = target.canSeekByUser
+        canFullScreen = target.canFullScreen
+        canShowSystemTime = target.canShowSystemTime
+        canShowBatteryImg = target.canShowBatteryImg
+        showTipIfNotWifi = target.showTipIfNotWifi
+        gotoNormalScreenWhenComplete = target.gotoNormalScreenWhenComplete
+        gotoNormalScreenWhenError = target.gotoNormalScreenWhenError
     }
 }
