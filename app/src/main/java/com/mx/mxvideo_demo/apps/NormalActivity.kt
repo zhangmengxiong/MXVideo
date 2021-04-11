@@ -1,6 +1,7 @@
 package com.mx.mxvideo_demo.apps
 
 import android.os.Bundle
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.mx.mxvideo_demo.*
@@ -54,10 +55,32 @@ class NormalActivity : AppCompatActivity() {
 
         ratioRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.ratio_16_9) {
+                val lp = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                mxVideoStd.layoutParams = lp
                 mxVideoStd.setDimensionRatio(16.0 / 9.0)
             } else if (checkedId == R.id.ratio_4_3) {
+                val lp = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                mxVideoStd.layoutParams = lp
                 mxVideoStd.setDimensionRatio(4.0 / 3.0)
+            } else if (checkedId == R.id.ratio200dp) {
+                val lp = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    (resources.displayMetrics.density * 200).toInt()
+                )
+                mxVideoStd.layoutParams = lp
+                mxVideoStd.setDimensionRatio(0.0)
             } else {
+                val lp = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                mxVideoStd.layoutParams = lp
                 mxVideoStd.setDimensionRatio(0.0)
             }
         }

@@ -54,6 +54,7 @@
                 android:layout_height="wrap_content"
                 android:text="9*16" />
         </RadioGroup>
+
         <RadioGroup
             android:id="@+id/rotationRG"
             android:layout_width="match_parent"
@@ -85,6 +86,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="180度" />
+
             <RadioButton
                 android:id="@+id/rotation270"
                 android:layout_width="wrap_content"
@@ -140,6 +142,12 @@
                 android:text="无" />
 
             <RadioButton
+                android:id="@+id/ratio200dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="200dp" />
+
+            <RadioButton
                 android:id="@+id/ratio_16_9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -178,6 +186,7 @@
                 android:layout_height="wrap_content"
                 android:text="不支持" />
         </RadioGroup>
+
         <RadioGroup
             android:id="@+id/canFullRG"
             android:layout_width="match_parent"
@@ -204,6 +213,7 @@
                 android:layout_height="wrap_content"
                 android:text="不支持" />
         </RadioGroup>
+
         <RadioGroup
             android:id="@+id/canShowSystemTimeRG"
             android:layout_width="match_parent"
@@ -230,6 +240,7 @@
                 android:layout_height="wrap_content"
                 android:text="不支持" />
         </RadioGroup>
+
         <RadioGroup
             android:id="@+id/canShowBatteryImgRG"
             android:layout_width="match_parent"
@@ -256,6 +267,7 @@
                 android:layout_height="wrap_content"
                 android:text="不支持" />
         </RadioGroup>
+
         <RadioGroup
             android:id="@+id/showTipIfNotWifiRG"
             android:layout_width="match_parent"
@@ -282,6 +294,7 @@
                 android:layout_height="wrap_content"
                 android:text="不支持" />
         </RadioGroup>
+
         <RadioGroup
             android:id="@+id/gotoNormalScreenWhenCompleteRG"
             android:layout_width="match_parent"
@@ -308,6 +321,7 @@
                 android:layout_height="wrap_content"
                 android:text="不支持" />
         </RadioGroup>
+
         <RadioGroup
             android:id="@+id/gotoNormalScreenWhenErrorRG"
             android:layout_width="match_parent"

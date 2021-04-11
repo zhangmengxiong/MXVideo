@@ -28,6 +28,7 @@ class SimpleVideoAdapt : BaseSimpleAdapt<String>() {
         Glide.with(mxVideoStd.context).load(record)
             .into(mxVideoStd.getPosterImageView())
 //            mxVideoStd.setDimensionRatio(16.0 / 9.0)
+        mxVideoStd.resetVideoSize()
         mxVideoStd.setSource(
             MXPlaySource(record, "" + position, isOnlineSource = true),
             start = false

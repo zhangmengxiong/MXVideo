@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
+import android.widget.ImageView
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
 import com.mx.video.utils.MXUtils
@@ -68,6 +69,7 @@ abstract class MXVideo @JvmOverloads constructor(
     init {
         View.inflate(context, getLayoutId(), this)
 
+        resetVideoSize()
         viewProvider.initView()
         viewProvider.setState(MXState.IDLE)
     }
@@ -140,6 +142,10 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun setDisplayType(type: MXScale) {
         this.displayType = type
+        viewProvider.mxPlaceImg.scaleType = when (type) {
+            MXScale.CENTER_CROP -> ImageView.ScaleType.FIT_CENTER
+            MXScale.FILL_PARENT -> ImageView.ScaleType.FIT_XY
+        }
         textureView?.setDisplayType(type)
     }
 
@@ -335,20 +341,24 @@ abstract class MXVideo @JvmOverloads constructor(
                 MeasureSpec.EXACTLY
             )
             super.onMeasure(widthMeasureSpec, measureSpec)
-        } else if (mVideoWidth > 0 && mVideoHeight > 0
+            return
+        }
+
+        if (mVideoWidth > 0 && mVideoHeight > 0
             && viewProvider.mScreen == MXScreen.NORMAL
             && widthMode == MeasureSpec.EXACTLY
             && heightMode != MeasureSpec.EXACTLY
         ) {
-            //  当视频宽高有数据，，且非全屏时，按照视频宽高比调整整个View的高度
+            //  当视频宽高有数据，，且非全屏时，按照视频宽高比调整整个View的高度，默认视频宽高比= 1280 x 720
             val measureSpec = MeasureSpec.makeMeasureSpec(
                 (widthSize * mVideoHeight.toFloat() / mVideoWidth).toInt(),
                 MeasureSpec.EXACTLY
             )
             super.onMeasure(widthMeasureSpec, measureSpec)
-        } else {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+            return
         }
+
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -471,4 +481,11 @@ abstract class MXVideo @JvmOverloads constructor(
         return mxPlayer?.getCurrentPosition() ?: 0
     }
 
+    /**
+     * 重置视频宽高
+     */
+    fun resetVideoSize() {
+        mVideoWidth = 1280
+        mVideoHeight = 720
+    }
 }
