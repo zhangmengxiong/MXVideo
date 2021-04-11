@@ -9,9 +9,9 @@ import kotlin.math.roundToInt
 
 class MXViewProvider(
     private val mxVideo: MXVideo,
+    private val videoListeners: ArrayList<MXVideoListener>,
     private val mxConfig: MXConfig
 ) {
-
     val timeTicket = MXTicket()
     val timeDelay = MXDelay()
     val touchHelp by lazy { MXTouchHelp(mxVideo.context) }
@@ -19,6 +19,7 @@ class MXViewProvider(
     val brightnessHelp by lazy { MXBrightnessHelp(mxVideo.context) }
     var mState: MXState = MXState.IDLE
     var mScreen: MXScreen = MXScreen.NORMAL
+    var preTicketTime: Int = -1
 
     private val mxPlayerRootLay: FrameLayout by lazy {
         mxVideo.findViewById(R.id.mxPlayerRootLay) ?: FrameLayout(mxVideo.context)
@@ -174,6 +175,13 @@ class MXViewProvider(
             ) {
                 val duration = mxVideo.getDuration()
                 val position = mxVideo.getCurrentPosition()
+                if (preTicketTime != position) {
+                    videoListeners.toList().forEach { listener ->
+                        listener.onPlayTicket(position, duration)
+                    }
+                }
+                preTicketTime = position
+
                 if (mxSeekProgress.isShown) {
                     mxSeekProgress.max = duration
                 }
@@ -358,6 +366,11 @@ class MXViewProvider(
     }
 
     fun setState(state: MXState) {
+        if (mState != state) {
+            videoListeners.toList().forEach { listener ->
+                listener.onStateChange(state)
+            }
+        }
         mState = state
         if (!mxConfig.canFullScreen) {
             mxFullscreenBtn.visibility = View.GONE
@@ -385,6 +398,8 @@ class MXViewProvider(
                     }
                 }
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
+                timeTicket.stop()
+                timeDelay.stop()
             }
             MXState.PREPARING -> {
                 allContentView.forEach {
@@ -394,6 +409,8 @@ class MXViewProvider(
                         it.visibility = View.GONE
                     }
                 }
+                timeTicket.stop()
+                timeDelay.stop()
             }
             MXState.PREPARED -> {
                 allContentView.forEach {
@@ -442,6 +459,8 @@ class MXViewProvider(
                         it.visibility = View.GONE
                     }
                 }
+                timeTicket.stop()
+                timeDelay.stop()
             }
             MXState.COMPLETE -> {
                 allContentView.forEach {
@@ -451,6 +470,8 @@ class MXViewProvider(
                         it.visibility = View.GONE
                     }
                 }
+                timeTicket.stop()
+                timeDelay.stop()
             }
         }
         mxReturnBtn.visibility = if (mScreen == MXScreen.FULL) View.VISIBLE else View.GONE

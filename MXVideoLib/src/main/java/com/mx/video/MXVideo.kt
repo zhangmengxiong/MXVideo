@@ -13,6 +13,7 @@ import android.widget.ImageView
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
 import com.mx.video.utils.MXUtils
+import com.mx.video.utils.MXVideoListener
 import com.mx.video.views.MXTextureView
 import com.mx.video.views.MXViewProvider
 import java.util.concurrent.atomic.AtomicInteger
@@ -64,7 +65,8 @@ abstract class MXVideo @JvmOverloads constructor(
     private var seekWhenPlay: Int = 0
 
     private val mxConfig = MXConfig()
-    private val viewProvider by lazy { MXViewProvider(this, mxConfig) }
+    private val videoListeners = ArrayList<MXVideoListener>()
+    private val viewProvider by lazy { MXViewProvider(this, videoListeners, mxConfig) }
 
     init {
         View.inflate(context, getLayoutId(), this)
@@ -72,6 +74,16 @@ abstract class MXVideo @JvmOverloads constructor(
         resetVideoSize()
         viewProvider.initView()
         viewProvider.setState(MXState.IDLE)
+    }
+
+    fun addOnVideoListener(listener: MXVideoListener) {
+        if (!videoListeners.contains(listener)) {
+            videoListeners.add(listener)
+        }
+    }
+
+    fun removeOnVideoListener(listener: MXVideoListener) {
+        videoListeners.remove(listener)
     }
 
     /**
@@ -104,12 +116,14 @@ abstract class MXVideo @JvmOverloads constructor(
     fun setSource(
         source: MXPlaySource,
         clazz: Class<IMXPlayer>? = null,
+        seekTo: Int = 0,
         start: Boolean = true
     ) {
         stopPlay()
         currentSource = source
         mxPlayerClass = clazz ?: MXSystemPlayer::class.java
 
+        seekWhenPlay = seekTo
         viewProvider.mxTitleTxv.text = source.title
         viewProvider.setState(MXState.IDLE)
         if (start) {
@@ -425,7 +439,7 @@ abstract class MXVideo @JvmOverloads constructor(
             selfClone.mRotation = mRotation
             selfClone.dimensionRatio = dimensionRatio
             selfClone.mxConfig.cloneBy(mxConfig)
-            
+
             selfClone.minimumWidth = target.width
             selfClone.minimumHeight = target.height
             target.parentViewGroup.addView(selfClone, target.index, target.layoutParams)

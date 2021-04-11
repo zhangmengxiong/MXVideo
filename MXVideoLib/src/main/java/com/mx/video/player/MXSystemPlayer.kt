@@ -66,8 +66,16 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
         return mediaPlayer?.isPlaying ?: false
     }
 
+    // 这里不需要处理未播放状态的快进快退，MXVideo会判断。
     override fun seekTo(time: Int) {
         if (!isActive()) return
+        val duration = getDuration()
+        if (duration != 0 && time >= duration) {
+            // 如果直接跳转到结束位置，则直接complete
+            releaseNow()
+            getMXVideo()?.onPlayerCompletion()
+            return
+        }
 
         runInThread {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -105,7 +113,9 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun getDuration(): Int {
-        return mediaPlayer?.duration?.div(1000) ?: 0
+        var duration = mediaPlayer?.duration ?: 0
+        if (duration < 0) duration = 0
+        return duration / 1000
     }
 
     override fun setVolume(leftVolume: Float, rightVolume: Float) {

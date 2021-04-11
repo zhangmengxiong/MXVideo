@@ -22,6 +22,14 @@
             android:padding="10dp"
             android:text="随机播放" />
 
+        <Button
+            android:id="@+id/randTo10SecPlay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:padding="10dp"
+            android:text="随机第60S 开始" />
+
         <RadioGroup
             android:id="@+id/videoSourceRG"
             android:layout_width="match_parent"

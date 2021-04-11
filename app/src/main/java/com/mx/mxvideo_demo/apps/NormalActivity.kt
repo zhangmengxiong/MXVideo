@@ -2,12 +2,15 @@ package com.mx.mxvideo_demo.apps
 
 import android.os.Bundle
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.mx.mxvideo_demo.*
 import com.mx.video.MXPlaySource
 import com.mx.video.MXScale
+import com.mx.video.MXState
 import com.mx.video.MXVideo
+import com.mx.video.utils.MXVideoListener
 import kotlinx.android.synthetic.main.activity_normal.*
 
 class NormalActivity : AppCompatActivity() {
@@ -23,6 +26,24 @@ class NormalActivity : AppCompatActivity() {
                 ), start = true
             )
         }
+        randTo10SecPlay.setOnClickListener {
+            Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
+            mxVideoStd.setSource(
+                MXPlaySource(
+                    ldjVideos.random(),
+                    titles.random()
+                ), start = true, seekTo = 60
+            )
+        }
+        mxVideoStd.addOnVideoListener(object : MXVideoListener() {
+            override fun onStateChange(state: MXState) {
+                Toast.makeText(this@NormalActivity, state.name, Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onPlayTicket(position: Int, duration: Int) {
+                println("MXUtils $position / $duration")
+            }
+        })
 
         videoSourceRG.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
