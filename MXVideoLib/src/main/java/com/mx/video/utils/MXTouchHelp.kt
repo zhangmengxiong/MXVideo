@@ -7,7 +7,7 @@ import kotlin.math.abs
 
 class MXTouchHelp(private val context: Context) {
     // 最低滑动距离
-    private val minMoveDistance = ViewConfiguration.get(context).scaledTouchSlop
+    private val minMoveDistance = ViewConfiguration.get(context).scaledTouchSlop * 2
     private var downX = 0f
     private var downY = 0f
     private var isSeekHorizontal = false

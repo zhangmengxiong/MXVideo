@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="mx_play_error">视频加载失败！</string>
+    <string name="mx_play_error">视频加载失败</string>
     <string name="mx_play_retry">点击重试</string>
     <string name="mx_play_complete_replay">重新播放</string>
     <string name="mx_play_wifi_notify">您当前正在使用移动网络，继续播放将消耗流量</string>
