@@ -42,7 +42,7 @@ abstract class MXVideo @JvmOverloads constructor(
         }
 
         fun releaseAll() {
-            playingVideo?.stopPlay()
+            playingVideo?.release()
         }
     }
 
@@ -326,6 +326,15 @@ abstract class MXVideo @JvmOverloads constructor(
             playingVideo = null
         }
         viewProvider.setState(MXState.IDLE)
+    }
+
+    /**
+     * 销毁Activity或Fragment时调用
+     */
+    fun release() {
+        MXUtils.log("release")
+        stopPlay()
+        videoListeners.clear()
     }
 
     private var dimensionRatio: Double = 0.0
