@@ -10,7 +10,6 @@ class MXViewProvider(
     private val mxVideo: MXVideo,
     private val mxConfig: MXConfig
 ) {
-
     val timeTicket = MXTicket()
     val timeDelay = MXDelay()
     val touchHelp by lazy { MXTouchHelp(mxVideo.context) }
@@ -18,13 +17,6 @@ class MXViewProvider(
     val brightnessHelp by lazy { MXBrightnessHelp(mxVideo.context) }
     var mState: MXState = MXState.IDLE
     var mScreen: MXScreen = MXScreen.NORMAL
-
-    private val mxPlayerRootLay: FrameLayout by lazy {
-        mxVideo.findViewById(R.id.mxPlayerRootLay) ?: FrameLayout(mxVideo.context)
-    }
-    val mxSurfaceContainer: FrameLayout by lazy {
-        mxVideo.findViewById(R.id.mxSurfaceContainer) ?: FrameLayout(mxVideo.context)
-    }
 
     val mxPlaceImg: ImageView by lazy {
         mxVideo.findViewById(R.id.mxPlaceImg) ?: ImageView(mxVideo.context)
@@ -130,7 +122,7 @@ class MXViewProvider(
                 mxVideo.startPlay()
             }
         }
-        mxPlayerRootLay.setOnClickListener {
+        mxVideo.setOnClickListener {
             if (mState == MXState.PAUSE) {
                 setPlayingControl(true)
                 timeDelay.stop()
@@ -148,9 +140,9 @@ class MXViewProvider(
             if (!mxVideo.isShown || mState != MXState.PLAYING) {
                 return@setDelayRun
             }
-            mxPlayBtn.visibility = View.INVISIBLE
-            mxBottomLay.visibility = View.INVISIBLE
-            mxTopLay.visibility = View.INVISIBLE
+            mxPlayBtn.visibility = View.GONE
+            mxBottomLay.visibility = View.GONE
+            mxTopLay.visibility = View.GONE
         }
         timeTicket.setTicketRun(300) {
             if (!mxVideo.isShown) return@setTicketRun
@@ -184,7 +176,7 @@ class MXViewProvider(
             }
         }
 
-        mxPlayerRootLay.setOnTouchListener { _, motionEvent ->
+        mxVideo.setOnTouchListener { _, motionEvent ->
             if (mScreen == MXScreen.FULL && mState == MXState.PLAYING) {
                 // 全屏且正在播放才会触发触摸滑动
                 return@setOnTouchListener touchHelp.onTouch(motionEvent)
@@ -198,7 +190,7 @@ class MXViewProvider(
                     if (it == mxQuickSeekLay) {
                         it.visibility = View.VISIBLE
                     } else {
-                        it.visibility = View.INVISIBLE
+                        it.visibility = View.GONE
                     }
                 }
             }
@@ -218,7 +210,7 @@ class MXViewProvider(
             }
 
             override fun onEnd(percent: Float) {
-                mxQuickSeekLay.visibility = View.INVISIBLE
+                mxQuickSeekLay.visibility = View.GONE
                 if (!mxConfig.canSeekByUser || mState != MXState.PLAYING) return
 
                 val duration = mxVideo.getDuration()
@@ -365,7 +357,7 @@ class MXViewProvider(
                     if (it in arrayOf(mxPlaceImg, mxPlayBtn)) {
                         it.visibility = View.VISIBLE
                     } else {
-                        it.visibility = View.INVISIBLE
+                        it.visibility = View.GONE
                     }
                 }
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
@@ -375,7 +367,7 @@ class MXViewProvider(
                     if (it in arrayOf(mxPlaceImg, mxLoading)) {
                         it.visibility = View.VISIBLE
                     } else {
-                        it.visibility = View.INVISIBLE
+                        it.visibility = View.GONE
                     }
                 }
             }
@@ -384,7 +376,7 @@ class MXViewProvider(
                     if (it in arrayOf(mxLoading, mxPlaceImg)) {
                         it.visibility = View.VISIBLE
                     } else {
-                        it.visibility = View.INVISIBLE
+                        it.visibility = View.GONE
                     }
                 }
                 mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
@@ -394,7 +386,7 @@ class MXViewProvider(
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_pause)
                 allContentView.forEach {
                     if (it !in playingVisible) {
-                        it.visibility = View.INVISIBLE
+                        it.visibility = View.GONE
                     }
                 }
                 if (mxConfig.canSeekByUser) {
@@ -408,7 +400,7 @@ class MXViewProvider(
                     if (it in playingVisible) {
                         it.visibility = View.VISIBLE
                     } else {
-                        it.visibility = View.INVISIBLE
+                        it.visibility = View.GONE
                     }
                 }
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
@@ -421,7 +413,7 @@ class MXViewProvider(
                     if (it in arrayOf(mxPlaceImg, mxRetryLay, mxTopLay)) {
                         it.visibility = View.VISIBLE
                     } else {
-                        it.visibility = View.INVISIBLE
+                        it.visibility = View.GONE
                     }
                 }
             }
@@ -430,7 +422,7 @@ class MXViewProvider(
                     if (it in arrayOf(mxPlaceImg, mxReplayLay, mxTopLay)) {
                         it.visibility = View.VISIBLE
                     } else {
-                        it.visibility = View.INVISIBLE
+                        it.visibility = View.GONE
                     }
                 }
             }
@@ -439,7 +431,7 @@ class MXViewProvider(
     }
 
     private fun setPlayingControl(show: Boolean) {
-        playingVisible.forEach { it.visibility = if (show) View.VISIBLE else View.INVISIBLE }
-        mxBottomSeekProgress.visibility = if (show) View.INVISIBLE else View.VISIBLE
+        playingVisible.forEach { it.visibility = if (show) View.VISIBLE else View.GONE }
+        mxBottomSeekProgress.visibility = if (show) View.GONE else View.VISIBLE
     }
 }

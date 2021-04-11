@@ -2,6 +2,7 @@ package com.mx.video
 
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
@@ -66,6 +67,8 @@ abstract class MXVideo @JvmOverloads constructor(
 
     init {
         View.inflate(context, getLayoutId(), this)
+        isSoundEffectsEnabled = false
+        setBackgroundColor(Color.BLACK)
 
         viewProvider.initView()
         viewProvider.setState(MXState.IDLE)
@@ -190,7 +193,11 @@ abstract class MXVideo @JvmOverloads constructor(
 
     private fun addTextureView(player: IMXPlayer): MXTextureView {
         MXUtils.log("addTextureView")
-        viewProvider.mxSurfaceContainer.removeAllViews()
+        (0 until childCount).mapNotNull { getChildAt(it) }.forEach { view ->
+            if (view is MXTextureView) {
+                removeView(view)
+            }
+        }
         val textureView = MXTextureView(context.applicationContext)
         textureView.setVideoSize(mVideoWidth, mVideoHeight)
         textureView.setDisplayType(displayType)
@@ -199,7 +206,7 @@ abstract class MXVideo @JvmOverloads constructor(
         val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         layoutParams.gravity = Gravity.CENTER
 
-        viewProvider.mxSurfaceContainer.addView(textureView, layoutParams)
+        this.addView(textureView, 0, layoutParams)
         textureView.surfaceTextureListener = player
         this.textureView = textureView
         return textureView

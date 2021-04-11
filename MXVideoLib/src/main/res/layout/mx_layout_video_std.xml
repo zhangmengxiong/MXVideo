@@ -1,26 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mxPlayerRootLay"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:animateLayoutChanges="false"
-    android:background="@android:color/black"
-    android:soundEffectsEnabled="false">
+    android:layout_height="match_parent">
 
-    <FrameLayout
-        android:id="@+id/mxSurfaceContainer"
+    <com.mx.video.views.MXTextureView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:animateLayoutChanges="false"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:soundEffectsEnabled="false">
-
-        <com.mx.video.views.MXTextureView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-    </FrameLayout>
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
 
     <ProgressBar
         android:id="@+id/mxBottomSeekProgress"
@@ -315,4 +301,4 @@
 
     </LinearLayout>
 
-</FrameLayout>
+</merge>
