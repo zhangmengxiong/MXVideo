@@ -33,7 +33,7 @@
         android:progress="50"
         android:progressDrawable="@drawable/mx_bottom_progressbar"
         android:soundEffectsEnabled="false"
-        android:visibility="invisible" />
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/mxPlaceImg"
@@ -43,7 +43,6 @@
         android:scaleType="fitCenter"
         android:soundEffectsEnabled="false" />
 
-
     <ProgressBar
         android:id="@+id/mxLoading"
         android:layout_width="@dimen/mx_player_size_loading_width"
@@ -51,7 +50,7 @@
         android:layout_gravity="center"
         android:indeterminateDrawable="@drawable/mx_progress_loading"
         android:soundEffectsEnabled="false"
-        android:visibility="invisible" />
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/mxPlayBtn"
@@ -59,7 +58,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:soundEffectsEnabled="false"
-        android:visibility="invisible">
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/mxPlayPauseImg"
@@ -82,7 +81,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:soundEffectsEnabled="false"
-        android:visibility="invisible">
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/mxReturnBtn"
@@ -94,7 +93,7 @@
             android:soundEffectsEnabled="false"
             android:src="@drawable/mx_icon_return"
             android:tint="@color/mx_player_color_important"
-            android:visibility="invisible" />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/mxTitleTxv"
@@ -150,7 +149,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:soundEffectsEnabled="false"
-        android:visibility="invisible">
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/mxCurrentTimeTxv"
@@ -213,7 +212,7 @@
         android:paddingHorizontal="22dp"
         android:paddingVertical="12dp"
         android:soundEffectsEnabled="false"
-        android:visibility="invisible">
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
@@ -249,7 +248,7 @@
         android:paddingHorizontal="22dp"
         android:paddingVertical="12dp"
         android:soundEffectsEnabled="false"
-        android:visibility="invisible">
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="@dimen/mx_player_size_icon_width"
@@ -280,14 +279,12 @@
         android:orientation="horizontal"
         android:paddingHorizontal="22dp"
         android:paddingVertical="15dp"
-        android:soundEffectsEnabled="false"
-        android:visibility="invisible">
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/mxQuickSeekCurrentTxv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:soundEffectsEnabled="false"
             android:text="00:00"
             android:textColor="@color/mx_player_color_important"
             android:textSize="17sp"
@@ -297,7 +294,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="6dp"
-            android:soundEffectsEnabled="false"
+            android:alpha="0.6"
             android:text="/"
             android:textColor="@color/mx_player_color_important_alpha_a5"
             android:textSize="17sp"
@@ -308,12 +305,50 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:alpha="0.6"
-            android:soundEffectsEnabled="false"
             android:text="00:00"
             android:textColor="@color/mx_player_color_important_alpha_a5"
             android:textSize="17sp"
             android:textStyle="bold" />
+    </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/mxVolumeLightLay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/mx_bg_float_layout"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="22dp"
+        android:paddingVertical="15dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/mxVolumeLightTypeTxv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/mx_play_volume"
+            android:textColor="@color/mx_player_color_important_alpha_a5"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="6dp"
+            android:text="："
+            android:textColor="@color/mx_player_color_important_alpha_a5"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/mxVolumeLightTxv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="50%"
+            android:textColor="@color/mx_player_color_important"
+            android:textSize="17sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
 </FrameLayout>

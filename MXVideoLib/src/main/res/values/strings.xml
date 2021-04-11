@@ -7,4 +7,6 @@
     <string name="mx_play_wifi_dialog_continue">继续播放</string>
     <string name="mx_play_wifi_dialog_cancel">取消</string>
     <string name="mx_play_source_not_set">请设置播放地址！</string>
+    <string name="mx_play_volume">音量</string>
+    <string name="mx_play_brightness">亮度</string>
 </resources>

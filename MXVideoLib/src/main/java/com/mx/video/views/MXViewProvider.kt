@@ -5,6 +5,7 @@ import android.widget.*
 import com.mx.video.*
 import com.mx.video.utils.*
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 class MXViewProvider(
     private val mxVideo: MXVideo,
@@ -79,6 +80,15 @@ class MXViewProvider(
     private val mxQuickSeekLay: LinearLayout by lazy {
         mxVideo.findViewById(R.id.mxQuickSeekLay) ?: LinearLayout(mxVideo.context)
     }
+    private val mxVolumeLightLay: LinearLayout by lazy {
+        mxVideo.findViewById(R.id.mxVolumeLightLay) ?: LinearLayout(mxVideo.context)
+    }
+    val mxVolumeLightTypeTxv: TextView by lazy {
+        mxVideo.findViewById(R.id.mxVolumeLightTypeTxv) ?: TextView(mxVideo.context)
+    }
+    val mxVolumeLightTxv: TextView by lazy {
+        mxVideo.findViewById(R.id.mxVolumeLightTxv) ?: TextView(mxVideo.context)
+    }
     val mxQuickSeekCurrentTxv: TextView by lazy {
         mxVideo.findViewById(R.id.mxQuickSeekCurrentTxv) ?: TextView(mxVideo.context)
     }
@@ -100,7 +110,8 @@ class MXViewProvider(
         mxBottomLay,
         mxRetryLay,
         mxReplayLay,
-        mxQuickSeekLay
+        mxQuickSeekLay,
+        mxVolumeLightLay
     )
 
     /**
@@ -232,29 +243,32 @@ class MXViewProvider(
         })
 
         touchHelp.setVerticalRightTouchCall(object : MXTouchHelp.OnMXTouchListener() {
+            private var maxVolume = 0
+            private var startVolume = 0
             override fun onStart() {
-                mxQuickSeekLay.visibility = View.VISIBLE
-                val maxVolume = volumeHelp.getMaxVolume()
-                val curVolume = volumeHelp.getVolume()
-                mxQuickSeekCurrentTxv.text = curVolume.toString()
-                mxQuickSeekMaxTxv.text = maxVolume.toString()
+                mxVolumeLightLay.visibility = View.VISIBLE
+                maxVolume = volumeHelp.getMaxVolume()
+                startVolume = volumeHelp.getVolume()
+
+                mxVolumeLightTypeTxv.setText(R.string.mx_play_volume)
+                val percent = (startVolume * 100.0 / maxVolume.toDouble()).roundToInt()
+                mxVolumeLightTxv.text = "${percent}%"
             }
 
             override fun onTouchMove(percent: Float) {
                 MXUtils.log("percent = $percent")
-                val maxVolume = volumeHelp.getMaxVolume()
-                var targetVolume = volumeHelp.getVolume() + (maxVolume * percent).toInt()
+                var targetVolume = startVolume + (maxVolume * percent).toInt()
                 if (targetVolume < 0) targetVolume = 0
                 if (targetVolume > maxVolume) targetVolume = maxVolume
 
-                mxQuickSeekCurrentTxv.text = targetVolume.toString()
-                mxQuickSeekMaxTxv.text = maxVolume.toString()
+                volumeHelp.setVolume(targetVolume)
+                val percent = (targetVolume * 100.0 / maxVolume.toDouble()).roundToInt()
+                mxVolumeLightTxv.text = "${percent}%"
             }
 
             override fun onEnd(percent: Float) {
-                mxQuickSeekLay.visibility = View.GONE
-                val maxVolume = volumeHelp.getMaxVolume()
-                var targetVolume = volumeHelp.getVolume() + (maxVolume * percent).toInt()
+                mxVolumeLightLay.visibility = View.GONE
+                var targetVolume = startVolume + (maxVolume * percent).toInt()
                 if (targetVolume < 0) targetVolume = 0
                 if (targetVolume > maxVolume) targetVolume = maxVolume
 
@@ -262,31 +276,33 @@ class MXViewProvider(
             }
         })
         touchHelp.setVerticalLeftTouchCall(object : MXTouchHelp.OnMXTouchListener() {
+            private var maxBrightness = 0
+            private var startBrightness = 0
             override fun onStart() {
-                mxQuickSeekLay.visibility = View.VISIBLE
-                val maxBrightness = brightnessHelp.getMaxBrightness()
-                val curBrightness = brightnessHelp.getBrightness()
-                mxQuickSeekCurrentTxv.text = curBrightness.toString()
-                mxQuickSeekMaxTxv.text = maxBrightness.toString()
+                mxVolumeLightLay.visibility = View.VISIBLE
+                maxBrightness = brightnessHelp.getMaxBrightness()
+                startBrightness = brightnessHelp.getBrightness()
+
+                mxVolumeLightTypeTxv.setText(R.string.mx_play_brightness)
+                val percent = (startBrightness * 100.0 / maxBrightness.toDouble()).roundToInt()
+                mxVolumeLightTxv.text = "${percent}%"
             }
 
             override fun onTouchMove(percent: Float) {
                 MXUtils.log("percent = $percent")
                 val maxBrightness = brightnessHelp.getMaxBrightness()
-                var targetBrightness =
-                    brightnessHelp.getBrightness() + (maxBrightness * percent * 0.7).toInt()
+                var targetBrightness = startBrightness + (maxBrightness * percent * 0.7).toInt()
                 if (targetBrightness < 0) targetBrightness = 0
                 if (targetBrightness > maxBrightness) targetBrightness = maxBrightness
 
-                mxQuickSeekCurrentTxv.text = targetBrightness.toString()
-                mxQuickSeekMaxTxv.text = maxBrightness.toString()
+                brightnessHelp.setBrightness(targetBrightness)
+                val percent = (targetBrightness * 100.0 / maxBrightness.toDouble()).roundToInt()
+                mxVolumeLightTxv.text = "${percent}%"
             }
 
             override fun onEnd(percent: Float) {
-                mxQuickSeekLay.visibility = View.GONE
-                val maxBrightness = brightnessHelp.getMaxBrightness()
-                var targetBrightness =
-                    brightnessHelp.getBrightness() + (maxBrightness * percent * 0.7).toInt()
+                mxVolumeLightLay.visibility = View.GONE
+                var targetBrightness = startBrightness + (maxBrightness * percent * 0.7).toInt()
                 if (targetBrightness < 0) targetBrightness = 0
                 if (targetBrightness > maxBrightness) targetBrightness = maxBrightness
 
