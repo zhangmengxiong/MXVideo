@@ -67,8 +67,6 @@ abstract class MXVideo @JvmOverloads constructor(
 
     init {
         View.inflate(context, getLayoutId(), this)
-        isSoundEffectsEnabled = false
-        setBackgroundColor(Color.BLACK)
 
         viewProvider.initView()
         viewProvider.setState(MXState.IDLE)
@@ -193,11 +191,7 @@ abstract class MXVideo @JvmOverloads constructor(
 
     private fun addTextureView(player: IMXPlayer): MXTextureView {
         MXUtils.log("addTextureView")
-        (0 until childCount).mapNotNull { getChildAt(it) }.forEach { view ->
-            if (view is MXTextureView) {
-                removeView(view)
-            }
-        }
+        viewProvider.mxSurfaceContainer.removeAllViews()
         val textureView = MXTextureView(context.applicationContext)
         textureView.setVideoSize(mVideoWidth, mVideoHeight)
         textureView.setDisplayType(displayType)
@@ -206,7 +200,7 @@ abstract class MXVideo @JvmOverloads constructor(
         val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         layoutParams.gravity = Gravity.CENTER
 
-        this.addView(textureView, 0, layoutParams)
+        viewProvider.mxSurfaceContainer.addView(textureView, layoutParams)
         textureView.surfaceTextureListener = player
         this.textureView = textureView
         return textureView
@@ -290,6 +284,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 视频获得宽高
      */
     fun onPlayerVideoSizeChanged(width: Int, height: Int) {
+        if (width <= 0 || height <= 0) return
         MXUtils.log("onPlayerVideoSizeChanged $width x $height")
         mVideoWidth = width
         mVideoHeight = height
@@ -326,12 +321,28 @@ abstract class MXVideo @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        if (dimensionRatio > 0.0 && viewProvider.mScreen == MXScreen.NORMAL
-            && MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY
+        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
+        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+
+        if (dimensionRatio > 0.0
+            && viewProvider.mScreen == MXScreen.NORMAL
+            && widthMode == MeasureSpec.EXACTLY
         ) {
-            val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+            // 当外部设置固定宽高比，且非全屏时，调整测量高度
             val measureSpec = MeasureSpec.makeMeasureSpec(
                 (widthSize / dimensionRatio).toInt(),
+                MeasureSpec.EXACTLY
+            )
+            super.onMeasure(widthMeasureSpec, measureSpec)
+        } else if (mVideoWidth > 0 && mVideoHeight > 0
+            && viewProvider.mScreen == MXScreen.NORMAL
+            && widthMode == MeasureSpec.EXACTLY
+            && heightMode != MeasureSpec.EXACTLY
+        ) {
+            //  当视频宽高有数据，，且非全屏时，按照视频宽高比调整整个View的高度
+            val measureSpec = MeasureSpec.makeMeasureSpec(
+                (widthSize * mVideoHeight.toFloat() / mVideoWidth).toInt(),
                 MeasureSpec.EXACTLY
             )
             super.onMeasure(widthMeasureSpec, measureSpec)

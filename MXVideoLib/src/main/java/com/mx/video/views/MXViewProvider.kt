@@ -10,6 +10,7 @@ class MXViewProvider(
     private val mxVideo: MXVideo,
     private val mxConfig: MXConfig
 ) {
+
     val timeTicket = MXTicket()
     val timeDelay = MXDelay()
     val touchHelp by lazy { MXTouchHelp(mxVideo.context) }
@@ -17,6 +18,13 @@ class MXViewProvider(
     val brightnessHelp by lazy { MXBrightnessHelp(mxVideo.context) }
     var mState: MXState = MXState.IDLE
     var mScreen: MXScreen = MXScreen.NORMAL
+
+    private val mxPlayerRootLay: FrameLayout by lazy {
+        mxVideo.findViewById(R.id.mxPlayerRootLay) ?: FrameLayout(mxVideo.context)
+    }
+    val mxSurfaceContainer: FrameLayout by lazy {
+        mxVideo.findViewById(R.id.mxSurfaceContainer) ?: FrameLayout(mxVideo.context)
+    }
 
     val mxPlaceImg: ImageView by lazy {
         mxVideo.findViewById(R.id.mxPlaceImg) ?: ImageView(mxVideo.context)
@@ -122,7 +130,7 @@ class MXViewProvider(
                 mxVideo.startPlay()
             }
         }
-        mxVideo.setOnClickListener {
+        mxPlayerRootLay.setOnClickListener {
             if (mState == MXState.PAUSE) {
                 setPlayingControl(true)
                 timeDelay.stop()
@@ -176,7 +184,7 @@ class MXViewProvider(
             }
         }
 
-        mxVideo.setOnTouchListener { _, motionEvent ->
+        mxPlayerRootLay.setOnTouchListener { _, motionEvent ->
             if (mScreen == MXScreen.FULL && mState == MXState.PLAYING) {
                 // 全屏且正在播放才会触发触摸滑动
                 return@setOnTouchListener touchHelp.onTouch(motionEvent)
