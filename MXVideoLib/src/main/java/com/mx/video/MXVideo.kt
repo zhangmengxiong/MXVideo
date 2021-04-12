@@ -325,6 +325,7 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun onPlayerCompletion() {
         MXUtils.log("onPlayerCompletion")
+        currentSource?.playUri?.let { MXUtils.saveProgress(context, it, 0) }
         viewProvider.setState(MXState.COMPLETE)
         if (mxConfig.gotoNormalScreenWhenComplete && viewProvider.mScreen == MXScreen.FULL) {
             gotoNormalScreen()

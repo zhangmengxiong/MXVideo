@@ -16,7 +16,6 @@ import com.mx.video.MXVideoStd
 class SimpleVideoAdapt : BaseSimpleAdapt<String>() {
     init {
         list.addAll(ldjVideos)
-        list.shuffle()
     }
 
     override fun createItem(inflater: LayoutInflater, parent: ViewGroup, viewType: Int): View {
