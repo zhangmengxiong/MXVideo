@@ -33,7 +33,7 @@ class SimpleVideoAdapt : BaseSimpleAdapt<String>() {
         mxVideoStd.reset()
         mxVideoStd.setSource(
             MXPlaySource(Uri.parse(record), "" + position, isOnlineSource = true),
-            clazz = MXIJKPlayer::class.java, start = false
+            clazz = MXIJKPlayer::class.java
         )
     }
 

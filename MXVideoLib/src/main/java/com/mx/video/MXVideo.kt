@@ -62,6 +62,7 @@ abstract class MXVideo @JvmOverloads constructor(
     private var textureView: MXTextureView? = null // 当前TextureView
     private var displayType: MXScale = MXScale.CENTER_CROP
     private var seekWhenPlay: Int = 0
+    private var startPlayWhenPrepared: Boolean = false // 准备完成后直接播放
 
     private val mxConfig = MXConfig()
     private val videoListeners = ArrayList<MXVideoListener>()
@@ -111,12 +112,12 @@ abstract class MXVideo @JvmOverloads constructor(
      * @param source 播放源
      * @param clazz 播放器
      * @param start 是否立即播放
+     * @param preload 是否预加载
      */
     fun setSource(
         source: MXPlaySource,
         clazz: Class<out IMXPlayer>? = null,
-        seekTo: Int = 0,
-        start: Boolean = true
+        seekTo: Int = 0
     ) {
         stopPlay()
         currentSource = source
@@ -125,9 +126,6 @@ abstract class MXVideo @JvmOverloads constructor(
         seekWhenPlay = seekTo
         viewProvider.mxTitleTxv.text = source.title
         viewProvider.setState(MXState.NORMAL)
-        if (start) {
-            startVideo()
-        }
     }
 
     fun setTextureViewRotation(rotation: Int) {
@@ -162,12 +160,24 @@ abstract class MXVideo @JvmOverloads constructor(
         textureView?.setDisplayType(type)
     }
 
+    /**
+     * 开始构建播放流程，预加载完成后立即播放
+     */
     fun startPlay() {
+        startPlayWhenPrepared = true
         startVideo()
     }
 
     /**
-     * 开始播放
+     * 开始构建播放流程，在预加载完成后不立即播放
+     */
+    fun startPreload() {
+        startPlayWhenPrepared = false
+        startVideo()
+    }
+
+    /**
+     * 开始构建播放流程
      * 1：释放播放资源
      * 2：判断播放地址、播放器
      * 3：判断WiFi状态
@@ -231,9 +241,14 @@ abstract class MXVideo @JvmOverloads constructor(
     fun onPlayerPrepared() {
         MXUtils.log("onPlayerPrepared")
         val player = mxPlayer ?: return
-        viewProvider.setState(MXState.PREPARED)
-        player.start()
 
+        if (startPlayWhenPrepared) {
+            player.start()
+            viewProvider.setState(MXState.PLAYING)
+        } else {
+            viewProvider.setState(MXState.PREPARED)
+            startPlayWhenPrepared = true
+        }
         if (seekWhenPlay > 0) {
             player.seekTo(seekWhenPlay)
             seekWhenPlay = 0

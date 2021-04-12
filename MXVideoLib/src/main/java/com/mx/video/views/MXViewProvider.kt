@@ -133,7 +133,7 @@ class MXViewProvider(
                     player.pause()
                     setState(MXState.PAUSE)
                 }
-            } else if (mState == MXState.PAUSE) {
+            } else if (mState == MXState.PAUSE || mState == MXState.PREPARED) {
                 if (player != null) {
                     player.start()
                     setState(MXState.PLAYING)
@@ -414,7 +414,7 @@ class MXViewProvider(
             }
             MXState.PREPARED -> {
                 allContentView.forEach {
-                    if (it in arrayOf(mxLoading, mxPlaceImg)) {
+                    if (it in arrayOf(mxPlaceImg, mxPlayBtn)) {
                         it.visibility = View.VISIBLE
                     } else {
                         it.visibility = View.GONE
@@ -430,6 +430,8 @@ class MXViewProvider(
                         it.visibility = View.GONE
                     }
                 }
+                
+                mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
                 setPlayingControl(playingVisible.any { it.isShown })
 
                 timeTicket.start()

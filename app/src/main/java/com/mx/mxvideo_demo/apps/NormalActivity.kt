@@ -25,8 +25,9 @@ class NormalActivity : AppCompatActivity() {
                 MXPlaySource(
                     Uri.parse(ldjVideos.random()),
                     titles.random()
-                ), clazz = MXIJKPlayer::class.java, start = true
+                ), clazz = MXIJKPlayer::class.java
             )
+            mxVideoStd.startPlay()
         }
         randTo10SecPlay.setOnClickListener {
             Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
@@ -34,8 +35,19 @@ class NormalActivity : AppCompatActivity() {
                 MXPlaySource(
                     Uri.parse(ldjVideos.random()),
                     titles.random()
-                ), start = true, seekTo = 60
+                ), seekTo = 60
             )
+            mxVideoStd.startPlay()
+        }
+        preloadPlay.setOnClickListener {
+            Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
+            mxVideoStd.setSource(
+                MXPlaySource(
+                    Uri.parse(ldjVideos.random()),
+                    titles.random()
+                )
+            )
+            mxVideoStd.startPreload()
         }
         mxVideoStd.addOnVideoListener(object : MXVideoListener() {
             override fun onStateChange(state: MXState) {
@@ -51,20 +63,21 @@ class NormalActivity : AppCompatActivity() {
             when (checkedId) {
                 R.id.source16x9 -> {
                     mxVideoStd.setSource(
-                        MXPlaySource(Uri.parse(VIDEO_16x9), titles.random()), start = true
+                        MXPlaySource(Uri.parse(VIDEO_16x9), titles.random())
                     )
                 }
                 R.id.source4x3 -> {
                     mxVideoStd.setSource(
-                        MXPlaySource(Uri.parse(VIDEO_4x3), titles.random()), start = true
+                        MXPlaySource(Uri.parse(VIDEO_4x3), titles.random())
                     )
                 }
                 R.id.source9x16 -> {
                     mxVideoStd.setSource(
-                        MXPlaySource(Uri.parse(VIDEO_9x16), titles.random()), start = true
+                        MXPlaySource(Uri.parse(VIDEO_9x16), titles.random())
                     )
                 }
             }
+            mxVideoStd.startPlay()
         }
 
         fillTypeRG.setOnCheckedChangeListener { group, checkedId ->

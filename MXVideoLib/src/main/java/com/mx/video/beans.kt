@@ -72,7 +72,7 @@ enum class MXState : Serializable {
     PREPARING,
 
     /**
-     * 视频资源校验完成
+     * 视频资源校验完成，等待用户调用开始播放
      */
     PREPARED,
 
