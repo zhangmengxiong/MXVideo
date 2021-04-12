@@ -430,7 +430,7 @@ class MXViewProvider(
                         it.visibility = View.GONE
                     }
                 }
-                
+
                 mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
                 setPlayingControl(playingVisible.any { it.isShown })
 
