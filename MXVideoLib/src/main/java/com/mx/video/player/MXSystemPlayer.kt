@@ -62,7 +62,10 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
     override fun isPlaying(): Boolean {
         if (!isActive()) return false
-        return mediaPlayer?.isPlaying ?: false
+        if (mediaPlayer?.isPlaying == true) {
+            return true
+        }
+        return false
     }
 
     // 这里不需要处理未播放状态的快进快退，MXVideo会判断。

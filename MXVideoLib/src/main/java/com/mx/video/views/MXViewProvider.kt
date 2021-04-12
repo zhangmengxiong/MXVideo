@@ -447,7 +447,7 @@ class MXViewProvider(
                     }
                 }
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
-                mxSeekProgress.isEnabled = false
+//                mxSeekProgress.isEnabled = false
                 timeTicket.start()
                 timeDelay.stop()
             }

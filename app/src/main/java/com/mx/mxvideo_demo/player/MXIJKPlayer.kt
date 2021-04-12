@@ -6,6 +6,7 @@ import android.view.Surface
 import com.mx.video.MXPlaySource
 import com.mx.video.MXVideo
 import com.mx.video.player.IMXPlayer
+import com.mx.video.utils.MXUtils
 import tv.danmaku.ijk.media.player.IMediaPlayer
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
 
@@ -47,7 +48,11 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
             ////1为硬解 0为软解
             mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 0)
             mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", 1)
-            mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-handle-resolution-change", 1)
+            mediaPlayer.setOption(
+                IjkMediaPlayer.OPT_CATEGORY_PLAYER,
+                "mediacodec-handle-resolution-change",
+                1
+            )
             //使用opensles把文件从java层拷贝到native层
             mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 0)
             //跳帧处理（-1~120）。CPU处理慢时，进行跳帧处理，保证音视频同步
@@ -55,11 +60,19 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
             //0为一进入就播放,1为进入时不播放
             mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 0)
             ////域名检测
-            mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 0)
+            mediaPlayer.setOption(
+                IjkMediaPlayer.OPT_CATEGORY_FORMAT,
+                "http-detect-range-support",
+                0
+            )
             //设置是否开启环路过滤: 0开启，画面质量高，解码开销大，48关闭，画面质量差点，解码开销小
             mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48)
             //最大缓冲大小,单位kb
-            mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "max-buffer-size", 1024 * 1024)
+            mediaPlayer.setOption(
+                IjkMediaPlayer.OPT_CATEGORY_PLAYER,
+                "max-buffer-size",
+                1024 * 1024
+            )
             //某些视频在SeekTo的时候，会跳回到拖动前的位置，这是因为视频的关键帧的问题，通俗一点就是FFMPEG不兼容，视频压缩过于厉害，seek只支持关键帧，出现这个情况就是原始的视频文件中i 帧比较少
             mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "enable-accurate-seek", 1)
             //是否重连
@@ -221,6 +234,6 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
 
     override fun onVideoSizeChanged(p0: IMediaPlayer?, p1: Int, p2: Int, p3: Int, p4: Int) {
         if (!isActive()) return
-        runInMainThread { getMXVideo()?.onPlayerVideoSizeChanged(p3, p4) }
+        runInMainThread { getMXVideo()?.onPlayerVideoSizeChanged(p1, p2) }
     }
 }

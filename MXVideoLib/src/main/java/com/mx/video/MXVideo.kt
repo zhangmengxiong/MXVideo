@@ -141,7 +141,7 @@ abstract class MXVideo @JvmOverloads constructor(
     fun seekTo(seek: Int) {
         MXUtils.log("seekTo ${MXUtils.stringForTime(seek)}")
         val player = mxPlayer
-        if (player != null && player.isPlaying()) {
+        if (player != null && viewProvider.mState in arrayOf(MXState.PLAYING, MXState.PAUSE)) {
             player.seekTo(seek)
         } else {
             seekWhenPlay = seek
