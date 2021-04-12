@@ -331,7 +331,6 @@ abstract class MXVideo @JvmOverloads constructor(
         }
         mxPlayer?.release()
         MXUtils.findWindows(context)?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        Runtime.getRuntime().gc()
     }
 
     /**
