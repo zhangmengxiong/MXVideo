@@ -3,7 +3,6 @@ package com.mx.video.player
 import android.graphics.SurfaceTexture
 import android.media.AudioManager
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Build
 import android.view.Surface
 import com.mx.video.MXPlaySource
@@ -46,7 +45,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
             mediaPlayer.setDataSource(
                 MXVideo.getAppContext(),
-                Uri.parse(source.playUrl),
+                source.playUri,
                 source.headerMap
             )
 

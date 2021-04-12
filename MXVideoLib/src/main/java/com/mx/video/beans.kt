@@ -1,10 +1,11 @@
 package com.mx.video
 
+import android.net.Uri
 import android.view.ViewGroup
 import java.io.Serializable
 
 data class MXPlaySource(
-    val playUrl: String, // 播放源
+    val playUri: Uri, // 播放源
     val title: String = "", // 标题
     val headerMap: MutableMap<String, String> = HashMap(), // 请求头部
     val isOnlineSource: Boolean = true, // 是否在线资源
@@ -13,7 +14,7 @@ data class MXPlaySource(
 ) : Serializable {
     fun clone(): MXPlaySource {
         return MXPlaySource(
-            playUrl,
+            playUri,
             title,
             headerMap,
             isOnlineSource,

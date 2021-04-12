@@ -1,5 +1,6 @@
 package com.mx.mxvideo_demo.apps
 
+import android.net.Uri
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -22,7 +23,7 @@ class NormalActivity : AppCompatActivity() {
             Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
             mxVideoStd.setSource(
                 MXPlaySource(
-                    ldjVideos.random(),
+                    Uri.parse(ldjVideos.random()),
                     titles.random()
                 ), clazz = MXIJKPlayer::class.java, start = true
             )
@@ -31,7 +32,7 @@ class NormalActivity : AppCompatActivity() {
             Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
             mxVideoStd.setSource(
                 MXPlaySource(
-                    ldjVideos.random(),
+                    Uri.parse(ldjVideos.random()),
                     titles.random()
                 ), start = true, seekTo = 60
             )
@@ -50,17 +51,17 @@ class NormalActivity : AppCompatActivity() {
             when (checkedId) {
                 R.id.source16x9 -> {
                     mxVideoStd.setSource(
-                        MXPlaySource(VIDEO_16x9, titles.random()), start = true
+                        MXPlaySource(Uri.parse(VIDEO_16x9), titles.random()), start = true
                     )
                 }
                 R.id.source4x3 -> {
                     mxVideoStd.setSource(
-                        MXPlaySource(VIDEO_4x3, titles.random()), start = true
+                        MXPlaySource(Uri.parse(VIDEO_4x3), titles.random()), start = true
                     )
                 }
                 R.id.source9x16 -> {
                     mxVideoStd.setSource(
-                        MXPlaySource(VIDEO_9x16, titles.random()), start = true
+                        MXPlaySource(Uri.parse(VIDEO_9x16), titles.random()), start = true
                     )
                 }
             }

@@ -2,7 +2,6 @@ package com.mx.video
 
 import android.app.AlertDialog
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
@@ -177,7 +176,7 @@ abstract class MXVideo @JvmOverloads constructor(
     private fun startVideo() {
         playingVideo?.stopPlay()
         stopPlay()
-        MXUtils.log("startVideo ${currentSource?.playUrl}")
+        MXUtils.log("startVideo ${currentSource?.playUri}")
         val clazz = mxPlayerClass ?: return
         val source = currentSource ?: return
 

@@ -1,5 +1,6 @@
 package com.mx.mxvideo_demo.adapts
 
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +31,7 @@ class SimpleVideoAdapt : BaseSimpleAdapt<String>() {
 //            mxVideoStd.setDimensionRatio(16.0 / 9.0)
         mxVideoStd.resetVideoSize()
         mxVideoStd.setSource(
-            MXPlaySource(record, "" + position, isOnlineSource = true),
+            MXPlaySource(Uri.parse(record), "" + position, isOnlineSource = true),
             start = false
         )
     }
