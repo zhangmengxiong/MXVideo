@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.mx.mxvideo_demo.*
+import com.mx.mxvideo_demo.player.MXIJKPlayer
 import com.mx.video.MXPlaySource
 import com.mx.video.MXScale
 import com.mx.video.MXState
@@ -23,7 +24,7 @@ class NormalActivity : AppCompatActivity() {
                 MXPlaySource(
                     ldjVideos.random(),
                     titles.random()
-                ), start = true
+                ), clazz = MXIJKPlayer::class.java, start = true
             )
         }
         randTo10SecPlay.setOnClickListener {
