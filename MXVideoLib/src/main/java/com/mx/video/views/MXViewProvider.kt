@@ -430,9 +430,6 @@ class MXViewProvider(
                         it.visibility = View.GONE
                     }
                 }
-                if (mxConfig.canSeekByUser) {
-                    mxSeekProgress.isEnabled = true
-                }
                 setPlayingControl(playingVisible.any { it.isShown })
 
                 timeTicket.start()
@@ -447,7 +444,6 @@ class MXViewProvider(
                     }
                 }
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
-//                mxSeekProgress.isEnabled = false
                 timeTicket.start()
                 timeDelay.stop()
             }
