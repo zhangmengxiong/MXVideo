@@ -27,11 +27,25 @@ object MXUtils {
         }
     }
 
+    /**
+     * 清空所有播放进度
+     */
+    fun clearProgress(context: Context) {
+        val sp = context.getSharedPreferences(SP_KEY, Context.MODE_PRIVATE)
+        sp.edit().clear().apply()
+    }
+
+    /**
+     * 保存播放度条
+     */
     fun saveProgress(context: Context, uri: Uri, time: Int) {
         val sp = context.getSharedPreferences(SP_KEY, Context.MODE_PRIVATE)
         sp.edit().putInt(uri.toString().md5(), time).apply()
     }
 
+    /**
+     * 获取播放进度
+     */
     fun getProgress(context: Context, uri: Uri): Int {
         val sp = context.getSharedPreferences(SP_KEY, Context.MODE_PRIVATE)
         return sp.getInt(uri.toString().md5(), 0)
