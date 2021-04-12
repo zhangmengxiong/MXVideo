@@ -179,11 +179,7 @@ abstract class MXVideo @JvmOverloads constructor(
         currentSource = source
         mxPlayerClass = clazz ?: MXSystemPlayer::class.java
 
-        seekWhenPlay = when {
-            (seekTo > 0) -> seekTo
-            source.enableSaveProgress -> MXUtils.getProgress(context, source.playUri)
-            else -> 0
-        }
+        seekWhenPlay = seekTo
         viewProvider.mxTitleTxv.text = source.title
         viewProvider.setState(MXState.NORMAL)
     }
@@ -309,6 +305,12 @@ abstract class MXVideo @JvmOverloads constructor(
         if (seekWhenPlay > 0) {
             player.seekTo(seekWhenPlay)
             seekWhenPlay = 0
+        } else {
+            val source = currentSource
+            val seekTo = MXUtils.getProgress(context, source?.playUri)
+            if (source?.enableSaveProgress == true && seekTo > 0) {
+                player.seekTo(seekTo)
+            }
         }
     }
 
