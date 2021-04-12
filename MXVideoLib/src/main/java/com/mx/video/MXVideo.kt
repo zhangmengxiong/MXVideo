@@ -115,7 +115,7 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun setSource(
         source: MXPlaySource,
-        clazz: Class<*>? = null,
+        clazz: Class<out IMXPlayer>? = null,
         seekTo: Int = 0,
         start: Boolean = true
     ) {
