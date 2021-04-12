@@ -70,7 +70,7 @@ abstract class MXVideo @JvmOverloads constructor(
     init {
         View.inflate(context, getLayoutId(), this)
 
-        resetVideoSize()
+        reset()
         viewProvider.initView()
         viewProvider.setState(MXState.IDLE)
     }
@@ -124,7 +124,7 @@ abstract class MXVideo @JvmOverloads constructor(
 
         seekWhenPlay = seekTo
         viewProvider.mxTitleTxv.text = source.title
-        viewProvider.setState(MXState.IDLE)
+        viewProvider.setState(MXState.NORMAL)
         if (start) {
             startVideo()
         }
@@ -505,10 +505,18 @@ abstract class MXVideo @JvmOverloads constructor(
     }
 
     /**
-     * 重置视频宽高
+     * 重置播放器为 @link{MXState.IDLE} 状态
      */
-    fun resetVideoSize() {
+    fun reset() {
+        stopPlay()
+        mRotation = 0
         mVideoWidth = 1280
         mVideoHeight = 720
+        currentSource = null
+        mxPlayerClass = null
+        mxPlayer = null
+        seekWhenPlay = 0
+        viewProvider.setState(MXState.IDLE)
+        postInvalidate()
     }
 }

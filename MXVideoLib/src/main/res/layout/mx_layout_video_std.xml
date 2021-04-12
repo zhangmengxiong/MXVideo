@@ -43,15 +43,6 @@
         android:scaleType="fitCenter"
         android:soundEffectsEnabled="false" />
 
-    <ProgressBar
-        android:id="@+id/mxLoading"
-        android:layout_width="@dimen/mx_player_size_loading_width"
-        android:layout_height="@dimen/mx_player_size_loading_width"
-        android:layout_gravity="center"
-        android:indeterminateDrawable="@drawable/mx_progress_loading"
-        android:soundEffectsEnabled="false"
-        android:visibility="gone" />
-
     <LinearLayout
         android:id="@+id/mxPlayBtn"
         android:layout_width="wrap_content"
@@ -70,6 +61,15 @@
             android:src="@drawable/mx_icon_player_play"
             android:tint="@color/mx_player_color_important" />
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/mxLoading"
+        android:layout_width="@dimen/mx_player_size_loading_width"
+        android:layout_height="@dimen/mx_player_size_loading_width"
+        android:layout_gravity="center"
+        android:indeterminateDrawable="@drawable/mx_progress_loading"
+        android:soundEffectsEnabled="false"
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/mxTopLay"
@@ -347,5 +347,4 @@
             android:textSize="17sp"
             android:textStyle="bold" />
     </LinearLayout>
-
 </FrameLayout>
