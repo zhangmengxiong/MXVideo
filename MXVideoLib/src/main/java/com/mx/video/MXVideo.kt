@@ -213,10 +213,6 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun setDisplayType(type: MXScale) {
         this.displayType = type
-        viewProvider.mxPlaceImg.scaleType = when (type) {
-            MXScale.CENTER_CROP -> ImageView.ScaleType.FIT_CENTER
-            MXScale.FILL_PARENT -> ImageView.ScaleType.FIT_XY
-        }
         textureView?.setDisplayType(type)
     }
 
