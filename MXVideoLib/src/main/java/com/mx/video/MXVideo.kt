@@ -51,27 +51,79 @@ abstract class MXVideo @JvmOverloads constructor(
 
     abstract fun getLayoutId(): Int
 
+    /**
+     * 旋转角度
+     */
     private var mRotation: Int = 0
+
+    /**
+     * 视频宽度
+     */
     private var mVideoWidth: Int = 1280
+
+    /**
+     * 视频高度
+     */
     private var mVideoHeight: Int = 720
+
+    /**
+     * 当前View的ID，全局ID
+     */
     private val viewIndexId = videoViewIndex.incrementAndGet()
 
+    /**
+     * 播放源
+     */
     private var currentSource: MXPlaySource? = null
-    private var mxPlayerClass: Class<*>? = null
-    private var mxPlayer: IMXPlayer? = null
-    private var textureView: MXTextureView? = null // 当前TextureView
-    private var displayType: MXScale = MXScale.CENTER_CROP
-    private var seekWhenPlay: Int = 0
-    private var startPlayWhenPrepared: Boolean = false // 准备完成后直接播放
 
+    /**
+     * 播放器
+     */
+    private var mxPlayerClass: Class<*>? = null
+
+    /**
+     * 播放器实例
+     */
+    private var mxPlayer: IMXPlayer? = null
+
+    /**
+     * 当前TextureView
+     */
+    private var textureView: MXTextureView? = null
+
+    /**
+     * 视频缩放
+     */
+    private var displayType: MXScale = MXScale.CENTER_CROP
+
+    /**
+     * 跳转位置
+     */
+    private var seekWhenPlay: Int = 0
+
+    /**
+     * 预加载模式
+     */
+    private var isPreloading: Boolean = false
+
+    /**
+     * 共享配置
+     */
     private val mxConfig = MXConfig()
+
+    /**
+     * 监听器列表
+     */
     private val videoListeners = ArrayList<MXVideoListener>()
+
+    /**
+     * 视图处理器
+     */
     private val viewProvider by lazy { MXViewProvider(this, videoListeners, mxConfig) }
 
     init {
         View.inflate(context, getLayoutId(), this)
 
-        reset()
         viewProvider.initView()
         viewProvider.setState(MXState.IDLE)
     }
@@ -164,7 +216,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 开始构建播放流程，预加载完成后立即播放
      */
     fun startPlay() {
-        startPlayWhenPrepared = true
+        isPreloading = false
         startVideo()
     }
 
@@ -172,7 +224,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 开始构建播放流程，在预加载完成后不立即播放
      */
     fun startPreload() {
-        startPlayWhenPrepared = false
+        isPreloading = true
         startVideo()
     }
 
@@ -242,13 +294,13 @@ abstract class MXVideo @JvmOverloads constructor(
         MXUtils.log("onPlayerPrepared")
         val player = mxPlayer ?: return
 
-        if (startPlayWhenPrepared) {
+        if (!isPreloading) {
             player.start()
-            viewProvider.setState(MXState.PLAYING)
         } else {
             viewProvider.setState(MXState.PREPARED)
-            startPlayWhenPrepared = true
         }
+        isPreloading = false
+
         if (seekWhenPlay > 0) {
             player.seekTo(seekWhenPlay)
             seekWhenPlay = 0
