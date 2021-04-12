@@ -297,10 +297,10 @@ abstract class MXVideo @JvmOverloads constructor(
         if (isPreloading) {
             viewProvider.setState(MXState.PREPARED)
             player.pause()
+            isPreloading = false
         } else {
             player.start()
         }
-        isPreloading = false
 
         if (seekWhenPlay > 0) {
             player.seekTo(seekWhenPlay)
