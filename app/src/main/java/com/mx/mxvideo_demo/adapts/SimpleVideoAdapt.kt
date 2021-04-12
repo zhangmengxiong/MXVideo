@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.mx.mxvideo_demo.R
 import com.mx.mxvideo_demo.ldjVideos
+import com.mx.mxvideo_demo.player.MXIJKPlayer
 import com.mx.recycleview.base.BaseSimpleAdapt
 import com.mx.recycleview.base.BaseViewHolder
 import com.mx.video.MXPlaySource
@@ -32,7 +33,7 @@ class SimpleVideoAdapt : BaseSimpleAdapt<String>() {
         mxVideoStd.reset()
         mxVideoStd.setSource(
             MXPlaySource(Uri.parse(record), "" + position, isOnlineSource = true),
-            start = false
+            clazz = MXIJKPlayer::class.java, start = false
         )
     }
 

@@ -138,7 +138,7 @@ class MXViewProvider(
                     player.start()
                     setState(MXState.PLAYING)
                 }
-            } else if (mState == MXState.IDLE) {
+            } else if (mState == MXState.NORMAL) {
                 mxVideo.startPlay()
             }
         }

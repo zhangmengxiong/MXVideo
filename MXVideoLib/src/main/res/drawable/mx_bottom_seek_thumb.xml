@@ -9,8 +9,9 @@
     </item>
     <item android:state_enabled="false">
         <shape android:shape="rectangle">
-            <solid android:color="@android:color/transparent" />
-            <size android:width="0dp" android:height="0dp" />
+            <corners android:radius="2.5dp" />
+            <solid android:color="@color/mx_player_color_important_alpha_a5" />
+            <size android:width="10dp" android:height="15dp" />
         </shape>
     </item>
     <item>

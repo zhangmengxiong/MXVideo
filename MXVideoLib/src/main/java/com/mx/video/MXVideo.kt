@@ -324,7 +324,11 @@ abstract class MXVideo @JvmOverloads constructor(
         if (playingVideo == this) {
             playingVideo = null
         }
-        viewProvider.setState(MXState.IDLE)
+        if (currentSource == null) {
+            viewProvider.setState(MXState.IDLE)
+        } else {
+            viewProvider.setState(MXState.NORMAL)
+        }
     }
 
     /**
