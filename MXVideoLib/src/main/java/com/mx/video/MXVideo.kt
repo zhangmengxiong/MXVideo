@@ -134,6 +134,10 @@ abstract class MXVideo @JvmOverloads constructor(
         }
     }
 
+    fun clearListener() {
+        videoListeners.clear()
+    }
+
     fun removeOnVideoListener(listener: MXVideoListener) {
         videoListeners.remove(listener)
     }
@@ -238,9 +242,9 @@ abstract class MXVideo @JvmOverloads constructor(
     private fun startVideo() {
         playingVideo?.stopPlay()
         stopPlay()
-        MXUtils.log("startVideo ${currentSource?.playUri}")
         val clazz = mxPlayerClass ?: return
         val source = currentSource ?: return
+        MXUtils.log("startVideo ${source.playUri} player=${clazz.name}")
 
         val startRun = {
             val constructor = clazz.getConstructor()
@@ -296,6 +300,7 @@ abstract class MXVideo @JvmOverloads constructor(
 
         if (isPreloading) {
             viewProvider.setState(MXState.PREPARED)
+            player.pause()
         } else {
             player.start()
         }
@@ -402,9 +407,8 @@ abstract class MXVideo @JvmOverloads constructor(
      * 销毁Activity或Fragment时调用
      */
     fun release() {
-        MXUtils.log("release")
-        stopPlay()
         videoListeners.clear()
+        stopPlay()
     }
 
     private var dimensionRatio: Double = 0.0

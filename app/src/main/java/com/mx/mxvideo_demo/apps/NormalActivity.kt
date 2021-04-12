@@ -12,10 +12,14 @@ import com.mx.video.MXPlaySource
 import com.mx.video.MXScale
 import com.mx.video.MXState
 import com.mx.video.MXVideo
+import com.mx.video.player.IMXPlayer
+import com.mx.video.player.MXSystemPlayer
 import com.mx.video.utils.MXVideoListener
 import kotlinx.android.synthetic.main.activity_normal.*
 
 class NormalActivity : AppCompatActivity() {
+    private var playerClass: Class<out IMXPlayer>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_normal)
@@ -25,7 +29,7 @@ class NormalActivity : AppCompatActivity() {
                 MXPlaySource(
                     Uri.parse(ldjVideos.random()),
                     titles.random()
-                ), clazz = MXIJKPlayer::class.java
+                ), clazz = playerClass
             )
             mxVideoStd.startPlay()
         }
@@ -35,7 +39,7 @@ class NormalActivity : AppCompatActivity() {
                 MXPlaySource(
                     Uri.parse(ldjVideos.random()),
                     titles.random()
-                ), seekTo = 60
+                ), seekTo = 60, clazz = playerClass
             )
             mxVideoStd.startPlay()
         }
@@ -45,7 +49,7 @@ class NormalActivity : AppCompatActivity() {
                 MXPlaySource(
                     Uri.parse(ldjVideos.random()),
                     titles.random()
-                )
+                ), clazz = playerClass
             )
             mxVideoStd.startPreload()
         }
@@ -80,6 +84,16 @@ class NormalActivity : AppCompatActivity() {
             mxVideoStd.startPlay()
         }
 
+        playerRG.setOnCheckedChangeListener { group, checkedId ->
+            if (checkedId == R.id.playerIJK) {
+                playerClass = MXIJKPlayer::class.java
+            } else {
+                playerClass = MXSystemPlayer::class.java
+            }
+        }
+        playerRG.getChildAt(0)?.performClick()
+
+        centerCrop.performClick()
         fillTypeRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.fill) {
                 mxVideoStd.setDisplayType(MXScale.FILL_PARENT)
