@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.ActivityInfo
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.view.View
@@ -12,17 +13,49 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import com.mx.video.BuildConfig
+import java.security.MessageDigest
 import java.util.*
 
 object MXUtils {
+    private const val SP_KEY = "MX_SP_KEY"
     private val activityFlagMap = HashMap<String, Int?>()
     private val activityOrientationMap = HashMap<String, Int?>()
-    private var SYSTEM_UI: Int? = null
 
     fun log(any: Any) {
         if (BuildConfig.DEBUG) {
             Log.v(MXUtils::class.java.simpleName, any.toString())
         }
+    }
+
+    fun saveProgress(context: Context, uri: Uri, time: Int) {
+        val sp = context.getSharedPreferences(SP_KEY, Context.MODE_PRIVATE)
+        sp.edit().putInt(uri.toString().md5(), time).apply()
+    }
+
+    fun getProgress(context: Context, uri: Uri): Int {
+        val sp = context.getSharedPreferences(SP_KEY, Context.MODE_PRIVATE)
+        return sp.getInt(uri.toString().md5(), 0)
+    }
+
+    private fun String.md5(): String {
+        try {
+            val instance = MessageDigest.getInstance("MD5")//获取md5加密对象
+            val digest = instance.digest(this.toByteArray())//对字符串加密，返回字节数组
+            val sb = StringBuffer()
+            for (b in digest) {
+                val i: Int = b.toInt() and 0xff//获取低八位有效值
+                var hexString = Integer.toHexString(i)//将整数转化为16进制
+                if (hexString.length < 2) {
+                    hexString = "0$hexString"//如果是一位的话，补0
+                }
+                sb.append(hexString)
+            }
+            return sb.toString()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return ""
     }
 
     fun stringForTime(time: Int): String? {

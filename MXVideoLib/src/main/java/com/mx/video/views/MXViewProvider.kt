@@ -166,6 +166,7 @@ class MXViewProvider(
         }
         timeTicket.setTicketRun(300) {
             if (!mxVideo.isShown) return@setTicketRun
+            val source = mxVideo.getSource() ?: return@setTicketRun
             if (mState in arrayOf(
                     MXState.PREPARED,
                     MXState.PREPARING,
@@ -176,6 +177,10 @@ class MXViewProvider(
                 val duration = mxVideo.getDuration()
                 val position = mxVideo.getCurrentPosition()
                 if (preTicketTime != position) {
+                    if (duration > 0 && position > 0 && source.enableSaveProgress) {
+                        MXUtils.saveProgress(mxVideo.context, source.playUri, position)
+                    }
+
                     videoListeners.toList().forEach { listener ->
                         listener.onPlayTicket(position, duration)
                     }

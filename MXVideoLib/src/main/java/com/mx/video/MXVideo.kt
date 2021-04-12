@@ -179,7 +179,11 @@ abstract class MXVideo @JvmOverloads constructor(
         currentSource = source
         mxPlayerClass = clazz ?: MXSystemPlayer::class.java
 
-        seekWhenPlay = seekTo
+        seekWhenPlay = when {
+            (seekTo > 0) -> seekTo
+            source.enableSaveProgress -> MXUtils.getProgress(context, source.playUri)
+            else -> 0
+        }
         viewProvider.mxTitleTxv.text = source.title
         viewProvider.setState(MXState.NORMAL)
     }
@@ -388,7 +392,6 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun stopPlay() {
         MXUtils.log("stopPlay")
-//        viewProvider.mxSurfaceContainer.removeAllViews()
         val player = mxPlayer
         textureView = null
         mxPlayer = null

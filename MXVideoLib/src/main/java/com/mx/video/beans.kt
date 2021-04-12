@@ -37,7 +37,12 @@ data class MXPlaySource(
     /**
      * 是否循环播放，默认 = true
      */
-    val isLooping: Boolean = false
+    val isLooping: Boolean = false,
+
+    /**
+     * 是否存储、读取播放进度
+     */
+    val enableSaveProgress: Boolean = true
 
 ) : Serializable {
     fun clone(): MXPlaySource {
