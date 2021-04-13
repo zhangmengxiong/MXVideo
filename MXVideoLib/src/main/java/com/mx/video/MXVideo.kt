@@ -58,12 +58,12 @@ abstract class MXVideo @JvmOverloads constructor(
     /**
      * 视频宽度
      */
-    private var mVideoWidth: Int = 1280
+    private var mVideoWidth: Int = 16
 
     /**
      * 视频高度
      */
-    private var mVideoHeight: Int = 720
+    private var mVideoHeight: Int = 9
 
     /**
      * 当前View的ID，全局ID
@@ -292,15 +292,6 @@ abstract class MXVideo @JvmOverloads constructor(
     fun onPlayerPrepared() {
         MXUtils.log("onPlayerPrepared")
         val player = mxPlayer ?: return
-
-        if (isPreloading) {
-            viewProvider.setPlayState(MXState.PREPARED)
-            player.pause()
-            isPreloading = false
-        } else {
-            player.start()
-        }
-
         if (seekWhenPlay > 0) {
             player.seekTo(seekWhenPlay)
             seekWhenPlay = 0
@@ -310,6 +301,14 @@ abstract class MXVideo @JvmOverloads constructor(
             if (source?.enableSaveProgress == true && seekTo > 0) {
                 player.seekTo(seekTo)
             }
+        }
+
+        if (isPreloading) {
+            player.pause()
+            isPreloading = false
+            viewProvider.setPlayState(MXState.PREPARED)
+        } else {
+            player.start()
         }
     }
 
@@ -327,12 +326,12 @@ abstract class MXVideo @JvmOverloads constructor(
     fun onPlayerCompletion() {
         MXUtils.log("onPlayerCompletion")
         currentSource?.playUri?.let { MXUtils.saveProgress(context, it, 0) }
-        viewProvider.setPlayState(MXState.COMPLETE)
         if (mxConfig.gotoNormalScreenWhenComplete && viewProvider.mScreen == MXScreen.FULL) {
             gotoNormalScreen()
         }
         mxPlayer?.release()
         MXUtils.findWindows(context)?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        viewProvider.setPlayState(MXState.COMPLETE)
     }
 
     /**
@@ -369,7 +368,11 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun onPlayerBuffering(start: Boolean) {
         MXUtils.log("onPlayerBuffering:$start")
-        viewProvider.mxLoading.visibility = if (start) View.VISIBLE else View.GONE
+        viewProvider.setOnBuffering(start)
+
+        videoListeners.toList().forEach { listener ->
+            listener.onBuffering(start)
+        }
     }
 
     /**
@@ -377,11 +380,17 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun onPlayerVideoSizeChanged(width: Int, height: Int) {
         if (width <= 0 || height <= 0) return
+        if (width == mVideoWidth && height == mVideoHeight) return
+
         MXUtils.log("onPlayerVideoSizeChanged $width x $height")
         mVideoWidth = width
         mVideoHeight = height
         textureView?.setVideoSize(width, height)
         postInvalidate()
+
+        videoListeners.toList().forEach { listener ->
+            listener.onVideoSizeChange(width, height)
+        }
     }
 
     /**
@@ -466,7 +475,6 @@ abstract class MXVideo @JvmOverloads constructor(
                 || mVideoWidth > mVideoHeight)
         when (screen) {
             MXScreen.FULL -> {
-                viewProvider.mxFullscreenBtn.setImageResource(R.drawable.mx_icon_small_screen)
                 if (parentMap.containsKey(viewIndexId)) {
                     return
                 }
@@ -484,18 +492,17 @@ abstract class MXVideo @JvmOverloads constructor(
                 )
                 windows.addView(this, fullLayout)
 
-                viewProvider.setScreenState(MXScreen.FULL)
                 MXUtils.setFullScreen(context, willChangeOrientation)
+                viewProvider.setScreenState(MXScreen.FULL)
             }
             MXScreen.NORMAL -> {
-                viewProvider.mxFullscreenBtn.setImageResource(R.drawable.mx_icon_full_screen)
                 val parentItem = parentMap.remove(viewIndexId) ?: return
                 windows.removeView(this)
                 parentItem.parentViewGroup.removeViewAt(parentItem.index)
                 parentItem.parentViewGroup.addView(this, parentItem.index, parentItem.layoutParams)
 
-                viewProvider.setScreenState(MXScreen.NORMAL)
                 MXUtils.recoverFullScreen(context)
+                viewProvider.setScreenState(MXScreen.NORMAL)
             }
         }
     }

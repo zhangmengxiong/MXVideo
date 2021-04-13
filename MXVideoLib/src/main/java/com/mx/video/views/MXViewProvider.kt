@@ -499,6 +499,7 @@ class MXViewProvider(
 
     fun setScreenState(screen: MXScreen) {
         mxReturnBtn.visibility = if (screen == MXScreen.FULL) View.VISIBLE else View.GONE
+        mxFullscreenBtn.setImageResource(if (screen == MXScreen.FULL) R.drawable.mx_icon_small_screen else R.drawable.mx_icon_full_screen)
         val oldScreen = mScreen
         mScreen = screen
         if (oldScreen != screen) {
@@ -506,5 +507,9 @@ class MXViewProvider(
                 listener.onScreenChange(screen, this)
             }
         }
+    }
+
+    fun setOnBuffering(start: Boolean) {
+        mxLoading.visibility = if (start) View.VISIBLE else View.GONE
     }
 }

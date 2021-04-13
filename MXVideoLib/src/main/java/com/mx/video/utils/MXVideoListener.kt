@@ -21,4 +21,14 @@ open class MXVideoListener {
      * 屏幕状态监听
      */
     open fun onScreenChange(screen: MXScreen, provider: MXViewProvider) = Unit
+
+    /**
+     * 视频宽高监听
+     */
+    open fun onVideoSizeChange(width: Int, height: Int) = Unit
+
+    /**
+     * 加载缓冲监听
+     */
+    open fun onBuffering(inBuffer: Boolean) = Unit
 }
