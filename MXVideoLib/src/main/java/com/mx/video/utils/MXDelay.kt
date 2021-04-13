@@ -29,4 +29,10 @@ class MXDelay {
             runnable?.run()
         }
     }
+
+    fun release() {
+        mHandler.removeCallbacksAndMessages(null)
+        isTicketStart = false
+        runnable = null
+    }
 }

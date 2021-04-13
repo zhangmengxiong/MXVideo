@@ -119,4 +119,12 @@ class MXTouchHelp(private val context: Context) {
         open fun onTouchMove(percent: Float) {}
         open fun onEnd(percent: Float) {}
     }
+
+    fun release() {
+        onHorizontalListener = null
+        onVerticalLeftListener = null
+        onVerticalRightListener = null
+        viewWidth = 0
+        viewHeight = 0
+    }
 }

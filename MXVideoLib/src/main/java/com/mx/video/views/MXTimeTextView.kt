@@ -38,4 +38,8 @@ class MXTimeTextView @JvmOverloads constructor(
         mHandler.removeCallbacksAndMessages(null)
         super.onDetachedFromWindow()
     }
+
+    fun release() {
+        mHandler.removeCallbacksAndMessages(null)
+    }
 }

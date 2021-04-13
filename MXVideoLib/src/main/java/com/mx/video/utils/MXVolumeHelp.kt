@@ -31,4 +31,7 @@ class MXVolumeHelp(context: Context) {
         val volume = kotlin.math.max(kotlin.math.min(max, volume), 0)
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0)
     }
+
+    fun release() {
+    }
 }

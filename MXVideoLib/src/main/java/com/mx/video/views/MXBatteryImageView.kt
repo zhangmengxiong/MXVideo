@@ -47,10 +47,7 @@ class MXBatteryImageView @JvmOverloads constructor(
     }
 
     override fun onDetachedFromWindow() {
-        try {
-            context.unregisterReceiver(batteryReceiver)
-        } catch (e: Exception) {
-        }
+        release()
         super.onDetachedFromWindow()
     }
 
@@ -76,5 +73,12 @@ class MXBatteryImageView @JvmOverloads constructor(
             }
         }
         setImageResource(img)
+    }
+
+    fun release() {
+        try {
+            context.unregisterReceiver(batteryReceiver)
+        } catch (e: Exception) {
+        }
     }
 }

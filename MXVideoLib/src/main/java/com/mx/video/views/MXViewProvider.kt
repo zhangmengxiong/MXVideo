@@ -512,4 +512,22 @@ class MXViewProvider(
     fun setOnBuffering(start: Boolean) {
         mxLoading.visibility = if (start) View.VISIBLE else View.GONE
     }
+
+    fun release() {
+        val batteryImg = mxBatteryImg
+        if (batteryImg is MXBatteryImageView) {
+            batteryImg.release()
+        }
+
+        val timeTxv = mxSystemTimeTxv
+        if (timeTxv is MXTimeTextView) {
+            timeTxv.release()
+        }
+
+        brightnessHelp.release()
+        timeDelay.release()
+        timeTicket.release()
+        touchHelp.release()
+        volumeHelp.release()
+    }
 }

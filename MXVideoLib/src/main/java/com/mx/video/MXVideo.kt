@@ -596,9 +596,11 @@ abstract class MXVideo @JvmOverloads constructor(
 
     /**
      * 销毁Activity或Fragment时调用
+     * 销毁后，不能再次进行播放操作
      */
     fun release() {
         videoListeners.clear()
+        viewProvider.release()
         stopPlay()
     }
 }

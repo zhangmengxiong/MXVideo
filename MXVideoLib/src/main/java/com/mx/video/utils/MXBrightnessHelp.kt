@@ -37,4 +37,7 @@ class MXBrightnessHelp(val context: Context) {
         params.screenBrightness = brightness
         windows.attributes = params
     }
+
+    fun release() {
+    }
 }
