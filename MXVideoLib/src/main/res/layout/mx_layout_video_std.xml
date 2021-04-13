@@ -3,7 +3,6 @@
     android:id="@+id/mxPlayerRootLay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="false"
     android:background="@android:color/black"
     android:soundEffectsEnabled="false">
 
