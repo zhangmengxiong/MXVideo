@@ -30,12 +30,14 @@ data class MXPlaySource(
     val isOnlineSource: Boolean = true,
 
     /**
-     * 全屏时是否需要变更Activity方向,如果=null，会自动根据视频宽高来判断
+     * 全屏时是否需要变更Activity方向
+     * 如果 = null，会自动根据视频宽高来判断
+     * 默认 = null
      */
     val canChangeOrientationIfFullScreen: Boolean? = null,
 
     /**
-     * 是否循环播放，默认 = true
+     * 是否循环播放，默认 = false
      */
     val isLooping: Boolean = false,
 
@@ -52,7 +54,8 @@ data class MXPlaySource(
             headerMap,
             isOnlineSource,
             canChangeOrientationIfFullScreen,
-            isLooping
+            isLooping,
+            enableSaveProgress
         )
     }
 }
