@@ -404,14 +404,6 @@ abstract class MXVideo @JvmOverloads constructor(
         }
     }
 
-    /**
-     * 销毁Activity或Fragment时调用
-     */
-    fun release() {
-        videoListeners.clear()
-        stopPlay()
-    }
-
     private var dimensionRatio: Double = 0.0
 
     /**
@@ -594,5 +586,14 @@ abstract class MXVideo @JvmOverloads constructor(
         seekWhenPlay = 0
         viewProvider.setState(MXState.IDLE)
         postInvalidate()
+    }
+
+
+    /**
+     * 销毁Activity或Fragment时调用
+     */
+    fun release() {
+        videoListeners.clear()
+        stopPlay()
     }
 }

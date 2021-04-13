@@ -41,3 +41,23 @@ mxVideoStd.addOnVideoListener(object : MXVideoListener() {
             }
         })
 ```
+
+##### 5、全屏返回 + 释放资源
+```
+    // 这里MXVideo默认持有当前播放的MXVideoStd，可以使用静态方法操作退出全屏、释放资源等功能。
+    // 也可以直接使用viewId：mxVideoStd.isFullScreen()，mxVideoStd.isFullScreen()，mxVideoStd.release() 等方法。
+
+
+    override fun onBackPressed() {
+        if (MXVideo.isFullScreen()) {
+            MXVideo.gotoNormalScreen()
+            return
+        }
+        super.onBackPressed()
+    }
+
+    override fun onDestroy() {
+        MXVideo.releaseAll()
+        super.onDestroy()
+    }
+```
