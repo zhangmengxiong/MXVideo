@@ -4,6 +4,16 @@
 基于饺子播放器、kotlin编写的开源播放器
 最新版本：[![](https://jitpack.io/v/com.gitee.zhangmengxiong/MXVideo.svg)](https://jitpack.io/#com.gitee.zhangmengxiong/MXVideo)
 
+#### 功能特性
+- 1、单例播放，只能同时播放一个节目
+- 2、0代码集成全屏功能
+- 3、可以调节音量、屏幕亮度
+- 4、可以注册播放状态监听回调
+- 5、播放器高度可以根据视频高度自动调节
+- 6、播放器支持设置宽高比，设置宽高比后，高度固定。
+- 7、自动保存与恢复播放进度（可关闭）
+- 7、支持循环播放、全屏时竖屏模式、可关闭快进快退功能、可关闭全屏功能、可关闭非WiFi环境下流量提醒
+
 ##### 1、通过 dependence 引入MXVideo
 ```
     dependencies {
