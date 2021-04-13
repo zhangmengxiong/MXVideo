@@ -8,6 +8,7 @@ import com.bumptech.glide.Glide
 import com.mx.mxvideo_demo.R
 import com.mx.mxvideo_demo.ldjVideos
 import com.mx.mxvideo_demo.player.MXIJKPlayer
+import com.mx.mxvideo_demo.thumbnails
 import com.mx.recycleview.base.BaseSimpleAdapt
 import com.mx.recycleview.base.BaseViewHolder
 import com.mx.video.MXPlaySource
@@ -26,13 +27,12 @@ class SimpleVideoAdapt : BaseSimpleAdapt<String>() {
 
     override fun bindView(position: Int, itemView: View, record: String) {
         val mxVideoStd = itemView.findViewById<MXVideoStd>(R.id.mxVideoStd)
-        Glide.with(mxVideoStd.context).load(record)
+        Glide.with(mxVideoStd.context).load(thumbnails.random())
             .into(mxVideoStd.getPosterImageView())
 //            mxVideoStd.setDimensionRatio(16.0 / 9.0)
         mxVideoStd.reset()
         mxVideoStd.setSource(
-            MXPlaySource(Uri.parse(record), "" + position, isOnlineSource = true),
-            clazz = MXIJKPlayer::class.java
+            MXPlaySource(Uri.parse(record), "" + position, isOnlineSource = true)
         )
     }
 
