@@ -15,6 +15,7 @@ import com.mx.video.MXVideo
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
 import com.mx.video.utils.MXVideoListener
+import com.mx.video.views.MXViewProvider
 import kotlinx.android.synthetic.main.activity_normal.*
 
 class NormalActivity : AppCompatActivity() {
@@ -26,10 +27,8 @@ class NormalActivity : AppCompatActivity() {
         randPlay.setOnClickListener {
             Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
             mxVideoStd.setSource(
-                MXPlaySource(
-                    Uri.parse(ldjVideos.random()),
-                    titles.random()
-                ), clazz = playerClass
+                MXPlaySource(Uri.parse(ldjVideos.random()), titles.random()),
+                clazz = playerClass
             )
             mxVideoStd.startPlay()
         }
@@ -54,7 +53,7 @@ class NormalActivity : AppCompatActivity() {
             mxVideoStd.startPreload()
         }
         mxVideoStd.addOnVideoListener(object : MXVideoListener() {
-            override fun onStateChange(state: MXState) {
+            override fun onStateChange(state: MXState, provider: MXViewProvider) {
                 Toast.makeText(this@NormalActivity, state.name, Toast.LENGTH_SHORT).show()
             }
 
