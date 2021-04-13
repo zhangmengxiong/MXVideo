@@ -5,6 +5,7 @@
 最新版本：[![](https://jitpack.io/v/com.gitee.zhangmengxiong/MXVideo.svg)](https://jitpack.io/#com.gitee.zhangmengxiong/MXVideo)
 
 #### 功能特性
+- 任意播放器内核（包含IJK、阿里云等等）
 - 单例播放，只能同时播放一个节目
 - 0代码集成全屏功能
 - 可以调节音量、屏幕亮度
