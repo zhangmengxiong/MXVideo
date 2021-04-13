@@ -12,13 +12,15 @@ class MXViewProvider(
     private val videoListeners: ArrayList<MXVideoListener>,
     private val mxConfig: MXConfig
 ) {
-    val timeTicket = MXTicket()
-    val timeDelay = MXDelay()
-    val touchHelp by lazy { MXTouchHelp(mxVideo.context) }
-    val volumeHelp by lazy { MXVolumeHelp(mxVideo.context) }
-    val brightnessHelp by lazy { MXBrightnessHelp(mxVideo.context) }
+    private val timeTicket = MXTicket()
+    private val timeDelay = MXDelay()
+    private val touchHelp by lazy { MXTouchHelp(mxVideo.context) }
+    private val volumeHelp by lazy { MXVolumeHelp(mxVideo.context) }
+    private val brightnessHelp by lazy { MXBrightnessHelp(mxVideo.context) }
     var mState: MXState = MXState.IDLE
+        private set
     var mScreen: MXScreen = MXScreen.NORMAL
+        private set
     var preTicketTime: Int = -1
 
     private val mxPlayerRootLay: FrameLayout by lazy {
@@ -38,14 +40,14 @@ class MXViewProvider(
         mxVideo.findViewById(R.id.mxBottomSeekProgress) ?: ProgressBar(mxVideo.context)
     }
 
-    private val mxPlayBtn: LinearLayout by lazy {
+    val mxPlayBtn: LinearLayout by lazy {
         mxVideo.findViewById(R.id.mxPlayBtn) ?: LinearLayout(mxVideo.context)
     }
-    private val mxRetryLay: LinearLayout by lazy {
+    val mxRetryLay: LinearLayout by lazy {
         mxVideo.findViewById(R.id.mxRetryLay) ?: LinearLayout(mxVideo.context)
     }
 
-    private val mxPlayPauseImg: ImageView by lazy {
+    val mxPlayPauseImg: ImageView by lazy {
         mxVideo.findViewById(R.id.mxPlayPauseImg) ?: ImageView(mxVideo.context)
     }
     val mxReturnBtn: ImageView by lazy {
@@ -131,12 +133,12 @@ class MXViewProvider(
             if (mState == MXState.PLAYING) {
                 if (player != null) {
                     player.pause()
-                    setState(MXState.PAUSE)
+                    setPlayState(MXState.PAUSE)
                 }
             } else if (mState == MXState.PAUSE || mState == MXState.PREPARED) {
                 if (player != null) {
                     player.start()
-                    setState(MXState.PLAYING)
+                    setPlayState(MXState.PLAYING)
                 }
             } else if (mState == MXState.NORMAL) {
                 mxVideo.startPlay()
@@ -370,13 +372,7 @@ class MXViewProvider(
         }
     }
 
-    fun setState(state: MXState) {
-        if (mState != state) {
-            videoListeners.toList().forEach { listener ->
-                listener.onStateChange(state)
-            }
-        }
-        mState = state
+    fun setPlayState(state: MXState) {
         if (!mxConfig.canFullScreen) {
             mxFullscreenBtn.visibility = View.GONE
         } else {
@@ -478,6 +474,14 @@ class MXViewProvider(
             }
         }
         mxReturnBtn.visibility = if (mScreen == MXScreen.FULL) View.VISIBLE else View.GONE
+
+        val oldState = mState
+        mState = state
+        if (oldState != state) {
+            videoListeners.toList().forEach { listener ->
+                listener.onStateChange(state, this)
+            }
+        }
     }
 
     private fun setPlayingControl(show: Boolean) {
@@ -486,6 +490,21 @@ class MXViewProvider(
     }
 
     fun refreshStatus() {
-        setState(mState)
+        setPlayState(mState)
+    }
+
+    fun setViewSize(width: Int, height: Int) {
+        touchHelp.setSize(width, height)
+    }
+
+    fun setScreenState(screen: MXScreen) {
+        mxReturnBtn.visibility = if (screen == MXScreen.FULL) View.VISIBLE else View.GONE
+        val oldScreen = mScreen
+        mScreen = screen
+        if (oldScreen != screen) {
+            videoListeners.toList().forEach { listener ->
+                listener.onScreenChange(screen, this)
+            }
+        }
     }
 }

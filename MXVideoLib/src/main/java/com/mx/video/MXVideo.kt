@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
-import android.widget.ImageView
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
 import com.mx.video.utils.MXUtils
@@ -125,7 +124,7 @@ abstract class MXVideo @JvmOverloads constructor(
         View.inflate(context, getLayoutId(), this)
 
         viewProvider.initView()
-        viewProvider.setState(MXState.IDLE)
+        viewProvider.setPlayState(MXState.IDLE)
     }
 
     fun addOnVideoListener(listener: MXVideoListener) {
@@ -181,7 +180,7 @@ abstract class MXVideo @JvmOverloads constructor(
 
         seekWhenPlay = seekTo
         viewProvider.mxTitleTxv.text = source.title
-        viewProvider.setState(MXState.NORMAL)
+        viewProvider.setPlayState(MXState.NORMAL)
     }
 
     fun setTextureViewRotation(rotation: Int) {
@@ -251,7 +250,7 @@ abstract class MXVideo @JvmOverloads constructor(
             mxPlayer = player
             playingVideo = this
             MXUtils.findWindows(context)?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            viewProvider.setState(MXState.PREPARING)
+            viewProvider.setPlayState(MXState.PREPARING)
         }
         if (!MXUtils.isWifiConnected(context) && mxConfig.showTipIfNotWifi && !hasWifiDialogShow) {
             AlertDialog.Builder(context).apply {
@@ -295,7 +294,7 @@ abstract class MXVideo @JvmOverloads constructor(
         val player = mxPlayer ?: return
 
         if (isPreloading) {
-            viewProvider.setState(MXState.PREPARED)
+            viewProvider.setPlayState(MXState.PREPARED)
             player.pause()
             isPreloading = false
         } else {
@@ -319,7 +318,7 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun onPlayerStartPlay() {
         MXUtils.log("onPlayerStartPlay")
-        viewProvider.setState(MXState.PLAYING)
+        viewProvider.setPlayState(MXState.PLAYING)
     }
 
     /**
@@ -328,7 +327,7 @@ abstract class MXVideo @JvmOverloads constructor(
     fun onPlayerCompletion() {
         MXUtils.log("onPlayerCompletion")
         currentSource?.playUri?.let { MXUtils.saveProgress(context, it, 0) }
-        viewProvider.setState(MXState.COMPLETE)
+        viewProvider.setPlayState(MXState.COMPLETE)
         if (mxConfig.gotoNormalScreenWhenComplete && viewProvider.mScreen == MXScreen.FULL) {
             gotoNormalScreen()
         }
@@ -356,7 +355,7 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun onPlayerError(error: String?) {
         MXUtils.log("onPlayerError  $error")
-        viewProvider.setState(MXState.ERROR)
+        viewProvider.setPlayState(MXState.ERROR)
         if (mxConfig.gotoNormalScreenWhenError && viewProvider.mScreen == MXScreen.FULL) {
             gotoNormalScreen()
         }
@@ -398,9 +397,9 @@ abstract class MXVideo @JvmOverloads constructor(
             playingVideo = null
         }
         if (currentSource == null) {
-            viewProvider.setState(MXState.IDLE)
+            viewProvider.setPlayState(MXState.IDLE)
         } else {
-            viewProvider.setState(MXState.NORMAL)
+            viewProvider.setPlayState(MXState.NORMAL)
         }
     }
 
@@ -453,7 +452,7 @@ abstract class MXVideo @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        viewProvider.touchHelp.setSize(w, h)
+        viewProvider.setViewSize(w, h)
     }
 
     /**
@@ -484,8 +483,8 @@ abstract class MXVideo @JvmOverloads constructor(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
                 )
                 windows.addView(this, fullLayout)
-                viewProvider.mScreen = MXScreen.FULL
-                viewProvider.mxReturnBtn.visibility = View.VISIBLE
+
+                viewProvider.setScreenState(MXScreen.FULL)
                 MXUtils.setFullScreen(context, willChangeOrientation)
             }
             MXScreen.NORMAL -> {
@@ -495,8 +494,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 parentItem.parentViewGroup.removeViewAt(parentItem.index)
                 parentItem.parentViewGroup.addView(this, parentItem.index, parentItem.layoutParams)
 
-                viewProvider.mScreen = MXScreen.NORMAL
-                viewProvider.mxReturnBtn.visibility = View.GONE
+                viewProvider.setScreenState(MXScreen.NORMAL)
                 MXUtils.recoverFullScreen(context)
             }
         }
@@ -584,7 +582,7 @@ abstract class MXVideo @JvmOverloads constructor(
         mxPlayerClass = null
         mxPlayer = null
         seekWhenPlay = 0
-        viewProvider.setState(MXState.IDLE)
+        viewProvider.setPlayState(MXState.IDLE)
         postInvalidate()
     }
 
