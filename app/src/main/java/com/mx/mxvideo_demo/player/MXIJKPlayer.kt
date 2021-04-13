@@ -6,7 +6,6 @@ import android.view.Surface
 import com.mx.video.MXPlaySource
 import com.mx.video.MXVideo
 import com.mx.video.player.IMXPlayer
-import com.mx.video.utils.MXUtils
 import tv.danmaku.ijk.media.player.IMediaPlayer
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
 
@@ -17,7 +16,7 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
     var mediaPlayer: IjkMediaPlayer? = null
     var mPlaySource: MXPlaySource? = null
     override fun start() {
-        runInThread { mediaPlayer?.start() }
+        postInThread { mediaPlayer?.start() }
     }
 
     override fun setSource(source: MXPlaySource) {
@@ -30,8 +29,8 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
         val surface = mSurfaceTexture ?: return
         releaseNow()
         initHandler()
-        runInThread {
-            if (!isActive()) return@runInThread
+        postInThread {
+            if (!isActive()) return@postInThread
 
             val mediaPlayer = IjkMediaPlayer()
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
@@ -101,7 +100,7 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
 
     override fun pause() {
         if (!isActive()) return
-        runInThread { mediaPlayer?.pause() }
+        postInThread { mediaPlayer?.pause() }
     }
 
     override fun isPlaying(): Boolean {
@@ -120,7 +119,7 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
             return
         }
 
-        runInThread {
+        postInThread {
             mediaPlayer?.seekTo(time * 1000L)
         }
     }
@@ -132,7 +131,7 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
         this.mediaPlayer = null
         mSurfaceTexture = null
 
-        runInThread {
+        postInThread {
             mediaPlayer?.setSurface(null)
             mediaPlayer?.release()
             quitHandler()
@@ -189,27 +188,27 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
 
     override fun onPrepared(mp: IMediaPlayer?) {
         if (!isActive()) return
-        runInMainThread { getMXVideo()?.onPlayerPrepared() }
+        postInMainThread { getMXVideo()?.onPlayerPrepared() }
     }
 
     override fun onCompletion(mp: IMediaPlayer?) {
         if (!isActive()) return
-        runInMainThread { getMXVideo()?.onPlayerCompletion() }
+        postInMainThread { getMXVideo()?.onPlayerCompletion() }
     }
 
     override fun onBufferingUpdate(mp: IMediaPlayer?, percent: Int) {
         if (!isActive()) return
-        runInMainThread { getMXVideo()?.onPlayerBufferProgress(percent) }
+        postInMainThread { getMXVideo()?.onPlayerBufferProgress(percent) }
     }
 
     override fun onSeekComplete(mp: IMediaPlayer?) {
         if (!isActive()) return
-        runInMainThread { getMXVideo()?.onPlayerSeekComplete() }
+        postInMainThread { getMXVideo()?.onPlayerSeekComplete() }
     }
 
     override fun onError(mp: IMediaPlayer?, what: Int, extra: Int): Boolean {
         if (!isActive()) return true
-        runInMainThread {
+        postInMainThread {
             getMXVideo()?.onPlayerError("what = $what    extra = $extra")
             release()
         }
@@ -220,13 +219,13 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
         if (!isActive()) return true
         when (what) {
             IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> {
-                runInMainThread { getMXVideo()?.onPlayerStartPlay() }
+                postInMainThread { getMXVideo()?.onPlayerStartPlay() }
             }
             IMediaPlayer.MEDIA_INFO_BUFFERING_START -> {
-                runInMainThread { getMXVideo()?.onPlayerBuffering(true) }
+                postInMainThread { getMXVideo()?.onPlayerBuffering(true) }
             }
             IMediaPlayer.MEDIA_INFO_BUFFERING_END -> {
-                runInMainThread { getMXVideo()?.onPlayerBuffering(false) }
+                postInMainThread { getMXVideo()?.onPlayerBuffering(false) }
             }
         }
         return true
@@ -234,6 +233,6 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
 
     override fun onVideoSizeChanged(p0: IMediaPlayer?, p1: Int, p2: Int, p3: Int, p4: Int) {
         if (!isActive()) return
-        runInMainThread { getMXVideo()?.onPlayerVideoSizeChanged(p1, p2) }
+        postInMainThread { getMXVideo()?.onPlayerVideoSizeChanged(p1, p2) }
     }
 }

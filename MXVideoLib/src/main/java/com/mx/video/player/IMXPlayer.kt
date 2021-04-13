@@ -18,7 +18,7 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     private val isActive = AtomicBoolean(false)
 
     /**
-     * 播放器是否可用
+     * 播放器是否可用，当=FALSE时，这个Player已经被释放！
      */
     fun isActive() = isActive.get()
 
@@ -26,6 +26,9 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     var mThreadHandler: Handler? = null
     private var threadHandler: HandlerThread? = null
 
+    /**
+     * 初始化主线程Handler和Thread进程
+     */
     protected fun initHandler() {
         quitHandler()
         mHandler = Handler()
@@ -35,6 +38,9 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         this.threadHandler = threadHandler
     }
 
+    /**
+     * 取消所有运行方法，包含主线程和Thread线程
+     */
     protected fun quitHandler() {
         try {
             val th = threadHandler
@@ -51,18 +57,25 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         }
     }
 
-    fun runInMainThread(run: () -> Unit) {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            run.invoke()
-        } else {
-            mHandler?.post(run)
-        }
+    /**
+     * 在主线程中运行
+     * @param run 运行回调
+     */
+    fun postInMainThread(run: () -> Unit) {
+        mHandler?.post(run)
     }
 
-    fun runInThread(run: () -> Unit) {
+    /**
+     * 在Thread中运行
+     * @param run 运行回调
+     */
+    fun postInThread(run: () -> Unit) {
         mThreadHandler?.post(run)
     }
 
+    /**
+     * 获取MXVideo主体
+     */
     fun getMXVideo(): MXVideo? {
         return if (isActive.get()) mMxVideo else null
     }
@@ -73,14 +86,29 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         isActive.set(true)
     }
 
+    /**
+     * 当播放器prepare后调用，开始播放
+     */
     abstract fun start()
 
+    /**
+     * 设置播放源
+     */
     abstract fun setSource(source: MXPlaySource)
 
+    /**
+     * 开始加载视频
+     */
     abstract fun prepare()
 
+    /**
+     * 暂停
+     */
     abstract fun pause()
 
+    /**
+     * 是否正在播放中
+     */
     abstract fun isPlaying(): Boolean
 
     /**
@@ -108,6 +136,9 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      */
     abstract fun getDuration(): Int
 
+    /**
+     * 设置播放器音量
+     */
     abstract fun setVolume(leftVolume: Float, rightVolume: Float)
 
     /**
