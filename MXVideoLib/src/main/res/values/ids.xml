@@ -1,13 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <item name="mxPlayerRootLay" type="id" />
     <item name="mxSurfaceContainer" type="id" />
+    <item name="mxBottomSeekProgress" type="id" />
     <item name="mxPlaceImg" type="id" />
-    <item name="mxLoading" type="id" />
     <item name="mxPlayBtn" type="id" />
     <item name="mxPlayPauseImg" type="id" />
+    <item name="mxLoading" type="id" />
+    <item name="mxTopLay" type="id" />
+    <item name="mxReturnBtn" type="id" />
+    <item name="mxTitleTxv" type="id" />
+    <item name="mxBatteryImg" type="id" />
+    <item name="mxSystemTimeTxv" type="id" />
+    <item name="mxBottomLay" type="id" />
     <item name="mxCurrentTimeTxv" type="id" />
     <item name="mxSeekProgress" type="id" />
     <item name="mxTotalTimeTxv" type="id" />
     <item name="mxFullscreenBtn" type="id" />
-    <item name="mxBottomLay" type="id" />
+    <item name="mxRetryLay" type="id" />
+    <item name="mxReplayLay" type="id" />
+
+    <item name="mxQuickSeekLay" type="id" />
+    <item name="mxQuickSeekCurrentTxv" type="id" />
+    <item name="mxQuickSeekMaxTxv" type="id" />
+
+    <item name="mxVolumeLightLay" type="id" />
+    <item name="mxVolumeLightTypeTxv" type="id" />
+    <item name="mxVolumeLightTxv" type="id" />
 </resources>

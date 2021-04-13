@@ -48,7 +48,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:soundEffectsEnabled="false" >
+        android:soundEffectsEnabled="false">
 
         <ImageView
             android:id="@+id/mxPlayPauseImg"
@@ -221,7 +221,6 @@
             android:textSize="14sp" />
 
         <TextView
-            android:id="@+id/retry_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
