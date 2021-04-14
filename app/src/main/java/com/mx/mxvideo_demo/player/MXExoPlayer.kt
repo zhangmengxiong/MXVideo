@@ -1,19 +1,13 @@
 package com.mx.mxvideo_demo.player
 
 import android.graphics.SurfaceTexture
+import android.os.Looper
 import android.view.Surface
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.trackselection.TrackSelection
-import com.google.android.exoplayer2.trackselection.TrackSelector
-import com.google.android.exoplayer2.upstream.DataSource
-import com.google.android.exoplayer2.upstream.DefaultAllocator
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.util.Util
 import com.google.android.exoplayer2.video.VideoListener
 import com.mx.video.MXPlaySource
 import com.mx.video.player.IMXPlayer
@@ -40,18 +34,18 @@ class MXExoPlayer : IMXPlayer(), VideoListener, Player.EventListener {
         initHandler()
         postInThread {
             if (!isActive()) return@postInThread
-            val player = SimpleExoPlayer.Builder(context).build()
-            val dataSourceFactory: DataSource.Factory = DefaultDataSourceFactory(
-                context,
-                Util.getUserAgent(context, "app")
-            )
+            val player = SimpleExoPlayer.Builder(context).setLooper(Looper.getMainLooper()).build()
+            val sourceFactory = DefaultDataSourceFactory(context)
 
             val currUrl = source.playUri.toString()
             val videoSource: MediaSource = if (currUrl.contains(".m3u8")) {
-                HlsMediaSource.Factory(dataSourceFactory).createMediaSource(source.playUri)
+                HlsMediaSource.Factory(sourceFactory)
+                    .createMediaSource(MediaItem.fromUri(source.playUri))
             } else {
-                ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(source.playUri)
+                ProgressiveMediaSource.Factory(sourceFactory)
+                    .createMediaSource(MediaItem.fromUri(source.playUri))
             }
+            player.setThrowsWhenUsingWrongThread(false)
             player.addVideoListener(this)
             player.addListener(this)
             if (source.isLooping) {
@@ -59,10 +53,10 @@ class MXExoPlayer : IMXPlayer(), VideoListener, Player.EventListener {
             } else {
                 player.repeatMode = Player.REPEAT_MODE_OFF
             }
-            player.prepare(videoSource)
+            player.setMediaSource(videoSource)
             player.playWhenReady = false
             player.setVideoSurface(Surface(surface))
-
+            player.prepare()
             this.mediaPlayer = player
         }
     }
@@ -80,15 +74,14 @@ class MXExoPlayer : IMXPlayer(), VideoListener, Player.EventListener {
     // 这里不需要处理未播放状态的快进快退，MXVideo会判断。
     override fun seekTo(time: Int) {
         if (!isActive()) return
-        val duration = getDuration()
-        if (duration != 0 && time >= duration) {
-            // 如果直接跳转到结束位置，则直接complete
-            releaseNow()
-            getMXVideo()?.onPlayerCompletion()
-            return
-        }
-
         postInThread {
+            val duration = getDuration()
+            if (duration != 0 && time >= duration) {
+                // 如果直接跳转到结束位置，则直接complete
+                releaseNow()
+                getMXVideo()?.onPlayerCompletion()
+                return@postInThread
+            }
             mediaPlayer?.seekTo(time * 1000L)
         }
     }
