@@ -190,12 +190,7 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
                 }
                 preTicketTime = position
 
-                mxSeekProgress.max = duration
-                mxSeekProgress.progress = position
-                mxBottomSeekProgress.max = duration
-                mxBottomSeekProgress.progress = position
-                mxCurrentTimeTxv.text = MXUtils.stringForTime(position)
-                mxTotalTimeTxv.text = MXUtils.stringForTime(duration)
+                setViewProgress(position, duration)
             }
         }
 
@@ -403,6 +398,7 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
                     mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
                     timeTicket.stop()
                     timeDelay.stop()
+                    setViewProgress(0, 0)
                 }
                 MXState.PREPARING -> {
                     allContentView.forEach {
@@ -492,6 +488,15 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
         mxBottomSeekProgress.visibility = if (show) View.GONE else View.VISIBLE
     }
 
+    private fun setViewProgress(position: Int, duration: Int) {
+        mxSeekProgress.max = duration
+        mxSeekProgress.progress = position
+        mxBottomSeekProgress.max = duration
+        mxBottomSeekProgress.progress = position
+        mxCurrentTimeTxv.text = MXUtils.stringForTime(position)
+        mxTotalTimeTxv.text = MXUtils.stringForTime(duration)
+    }
+
     fun refreshStatus() {
         setPlayState(mState)
     }
@@ -526,6 +531,8 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
         if (timeTxv is MXTimeTextView) {
             timeTxv.release()
         }
+
+        mxSeekProgress.setOnSeekBarChangeListener(null)
 
         brightnessHelp.release()
         timeDelay.release()
