@@ -59,7 +59,7 @@ class NormalActivity : AppCompatActivity() {
             }
 
             override fun onPlayTicket(position: Int, duration: Int) {
-                println("MXUtils $position / $duration")
+                // println("MXUtils $position / $duration")
             }
         })
 
