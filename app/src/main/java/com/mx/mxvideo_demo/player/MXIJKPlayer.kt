@@ -8,11 +8,21 @@ import com.mx.video.MXVideo
 import com.mx.video.player.IMXPlayer
 import tv.danmaku.ijk.media.player.IMediaPlayer
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
+import java.lang.Exception
 
 class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
     IMediaPlayer.OnCompletionListener, IMediaPlayer.OnBufferingUpdateListener,
     IMediaPlayer.OnSeekCompleteListener, IMediaPlayer.OnErrorListener, IMediaPlayer.OnInfoListener,
     IMediaPlayer.OnVideoSizeChangedListener {
+    init {
+        try {
+            IjkMediaPlayer.loadLibrariesOnce(null)
+            IjkMediaPlayer.native_profileBegin("libijkplayer.so")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     var mediaPlayer: IjkMediaPlayer? = null
     var mPlaySource: MXPlaySource? = null
     override fun start() {
