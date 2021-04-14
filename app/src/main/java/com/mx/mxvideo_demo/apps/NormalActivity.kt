@@ -29,7 +29,7 @@ class NormalActivity : AppCompatActivity() {
             Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
             mxVideoStd.setSource(
                 MXPlaySource(Uri.parse(ldjVideos.random()), titles.random()),
-                clazz = playerClass
+                clazz = playerClass, seekTo = 0
             )
             mxVideoStd.startPlay()
         }
@@ -49,7 +49,7 @@ class NormalActivity : AppCompatActivity() {
                 MXPlaySource(
                     Uri.parse(ldjVideos.random()),
                     titles.random()
-                ), clazz = playerClass
+                ), clazz = playerClass, seekTo = 0
             )
             mxVideoStd.startPreload()
         }

@@ -251,7 +251,11 @@ abstract class MXVideo @JvmOverloads constructor(
         val player = mxPlayer ?: return
         val source = config.source ?: return
         if (config.seekWhenPlay >= 0) {
-            player.seekTo(config.seekWhenPlay)
+            if (config.seekWhenPlay > 0) {
+                // 0 = 是默认重头开始
+                // > 0 需要seekTo
+                player.seekTo(config.seekWhenPlay)
+            }
             config.seekWhenPlay = -1
         } else if (source.enableSaveProgress) {
             val seekTo = MXUtils.getProgress(context, source.playUri)
@@ -295,7 +299,6 @@ abstract class MXVideo @JvmOverloads constructor(
      * 视频快进完成
      */
     fun onPlayerSeekComplete() {
-        MXUtils.log("onPlayerSeekComplete")
     }
 
     /**

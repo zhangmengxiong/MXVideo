@@ -62,7 +62,12 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      * @param run 运行回调
      */
     fun postInMainThread(run: () -> Unit) {
-        mHandler?.post(run)
+        val handler = mHandler ?: return
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            run.invoke()
+        } else {
+            handler.post(run)
+        }
     }
 
     /**
