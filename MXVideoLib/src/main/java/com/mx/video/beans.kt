@@ -2,7 +2,9 @@ package com.mx.video
 
 import android.net.Uri
 import android.view.ViewGroup
+import com.mx.video.utils.MXVideoListener
 import java.io.Serializable
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * 播放源枚举
@@ -136,16 +138,101 @@ data class MXParentView(
  * 播放属性配置
  */
 class MXConfig : Serializable {
-    var canSeekByUser = true // 是否可以通过滑动或者进度条调整进度
-    var canFullScreen = true // 是否支持全屏
-    var canShowSystemTime = true // 是否显示右上角的时间
-    var canShowBatteryImg = true // 是否显示右上角的电量信息
-    var showTipIfNotWifi = true // 当非WiFi网络是是否弹出提示
-    var gotoNormalScreenWhenComplete = true // 播放完成时如果是全屏，则退出全屏
-    var gotoNormalScreenWhenError = true // 播放错误时如果是全屏，则退出全屏
-    var canPauseByUser = true // 播放时用户可以暂停  ~~为啥需要这个？
+    companion object {
+        private val videoViewIndex = AtomicInteger(1)
+    }
+
+    init {
+        reset()
+    }
+
+    /**
+     * 当前View的ID，全局ID
+     */
+    val viewIndexId = videoViewIndex.incrementAndGet()
+
+    /**
+     * 旋转角度
+     */
+    var mRotation: Int = 0
+
+    /**
+     * 视频宽度
+     */
+    var videoWidth: Int = 16
+
+    /**
+     * 视频高度
+     */
+    var videoHeight: Int = 9
+
+    /**
+     * 视频缩放
+     */
+    var displayType: MXScale = MXScale.CENTER_CROP
+
+    /**
+     * 跳转位置
+     */
+    var seekWhenPlay: Int = 0
+
+    /**
+     * 播放源
+     */
+    var source: MXPlaySource? = null
+
+    /**
+     * 是否可以通过滑动或者进度条调整进度
+     */
+    var canSeekByUser = true
+
+    /**
+     * 是否支持全屏
+     */
+    var canFullScreen = true
+
+    /**
+     * 是否显示右上角的时间
+     */
+    var canShowSystemTime = true
+
+    /**
+     * 是否显示右上角的电量信息
+     */
+    var canShowBatteryImg = true
+
+    /**
+     * 当非WiFi网络是是否弹出提示
+     */
+    var showTipIfNotWifi = true
+
+    /**
+     * 播放完成时如果是全屏，则退出全屏
+     */
+    var gotoNormalScreenWhenComplete = true
+
+    /**
+     * 播放错误时如果是全屏，则退出全屏
+     */
+    var gotoNormalScreenWhenError = true
+
+    /**
+     * 播放时用户可以暂停  ~~为啥需要这个？
+     */
+    var canPauseByUser = true
+
+    /**
+     * 监听器列表
+     */
+    val videoListeners = ArrayList<MXVideoListener>()
 
     fun cloneBy(target: MXConfig) {
+        mRotation = target.mRotation
+        videoWidth = target.videoWidth
+        videoHeight = target.videoHeight
+        displayType = target.displayType
+        seekWhenPlay = target.seekWhenPlay
+        source = target.source?.clone()
         canSeekByUser = target.canSeekByUser
         canFullScreen = target.canFullScreen
         canShowSystemTime = target.canShowSystemTime
@@ -154,5 +241,26 @@ class MXConfig : Serializable {
         gotoNormalScreenWhenComplete = target.gotoNormalScreenWhenComplete
         gotoNormalScreenWhenError = target.gotoNormalScreenWhenError
         canPauseByUser = target.canPauseByUser
+    }
+
+    fun reset() {
+        mRotation = 0
+        videoWidth = 16
+        videoHeight = 9
+        displayType = MXScale.CENTER_CROP
+        seekWhenPlay = 0
+        source = null
+        canSeekByUser = true
+        canFullScreen = true
+        canShowSystemTime = true
+        canShowBatteryImg = true
+        showTipIfNotWifi = true
+        gotoNormalScreenWhenComplete = true
+        gotoNormalScreenWhenError = true
+        canPauseByUser = true
+    }
+
+    fun release() {
+        videoListeners.clear()
     }
 }

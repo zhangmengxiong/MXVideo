@@ -8,11 +8,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-class MXViewProvider(
-    private val mxVideo: MXVideo,
-    private val videoListeners: ArrayList<MXVideoListener>,
-    private val mxConfig: MXConfig
-) {
+class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig) {
     private val timeTicket = MXTicket()
     private val timeDelay = MXDelay()
     private val touchHelp by lazy { MXTouchHelp(mxVideo.context) }
@@ -131,13 +127,13 @@ class MXViewProvider(
 
     fun initView() {
         mxPlayBtn.setOnClickListener {
-            if (mxVideo.getSource() == null) {
+            if (config.source == null) {
                 Toast.makeText(mxVideo.context, R.string.mx_play_source_not_set, Toast.LENGTH_SHORT)
                     .show()
                 return@setOnClickListener
             }
             val player = mxVideo.getPlayer()
-            if (mState == MXState.PLAYING && mxConfig.canPauseByUser) {
+            if (mState == MXState.PLAYING && config.canPauseByUser) {
                 if (player != null) {
                     player.pause()
                     setPlayState(MXState.PAUSE)
@@ -184,7 +180,7 @@ class MXViewProvider(
         }
         timeTicket.setTicketRun(300) {
             if (!mxVideo.isShown) return@setTicketRun
-            val source = mxVideo.getSource() ?: return@setTicketRun
+            val source = config.source ?: return@setTicketRun
             if (mxVideo.isPlaying()) {
                 val duration = mxVideo.getDuration()
                 val position = mxVideo.getCurrentPosition()
@@ -193,7 +189,7 @@ class MXViewProvider(
                         MXUtils.saveProgress(mxVideo.context, source.playUri, position)
                     }
 
-                    videoListeners.toList().forEach { listener ->
+                    config.videoListeners.toList().forEach { listener ->
                         listener.onPlayTicket(position, duration)
                     }
                 }
@@ -217,7 +213,7 @@ class MXViewProvider(
         }
         touchHelp.setHorizontalTouchCall(object : MXTouchHelp.OnMXTouchListener() {
             override fun onStart() {
-                if (!mxConfig.canSeekByUser || mState != MXState.PLAYING) return
+                if (!config.canSeekByUser || mState != MXState.PLAYING) return
                 allContentView.forEach {
                     if (it == mxQuickSeekLay) {
                         it.visibility = View.VISIBLE
@@ -228,7 +224,7 @@ class MXViewProvider(
             }
 
             override fun onTouchMove(percent: Float) {
-                if (!mxConfig.canSeekByUser || mState != MXState.PLAYING) return
+                if (!config.canSeekByUser || mState != MXState.PLAYING) return
 
                 MXUtils.log("percent = $percent")
                 val duration = mxVideo.getDuration()
@@ -243,7 +239,7 @@ class MXViewProvider(
 
             override fun onEnd(percent: Float) {
                 mxQuickSeekLay.visibility = View.GONE
-                if (!mxConfig.canSeekByUser || mState != MXState.PLAYING) return
+                if (!config.canSeekByUser || mState != MXState.PLAYING) return
 
                 val duration = mxVideo.getDuration()
                 var position = mxVideo.getCurrentPosition() + (min(120, duration) * percent).toInt()
@@ -346,14 +342,14 @@ class MXViewProvider(
     private val onSeekBarListener = object : SeekBar.OnSeekBarChangeListener {
         var progress = 0
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            if (fromUser && mxConfig.canSeekByUser) {
+            if (fromUser && config.canSeekByUser) {
                 this.progress = progress
                 mxCurrentTimeTxv.text = MXUtils.stringForTime(progress)
             }
         }
 
         override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            if (!mxConfig.canSeekByUser) return
+            if (!config.canSeekByUser) return
             MXUtils.log("onStartTrackingTouch")
             this.progress = seekBar?.progress ?: return
             timeDelay.stop()
@@ -361,7 +357,7 @@ class MXViewProvider(
         }
 
         override fun onStopTrackingTouch(seekBar: SeekBar?) {
-            if (!mxConfig.canSeekByUser) return
+            if (!config.canSeekByUser) return
             MXUtils.log("onStopTrackingTouch")
             mxCurrentTimeTxv.text = MXUtils.stringForTime(progress)
             mxVideo.seekTo(progress)
@@ -371,18 +367,18 @@ class MXViewProvider(
     }
 
     fun setPlayState(state: MXState) {
-        if (!mxConfig.canFullScreen) {
+        if (!config.canFullScreen) {
             mxFullscreenBtn.visibility = View.GONE
         } else {
             mxFullscreenBtn.visibility = View.VISIBLE
         }
-        mxSeekProgress.isEnabled = mxConfig.canSeekByUser
-        if (!mxConfig.canShowSystemTime) {
+        mxSeekProgress.isEnabled = config.canSeekByUser
+        if (!config.canShowSystemTime) {
             mxSystemTimeTxv.visibility = View.GONE
         } else {
             mxSystemTimeTxv.visibility = View.VISIBLE
         }
-        if (!mxConfig.canShowBatteryImg) {
+        if (!config.canShowBatteryImg) {
             mxBatteryImg.visibility = View.GONE
         } else {
             mxBatteryImg.visibility = View.VISIBLE
@@ -490,7 +486,7 @@ class MXViewProvider(
         val oldState = mState
         mState = state
         if (oldState != state) {
-            videoListeners.toList().forEach { listener ->
+            config.videoListeners.toList().forEach { listener ->
                 listener.onStateChange(state, this)
             }
         }
@@ -515,7 +511,7 @@ class MXViewProvider(
         val oldScreen = mScreen
         mScreen = screen
         if (oldScreen != screen) {
-            videoListeners.toList().forEach { listener ->
+            config.videoListeners.toList().forEach { listener ->
                 listener.onScreenChange(screen, this)
             }
         }

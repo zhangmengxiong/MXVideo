@@ -11,14 +11,12 @@ import com.mx.video.utils.MXUtils
 import com.mx.video.utils.MXVideoListener
 import com.mx.video.views.MXTextureView
 import com.mx.video.views.MXViewProvider
-import java.util.concurrent.atomic.AtomicInteger
 
 abstract class MXVideo @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
     companion object {
         private var hasWifiDialogShow = false
-        private val videoViewIndex = AtomicInteger(1)
         private val parentMap = HashMap<Int, MXParentView>()
         var mContext: Context? = null
         fun getAppContext() = mContext!!
@@ -48,31 +46,6 @@ abstract class MXVideo @JvmOverloads constructor(
     abstract fun getLayoutId(): Int
 
     /**
-     * 旋转角度
-     */
-    private var mRotation: Int = 0
-
-    /**
-     * 视频宽度
-     */
-    private var mVideoWidth: Int = 16
-
-    /**
-     * 视频高度
-     */
-    private var mVideoHeight: Int = 9
-
-    /**
-     * 当前View的ID，全局ID
-     */
-    private val viewIndexId = videoViewIndex.incrementAndGet()
-
-    /**
-     * 播放源
-     */
-    private var currentSource: MXPlaySource? = null
-
-    /**
      * 播放器
      */
     private var mxPlayerClass: Class<*>? = null
@@ -88,29 +61,14 @@ abstract class MXVideo @JvmOverloads constructor(
     private var textureView: MXTextureView? = null
 
     /**
-     * 视频缩放
-     */
-    private var displayType: MXScale = MXScale.CENTER_CROP
-
-    /**
-     * 跳转位置
-     */
-    private var seekWhenPlay: Int = 0
-
-    /**
      * 共享配置
      */
-    private val mxConfig = MXConfig()
-
-    /**
-     * 监听器列表
-     */
-    private val videoListeners = ArrayList<MXVideoListener>()
+    private val config = MXConfig()
 
     /**
      * 视图处理器
      */
-    private val viewProvider by lazy { MXViewProvider(this, videoListeners, mxConfig) }
+    private val viewProvider by lazy { MXViewProvider(this, config) }
 
     init {
         View.inflate(context, getLayoutId(), this)
@@ -120,17 +78,17 @@ abstract class MXVideo @JvmOverloads constructor(
     }
 
     fun addOnVideoListener(listener: MXVideoListener) {
-        if (!videoListeners.contains(listener)) {
-            videoListeners.add(listener)
+        if (!config.videoListeners.contains(listener)) {
+            config.videoListeners.add(listener)
         }
     }
 
     fun clearListener() {
-        videoListeners.clear()
+        config.videoListeners.clear()
     }
 
     fun removeOnVideoListener(listener: MXVideoListener) {
-        videoListeners.remove(listener)
+        config.videoListeners.remove(listener)
     }
 
     /**
@@ -141,12 +99,7 @@ abstract class MXVideo @JvmOverloads constructor(
     /**
      * 获取Config
      */
-    fun getConfig() = mxConfig
-
-    /**
-     * 获取当前播放源
-     */
-    fun getSource() = currentSource
+    fun getConfig() = config
 
     /**
      * 获取播放器
@@ -162,16 +115,16 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun setSource(source: MXPlaySource, clazz: Class<out IMXPlayer>? = null, seekTo: Int = 0) {
         stopPlay()
-        currentSource = source
+        config.source = source
         mxPlayerClass = clazz
 
-        seekWhenPlay = seekTo
+        config.seekWhenPlay = seekTo
         viewProvider.mxTitleTxv.text = source.title
         viewProvider.setPlayState(MXState.NORMAL)
     }
 
     fun setTextureViewRotation(rotation: Int) {
-        mRotation = rotation
+        config.mRotation = rotation
         textureView?.rotation = rotation.toFloat()
     }
 
@@ -184,7 +137,7 @@ abstract class MXVideo @JvmOverloads constructor(
         if (player != null && viewProvider.mState in arrayOf(MXState.PLAYING, MXState.PAUSE)) {
             player.seekTo(seek)
         } else {
-            seekWhenPlay = seek
+            config.seekWhenPlay = seek
         }
     }
 
@@ -194,7 +147,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * MXScale.CENTER_CROP  根据视频宽高自适应
      */
     fun setDisplayType(type: MXScale) {
-        this.displayType = type
+        config.displayType = type
         textureView?.setDisplayType(type)
     }
 
@@ -226,7 +179,7 @@ abstract class MXVideo @JvmOverloads constructor(
     private fun startVideo() {
         playingVideo?.stopPlay()
         val clazz = mxPlayerClass ?: MXSystemPlayer::class.java
-        val source = currentSource ?: return
+        val source = config.source ?: return
         MXUtils.log("startVideo ${source.playUri} player=${clazz.name}")
 
         val startRun = {
@@ -240,7 +193,7 @@ abstract class MXVideo @JvmOverloads constructor(
             MXUtils.findWindows(context)?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             viewProvider.setPlayState(MXState.PREPARING)
         }
-        if (!MXUtils.isWifiConnected(context) && mxConfig.showTipIfNotWifi && !hasWifiDialogShow) {
+        if (!MXUtils.isWifiConnected(context) && config.showTipIfNotWifi && !hasWifiDialogShow) {
             AlertDialog.Builder(context).apply {
                 setMessage(R.string.mx_play_wifi_notify)
                 setPositiveButton(context.getString(R.string.mx_play_wifi_dialog_continue)) { _, _ ->
@@ -261,9 +214,9 @@ abstract class MXVideo @JvmOverloads constructor(
         MXUtils.log("addTextureView")
         viewProvider.mxSurfaceContainer.removeAllViews()
         val textureView = MXTextureView(context.applicationContext)
-        textureView.setVideoSize(mVideoWidth, mVideoHeight)
-        textureView.setDisplayType(displayType)
-        textureView.rotation = mRotation.toFloat()
+        textureView.setVideoSize(config.videoWidth, config.videoHeight)
+        textureView.setDisplayType(config.displayType)
+        textureView.rotation = config.mRotation.toFloat()
 
         val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         layoutParams.gravity = Gravity.CENTER
@@ -296,10 +249,10 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun seekBeforePlay() {
         val player = mxPlayer ?: return
-        val source = currentSource ?: return
-        if (seekWhenPlay > 0) {
-            player.seekTo(seekWhenPlay)
-            seekWhenPlay = 0
+        val source = config.source ?: return
+        if (config.seekWhenPlay > 0) {
+            player.seekTo(config.seekWhenPlay)
+            config.seekWhenPlay = 0
         } else if (source.enableSaveProgress) {
             val seekTo = MXUtils.getProgress(context, source.playUri)
             if (seekTo > 0) {
@@ -321,8 +274,8 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun onPlayerCompletion() {
         MXUtils.log("onPlayerCompletion")
-        currentSource?.playUri?.let { MXUtils.saveProgress(context, it, 0) }
-        if (mxConfig.gotoNormalScreenWhenComplete && viewProvider.mScreen == MXScreen.FULL) {
+        config.source?.playUri?.let { MXUtils.saveProgress(context, it, 0) }
+        if (config.gotoNormalScreenWhenComplete && viewProvider.mScreen == MXScreen.FULL) {
             gotoNormalScreen()
         }
         mxPlayer?.release()
@@ -350,8 +303,15 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun onPlayerError(error: String?) {
         MXUtils.log("onPlayerError  $error")
+        if (viewProvider.isPreloading.get()) {
+            // 预加载失败！
+            viewProvider.isPreloading.set(false)
+            stopPlay()
+            viewProvider.setPlayState(MXState.NORMAL)
+            return
+        }
         viewProvider.setPlayState(MXState.ERROR)
-        if (mxConfig.gotoNormalScreenWhenError && viewProvider.mScreen == MXScreen.FULL) {
+        if (config.gotoNormalScreenWhenError && viewProvider.mScreen == MXScreen.FULL) {
             gotoNormalScreen()
         }
     }
@@ -366,7 +326,7 @@ abstract class MXVideo @JvmOverloads constructor(
         MXUtils.log("onPlayerBuffering:$start")
         viewProvider.setOnBuffering(start)
 
-        videoListeners.toList().forEach { listener ->
+        config.videoListeners.toList().forEach { listener ->
             listener.onBuffering(start)
         }
     }
@@ -376,15 +336,15 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun onPlayerVideoSizeChanged(width: Int, height: Int) {
         if (width <= 0 || height <= 0) return
-        if (width == mVideoWidth && height == mVideoHeight) return
+        if (width == config.videoWidth && height == config.videoHeight) return
 
         MXUtils.log("onPlayerVideoSizeChanged $width x $height")
-        mVideoWidth = width
-        mVideoHeight = height
+        config.videoWidth = width
+        config.videoHeight = height
         textureView?.setVideoSize(width, height)
         postInvalidate()
 
-        videoListeners.toList().forEach { listener ->
+        config.videoListeners.toList().forEach { listener ->
             listener.onVideoSizeChange(width, height)
         }
     }
@@ -401,7 +361,7 @@ abstract class MXVideo @JvmOverloads constructor(
         if (playingVideo == this) {
             playingVideo = null
         }
-        if (currentSource == null) {
+        if (config.source == null) {
             viewProvider.setPlayState(MXState.IDLE)
         } else {
             viewProvider.setPlayState(MXState.NORMAL)
@@ -438,14 +398,14 @@ abstract class MXVideo @JvmOverloads constructor(
             return
         }
 
-        if (mVideoWidth > 0 && mVideoHeight > 0
+        if (config.videoWidth > 0 && config.videoHeight > 0
             && viewProvider.mScreen == MXScreen.NORMAL
             && widthMode == MeasureSpec.EXACTLY
             && heightMode != MeasureSpec.EXACTLY
         ) {
             //  当视频宽高有数据，，且非全屏时，按照视频宽高比调整整个View的高度，默认视频宽高比= 1280 x 720
             val measureSpec = MeasureSpec.makeMeasureSpec(
-                (widthSize * mVideoHeight.toFloat() / mVideoWidth).toInt(),
+                (widthSize * config.videoHeight.toFloat() / config.videoWidth).toInt(),
                 MeasureSpec.EXACTLY
             )
             super.onMeasure(widthMeasureSpec, measureSpec)
@@ -464,14 +424,14 @@ abstract class MXVideo @JvmOverloads constructor(
      * 切换全屏、小屏显示
      */
     private fun switchToScreen(screen: MXScreen) {
-        if (!mxConfig.canFullScreen) return
+        if (!config.canFullScreen) return
         val windows = MXUtils.findWindowsDecorView(context) ?: return
         if (viewProvider.mScreen == screen) return
-        val willChangeOrientation = (currentSource?.canChangeOrientationIfFullScreen == true
-                || mVideoWidth > mVideoHeight)
+        val willChangeOrientation = (config.source?.canChangeOrientationIfFullScreen == true
+                || config.videoWidth > config.videoHeight)
         when (screen) {
             MXScreen.FULL -> {
-                if (parentMap.containsKey(viewIndexId)) {
+                if (parentMap.containsKey(config.viewIndexId)) {
                     return
                 }
                 val parent = (parent as ViewGroup?) ?: return
@@ -481,7 +441,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 )
                 parent.removeView(this)
                 cloneMeToLayout(item)
-                parentMap[viewIndexId] = item
+                parentMap[config.viewIndexId] = item
 
                 val fullLayout = LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
@@ -492,7 +452,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 viewProvider.setScreenState(MXScreen.FULL)
             }
             MXScreen.NORMAL -> {
-                val parentItem = parentMap.remove(viewIndexId) ?: return
+                val parentItem = parentMap.remove(config.viewIndexId) ?: return
                 windows.removeView(this)
                 parentItem.parentViewGroup.removeViewAt(parentItem.index)
                 parentItem.parentViewGroup.addView(this, parentItem.index, parentItem.layoutParams)
@@ -508,14 +468,9 @@ abstract class MXVideo @JvmOverloads constructor(
             val constructor = this::class.java.getConstructor(Context::class.java)
             val selfClone = constructor.newInstance(context)
             selfClone.id = this.id
-            selfClone.mVideoWidth = mVideoWidth
-            selfClone.mVideoHeight = mVideoHeight
-            selfClone.currentSource = currentSource?.clone()
-            selfClone.displayType = displayType
             selfClone.mxPlayerClass = mxPlayerClass
-            selfClone.mRotation = mRotation
             selfClone.dimensionRatio = dimensionRatio
-            selfClone.mxConfig.cloneBy(mxConfig)
+            selfClone.config.cloneBy(config)
 
             selfClone.minimumWidth = target.width
             selfClone.minimumHeight = target.height
@@ -578,13 +533,9 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun reset() {
         stopPlay()
-        mRotation = 0
-        mVideoWidth = 1280
-        mVideoHeight = 720
-        currentSource = null
         mxPlayerClass = null
         mxPlayer = null
-        seekWhenPlay = 0
+        config.reset()
         viewProvider.setPlayState(MXState.IDLE)
         postInvalidate()
     }
@@ -595,7 +546,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 销毁后，不能再次进行播放操作
      */
     fun release() {
-        videoListeners.clear()
+        config.release()
         viewProvider.release()
         stopPlay()
     }
