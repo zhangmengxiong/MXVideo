@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.*
 import com.mx.video.*
 import com.mx.video.utils.*
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -17,6 +18,12 @@ class MXViewProvider(
     private val touchHelp by lazy { MXTouchHelp(mxVideo.context) }
     private val volumeHelp by lazy { MXVolumeHelp(mxVideo.context) }
     private val brightnessHelp by lazy { MXBrightnessHelp(mxVideo.context) }
+
+    /**
+     * 是否预加载
+     */
+    val isPreloading = AtomicBoolean(false)
+
     var mState: MXState = MXState.IDLE
         private set
     var mScreen: MXScreen = MXScreen.NORMAL
@@ -135,11 +142,20 @@ class MXViewProvider(
                     player.pause()
                     setPlayState(MXState.PAUSE)
                 }
-            } else if (mState == MXState.PAUSE || mState == MXState.PREPARED) {
+            } else if (mState == MXState.PAUSE) {
                 if (player != null) {
                     player.start()
                     setPlayState(MXState.PLAYING)
                 }
+            } else if (mState == MXState.PREPARED) { // 预加载完成
+                if (player != null) {
+                    player.start()
+                    mxVideo.seekBeforePlay()
+                    setPlayState(MXState.PLAYING)
+                }
+            } else if (isPreloading.get() && mState == MXState.PREPARING) { // 预加载完成
+                isPreloading.set(false)
+                setPlayState(mState)
             } else if (mState == MXState.NORMAL) {
                 mxVideo.startPlay()
             }
@@ -371,88 +387,102 @@ class MXViewProvider(
         } else {
             mxBatteryImg.visibility = View.VISIBLE
         }
-        when (state) {
-            MXState.IDLE, MXState.NORMAL -> {
-                allContentView.forEach {
-                    if (it in arrayOf(mxPlaceImg, mxPlayBtn)) {
-                        it.visibility = View.VISIBLE
-                    } else {
-                        it.visibility = View.GONE
-                    }
+        if (isPreloading.get() && state == MXState.PREPARING) {
+            // 正在预加载中
+            allContentView.forEach {
+                if (it in arrayOf(mxPlaceImg, mxPlayBtn)) {
+                    it.visibility = View.VISIBLE
+                } else {
+                    it.visibility = View.GONE
                 }
-                mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
-                timeTicket.stop()
-                timeDelay.stop()
             }
-            MXState.PREPARING -> {
-                allContentView.forEach {
-                    if (it in arrayOf(mxPlaceImg, mxLoading)) {
-                        it.visibility = View.VISIBLE
-                    } else {
-                        it.visibility = View.GONE
+            mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
+            timeTicket.stop()
+            timeDelay.stop()
+        } else {
+            when (state) {
+                MXState.IDLE, MXState.NORMAL -> {
+                    allContentView.forEach {
+                        if (it in arrayOf(mxPlaceImg, mxPlayBtn)) {
+                            it.visibility = View.VISIBLE
+                        } else {
+                            it.visibility = View.GONE
+                        }
                     }
+                    mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
+                    timeTicket.stop()
+                    timeDelay.stop()
                 }
-                timeTicket.stop()
-                timeDelay.stop()
-            }
-            MXState.PREPARED -> {
-                allContentView.forEach {
-                    if (it in arrayOf(mxPlaceImg, mxPlayBtn)) {
-                        it.visibility = View.VISIBLE
-                    } else {
-                        it.visibility = View.GONE
+                MXState.PREPARING -> {
+                    allContentView.forEach {
+                        if (it in arrayOf(mxPlaceImg, mxLoading)) {
+                            it.visibility = View.VISIBLE
+                        } else {
+                            it.visibility = View.GONE
+                        }
                     }
+                    timeTicket.stop()
+                    timeDelay.stop()
                 }
-                mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
-                timeTicket.start()
-            }
-            MXState.PLAYING -> {
-                mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_pause)
-                allContentView.forEach {
-                    if (it !in playingVisible) {
-                        it.visibility = View.GONE
+                MXState.PREPARED -> {
+                    allContentView.forEach {
+                        if (it in arrayOf(mxPlaceImg, mxPlayBtn)) {
+                            it.visibility = View.VISIBLE
+                        } else {
+                            it.visibility = View.GONE
+                        }
                     }
+                    mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
+                    timeTicket.start()
                 }
+                MXState.PLAYING -> {
+                    mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_pause)
+                    allContentView.forEach {
+                        if (it !in playingVisible) {
+                            it.visibility = View.GONE
+                        }
+                    }
 
-                mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
-                setPlayingControl(playingVisible.any { it.isShown })
+                    mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
+                    setPlayingControl(playingVisible.any { it.isShown })
 
-                timeTicket.start()
-                timeDelay.start()
-            }
-            MXState.PAUSE -> {
-                allContentView.forEach {
-                    if (it in playingVisible) {
-                        it.visibility = View.VISIBLE
-                    } else {
-                        it.visibility = View.GONE
-                    }
+                    timeTicket.start()
+                    timeDelay.start()
                 }
-                mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
-                timeTicket.start()
-                timeDelay.stop()
-            }
-            MXState.ERROR -> {
-                allContentView.forEach {
-                    if (it in arrayOf(mxPlaceImg, mxRetryLay, mxTopLay)) {
-                        it.visibility = View.VISIBLE
-                    } else {
-                        it.visibility = View.GONE
+                MXState.PAUSE -> {
+                    allContentView.forEach {
+                        if (it in playingVisible) {
+                            it.visibility = View.VISIBLE
+                        } else {
+                            it.visibility = View.GONE
+                        }
                     }
+                    mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
+                    timeTicket.start()
+                    timeDelay.stop()
                 }
-                timeTicket.stop()
-                timeDelay.stop()
-            }
-            MXState.COMPLETE -> {
-                allContentView.forEach {
-                    if (it in arrayOf(mxPlaceImg, mxReplayLay, mxTopLay)) {
-                        it.visibility = View.VISIBLE
-                    } else {
-                        it.visibility = View.GONE
+                MXState.ERROR -> {
+                    allContentView.forEach {
+                        if (it in arrayOf(mxPlaceImg, mxRetryLay, mxTopLay)) {
+                            it.visibility = View.VISIBLE
+                        } else {
+                            it.visibility = View.GONE
+                        }
                     }
+                    timeTicket.stop()
+                    timeDelay.stop()
                 }
-                timeTicket.stop()
-                timeDelay.stop()
+                MXState.COMPLETE -> {
+                    allContentView.forEach {
+                        if (it in arrayOf(mxPlaceImg, mxReplayLay, mxTopLay)) {
+                            it.visibility = View.VISIBLE
+                        } else {
+                            it.visibility = View.GONE
+                        }
+                    }
+                    timeTicket.stop()
+                    timeDelay.stop()
+                }
             }
         }
         mxReturnBtn.visibility = if (mScreen == MXScreen.FULL) View.VISIBLE else View.GONE

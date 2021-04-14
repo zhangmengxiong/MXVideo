@@ -3,10 +3,7 @@ package com.mx.video
 import android.app.AlertDialog
 import android.content.Context
 import android.util.AttributeSet
-import android.view.Gravity
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.widget.FrameLayout
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
@@ -101,11 +98,6 @@ abstract class MXVideo @JvmOverloads constructor(
     private var seekWhenPlay: Int = 0
 
     /**
-     * 预加载模式
-     */
-    private var isPreloading: Boolean = false
-
-    /**
      * 共享配置
      */
     private val mxConfig = MXConfig()
@@ -166,17 +158,12 @@ abstract class MXVideo @JvmOverloads constructor(
      * 设置播放数据源
      * @param source 播放源
      * @param clazz 播放器
-     * @param start 是否立即播放
-     * @param preload 是否预加载
+     * @param seekTo 跳转
      */
-    fun setSource(
-        source: MXPlaySource,
-        clazz: Class<out IMXPlayer>? = null,
-        seekTo: Int = 0
-    ) {
+    fun setSource(source: MXPlaySource, clazz: Class<out IMXPlayer>? = null, seekTo: Int = 0) {
         stopPlay()
         currentSource = source
-        mxPlayerClass = clazz ?: MXSystemPlayer::class.java
+        mxPlayerClass = clazz
 
         seekWhenPlay = seekTo
         viewProvider.mxTitleTxv.text = source.title
@@ -215,7 +202,8 @@ abstract class MXVideo @JvmOverloads constructor(
      * 开始构建播放流程，预加载完成后立即播放
      */
     fun startPlay() {
-        isPreloading = false
+        stopPlay()
+        viewProvider.isPreloading.set(false)
         startVideo()
     }
 
@@ -223,7 +211,8 @@ abstract class MXVideo @JvmOverloads constructor(
      * 开始构建播放流程，在预加载完成后不立即播放
      */
     fun startPreload() {
-        isPreloading = true
+        stopPlay()
+        viewProvider.isPreloading.set(true)
         startVideo()
     }
 
@@ -236,8 +225,7 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     private fun startVideo() {
         playingVideo?.stopPlay()
-        stopPlay()
-        val clazz = mxPlayerClass ?: return
+        val clazz = mxPlayerClass ?: MXSystemPlayer::class.java
         val source = currentSource ?: return
         MXUtils.log("startVideo ${source.playUri} player=${clazz.name}")
 
@@ -292,23 +280,31 @@ abstract class MXVideo @JvmOverloads constructor(
     fun onPlayerPrepared() {
         MXUtils.log("onPlayerPrepared")
         val player = mxPlayer ?: return
-        if (seekWhenPlay > 0) {
-            player.seekTo(seekWhenPlay)
-            seekWhenPlay = 0
-        } else {
-            val source = currentSource
-            val seekTo = MXUtils.getProgress(context, source?.playUri)
-            if (source?.enableSaveProgress == true && seekTo > 0) {
-                player.seekTo(seekTo)
-            }
-        }
 
-        if (isPreloading) {
-            player.pause()
-            isPreloading = false
+        if (viewProvider.isPreloading.get()) {
+            viewProvider.isPreloading.set(false)
             viewProvider.setPlayState(MXState.PREPARED)
         } else {
             player.start()
+            seekBeforePlay()
+        }
+    }
+
+    /**
+     * 播放前跳转
+     * 必须在player.start()调用之后再使用
+     */
+    fun seekBeforePlay() {
+        val player = mxPlayer ?: return
+        val source = currentSource ?: return
+        if (seekWhenPlay > 0) {
+            player.seekTo(seekWhenPlay)
+            seekWhenPlay = 0
+        } else if (source.enableSaveProgress) {
+            val seekTo = MXUtils.getProgress(context, source.playUri)
+            if (seekTo > 0) {
+                player.seekTo(seekTo)
+            }
         }
     }
 
