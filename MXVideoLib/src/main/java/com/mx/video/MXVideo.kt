@@ -113,7 +113,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * @param clazz 播放器
      * @param seekTo 跳转
      */
-    fun setSource(source: MXPlaySource, clazz: Class<out IMXPlayer>? = null, seekTo: Int = 0) {
+    fun setSource(source: MXPlaySource, clazz: Class<out IMXPlayer>? = null, seekTo: Int = -1) {
         stopPlay()
         config.source = source
         mxPlayerClass = clazz
@@ -124,7 +124,7 @@ abstract class MXVideo @JvmOverloads constructor(
     }
 
     fun setTextureViewRotation(rotation: Int) {
-        config.mRotation = rotation
+        config.rotation = rotation
         textureView?.rotation = rotation.toFloat()
     }
 
@@ -146,8 +146,8 @@ abstract class MXVideo @JvmOverloads constructor(
      * MXScale.FILL_PARENT  当父容器宽高一定时，填满宽高
      * MXScale.CENTER_CROP  根据视频宽高自适应
      */
-    fun setDisplayType(type: MXScale) {
-        config.displayType = type
+    fun setScaleType(type: MXScale) {
+        config.scale = type
         textureView?.setDisplayType(type)
     }
 
@@ -215,8 +215,8 @@ abstract class MXVideo @JvmOverloads constructor(
         provider.mxSurfaceContainer.removeAllViews()
         val textureView = MXTextureView(context.applicationContext)
         textureView.setVideoSize(config.videoWidth, config.videoHeight)
-        textureView.setDisplayType(config.displayType)
-        textureView.rotation = config.mRotation.toFloat()
+        textureView.setDisplayType(config.scale)
+        textureView.rotation = config.rotation.toFloat()
 
         val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         layoutParams.gravity = Gravity.CENTER
@@ -250,9 +250,9 @@ abstract class MXVideo @JvmOverloads constructor(
     fun seekBeforePlay() {
         val player = mxPlayer ?: return
         val source = config.source ?: return
-        if (config.seekWhenPlay > 0) {
+        if (config.seekWhenPlay >= 0) {
             player.seekTo(config.seekWhenPlay)
-            config.seekWhenPlay = 0
+            config.seekWhenPlay = -1
         } else if (source.enableSaveProgress) {
             val seekTo = MXUtils.getProgress(context, source.playUri)
             if (seekTo > 0) {

@@ -98,9 +98,9 @@ class NormalActivity : AppCompatActivity() {
         centerCrop.performClick()
         fillTypeRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.fill) {
-                mxVideoStd.setDisplayType(MXScale.FILL_PARENT)
+                mxVideoStd.setScaleType(MXScale.FILL_PARENT)
             } else {
-                mxVideoStd.setDisplayType(MXScale.CENTER_CROP)
+                mxVideoStd.setScaleType(MXScale.CENTER_CROP)
             }
         }
         centerCrop.performClick()

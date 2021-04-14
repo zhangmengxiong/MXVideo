@@ -4,7 +4,6 @@ import android.net.Uri
 import android.view.ViewGroup
 import com.mx.video.utils.MXVideoListener
 import java.io.Serializable
-import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -160,7 +159,7 @@ class MXConfig : Serializable {
     /**
      * 旋转角度
      */
-    var mRotation: Int = 0
+    var rotation: Int = 0
 
     /**
      * 视频宽度
@@ -175,12 +174,13 @@ class MXConfig : Serializable {
     /**
      * 视频缩放
      */
-    var displayType: MXScale = MXScale.CENTER_CROP
+    var scale: MXScale = MXScale.CENTER_CROP
 
     /**
-     * 跳转位置
+     * 跳转位置，当>=0时播放前会跳转到对应位置
+     * 单位：秒
      */
-    var seekWhenPlay: Int = 0
+    var seekWhenPlay: Int = -1
 
     /**
      * 播放源
@@ -233,10 +233,10 @@ class MXConfig : Serializable {
     val videoListeners = ArrayList<MXVideoListener>()
 
     fun cloneBy(target: MXConfig) {
-        mRotation = target.mRotation
+        rotation = target.rotation
         videoWidth = target.videoWidth
         videoHeight = target.videoHeight
-        displayType = target.displayType
+        scale = target.scale
         seekWhenPlay = target.seekWhenPlay
         source = target.source?.clone()
         canSeekByUser = target.canSeekByUser
@@ -250,11 +250,11 @@ class MXConfig : Serializable {
     }
 
     fun reset() {
-        mRotation = 0
+        rotation = 0
         videoWidth = 16
         videoHeight = 9
-        displayType = MXScale.CENTER_CROP
-        seekWhenPlay = 0
+        scale = MXScale.CENTER_CROP
+        seekWhenPlay = -1
         source = null
         canSeekByUser = true
         canFullScreen = true
