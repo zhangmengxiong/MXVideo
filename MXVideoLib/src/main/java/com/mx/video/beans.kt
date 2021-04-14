@@ -80,7 +80,7 @@ enum class MXState : Serializable {
     PREPARING,
 
     /**
-     * 视频资源校验完成，等待用户调用开始播放
+     * 预加载视频完成，等待开始播放
      */
     PREPARED,
 
@@ -143,6 +143,7 @@ class MXConfig : Serializable {
     var showTipIfNotWifi = true // 当非WiFi网络是是否弹出提示
     var gotoNormalScreenWhenComplete = true // 播放完成时如果是全屏，则退出全屏
     var gotoNormalScreenWhenError = true // 播放错误时如果是全屏，则退出全屏
+    var canPauseByUser = true // 播放时用户可以暂停  ~~为啥需要这个？
 
     fun cloneBy(target: MXConfig) {
         canSeekByUser = target.canSeekByUser
@@ -152,5 +153,6 @@ class MXConfig : Serializable {
         showTipIfNotWifi = target.showTipIfNotWifi
         gotoNormalScreenWhenComplete = target.gotoNormalScreenWhenComplete
         gotoNormalScreenWhenError = target.gotoNormalScreenWhenError
+        canPauseByUser = target.canPauseByUser
     }
 }

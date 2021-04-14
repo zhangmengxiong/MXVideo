@@ -31,6 +31,7 @@ class MXTicket {
                 runnable?.run()
             } catch (e: Exception) {
             } finally {
+                mHandler.removeCallbacksAndMessages(null)
                 mHandler.postDelayed(this, timeDiff)
             }
         }

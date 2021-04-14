@@ -137,7 +137,7 @@ class MXViewProvider(
                 return@setOnClickListener
             }
             val player = mxVideo.getPlayer()
-            if (mState == MXState.PLAYING) {
+            if (mState == MXState.PLAYING && mxConfig.canPauseByUser) {
                 if (player != null) {
                     player.pause()
                     setPlayState(MXState.PAUSE)
@@ -432,8 +432,8 @@ class MXViewProvider(
                             it.visibility = View.GONE
                         }
                     }
-                    mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
-                    timeTicket.start()
+                    timeTicket.stop()
+                    timeDelay.stop()
                 }
                 MXState.PLAYING -> {
                     mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_pause)
