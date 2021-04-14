@@ -20,6 +20,7 @@ android {
         ndk {
             abiFilters "armeabi-v7a"
         }
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -39,6 +40,7 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.core:core-ktx:1.3.2'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
@@ -48,6 +50,10 @@ dependencies {
 
     implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
     implementation 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8'
+
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.13.2'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.13.2'
+    implementation 'com.google.android.exoplayer:exoplayer-hls:2.13.2'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
     implementation project(path: ':MXVideoLib')

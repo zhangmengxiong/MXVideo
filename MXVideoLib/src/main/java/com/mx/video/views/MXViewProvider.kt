@@ -15,11 +15,6 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
     private val volumeHelp by lazy { MXVolumeHelp(mxVideo.context) }
     private val brightnessHelp by lazy { MXBrightnessHelp(mxVideo.context) }
 
-    /**
-     * 是否预加载
-     */
-    val isPreloading = AtomicBoolean(false)
-
     var mState: MXState = MXState.IDLE
         private set
     var mScreen: MXScreen = MXScreen.NORMAL
@@ -149,8 +144,8 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
                     mxVideo.seekBeforePlay()
                     setPlayState(MXState.PLAYING)
                 }
-            } else if (isPreloading.get() && mState == MXState.PREPARING) { // 预加载完成
-                isPreloading.set(false)
+            } else if (config.isPreloading && mState == MXState.PREPARING) { // 预加载完成
+                config.isPreloading = false
                 setPlayState(mState)
             } else if (mState == MXState.NORMAL) {
                 mxVideo.startPlay()
@@ -383,7 +378,7 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
         } else {
             mxBatteryImg.visibility = View.VISIBLE
         }
-        if (isPreloading.get() && state == MXState.PREPARING) {
+        if (config.isPreloading && state == MXState.PREPARING) {
             // 正在预加载中
             allContentView.forEach {
                 if (it in arrayOf(mxPlaceImg, mxPlayBtn)) {

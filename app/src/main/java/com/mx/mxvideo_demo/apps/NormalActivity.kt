@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.mx.mxvideo_demo.*
+import com.mx.mxvideo_demo.player.MXExoPlayer
 import com.mx.mxvideo_demo.player.MXIJKPlayer
 import com.mx.video.MXPlaySource
 import com.mx.video.MXScale
@@ -86,6 +87,8 @@ class NormalActivity : AppCompatActivity() {
         playerRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.playerIJK) {
                 playerClass = MXIJKPlayer::class.java
+            } else if (checkedId == R.id.playerEXO) {
+                playerClass = MXExoPlayer::class.java
             } else {
                 playerClass = MXSystemPlayer::class.java
             }

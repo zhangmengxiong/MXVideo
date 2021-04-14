@@ -4,6 +4,7 @@ import android.net.Uri
 import android.view.ViewGroup
 import com.mx.video.utils.MXVideoListener
 import java.io.Serializable
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -150,6 +151,11 @@ class MXConfig : Serializable {
      * 当前View的ID，全局ID
      */
     val viewIndexId = videoViewIndex.incrementAndGet()
+
+    /**
+     * 预加载状态
+     */
+    var isPreloading = false
 
     /**
      * 旋转角度
