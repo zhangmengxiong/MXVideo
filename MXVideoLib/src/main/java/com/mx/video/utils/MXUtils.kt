@@ -101,7 +101,7 @@ object MXUtils {
      * @param context 页面上下文
      * @param willChangeOrientation 是否需要更改页面方向
      */
-    fun setFullScreen(context: Context?, willChangeOrientation: Boolean) {
+    fun setFullScreen(context: Context?, willChangeOrientation: Boolean, degree: Int = 0) {
         val activity = findActivity(context) ?: return
         val currentActivityId = activity.toString()
 
@@ -112,7 +112,7 @@ object MXUtils {
 
         if (willChangeOrientation) {
             activityOrientationMap[currentActivityId] = activity.requestedOrientation
-            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+            activity.requestedOrientation = getOrientationByDegree(degree)
         } else {
             activityOrientationMap.remove(currentActivityId)
         }
@@ -128,6 +128,16 @@ object MXUtils {
         val currentSystemVisibility = activity.window?.decorView?.systemUiVisibility
         activityFlagMap[currentActivityId] = currentSystemVisibility
         activity.window?.decorView?.systemUiVisibility = uiOptions
+    }
+
+    private fun getOrientationByDegree(degree: Int): Int {
+        return when (degree) {
+            0 -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            90 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+            180 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
+            270 -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            else -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        }
     }
 
     fun recoverFullScreen(context: Context?) {

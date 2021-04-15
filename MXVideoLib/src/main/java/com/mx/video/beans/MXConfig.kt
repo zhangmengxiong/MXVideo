@@ -99,6 +99,11 @@ class MXConfig : Serializable {
     var canPauseByUser = true
 
     /**
+     * 播放时随着感应器旋转而全屏/小屏
+     */
+    var autoRotateBySensor = false
+
+    /**
      * 是否可以快进快退
      */
     fun sourceCanSeek(): Boolean {
@@ -125,6 +130,7 @@ class MXConfig : Serializable {
         gotoNormalScreenWhenComplete = target.gotoNormalScreenWhenComplete
         gotoNormalScreenWhenError = target.gotoNormalScreenWhenError
         canPauseByUser = target.canPauseByUser
+        autoRotateBySensor = target.autoRotateBySensor
     }
 
     fun reset() {

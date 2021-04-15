@@ -11,6 +11,7 @@ import android.widget.FrameLayout
 import com.mx.video.beans.*
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
+import com.mx.video.utils.MXSensorHelp
 import com.mx.video.utils.MXUtils
 import com.mx.video.utils.MXVideoListener
 import com.mx.video.views.MXTextureView
@@ -79,11 +80,26 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     private val provider by lazy { MXViewProvider(this, config) }
 
+    private val rotateHelp = MXSensorHelp(context)
+
     init {
         View.inflate(context, getLayoutId(), this)
 
         provider.initView()
         provider.setPlayState(MXState.IDLE)
+        rotateHelp.setRotationChangeCall { degree ->
+            if (!config.autoRotateBySensor) {
+                rotateHelp.stop()
+                return@setRotationChangeCall
+            }
+
+            MXUtils.log("degree = $degree")
+            if (degree == 90 || degree == 270) {
+                switchToScreen(MXScreen.FULL)
+            } else {
+                switchToScreen(MXScreen.NORMAL)
+            }
+        }
     }
 
     fun addOnVideoListener(listener: MXVideoListener) {
@@ -214,6 +230,9 @@ abstract class MXVideo @JvmOverloads constructor(
             playingVideo = this
             MXUtils.findWindows(context)?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             provider.setPlayState(MXState.PREPARING)
+            if (config.autoRotateBySensor) {
+                rotateHelp.start()
+            }
         }
         if (!MXUtils.isWifiConnected(context) && config.showTipIfNotWifi && !hasWifiDialogShow) {
             AlertDialog.Builder(context).apply {
@@ -386,6 +405,7 @@ abstract class MXVideo @JvmOverloads constructor(
         if (playingVideo == this) {
             playingVideo = null
         }
+        rotateHelp.stop()
         if (config.source == null) {
             provider.setPlayState(MXState.IDLE)
         } else {
@@ -473,7 +493,11 @@ abstract class MXVideo @JvmOverloads constructor(
                 )
                 windows.addView(this, fullLayout)
 
-                MXUtils.setFullScreen(context, willChangeOrientation)
+                MXUtils.setFullScreen(
+                    context,
+                    willChangeOrientation,
+                    degree = rotateHelp.getRotationDegree()
+                )
                 provider.setScreenState(MXScreen.FULL)
             }
             MXScreen.NORMAL -> {
@@ -573,6 +597,7 @@ abstract class MXVideo @JvmOverloads constructor(
     fun release() {
         config.release()
         provider.release()
+        rotateHelp.release()
         stopPlay()
     }
 }

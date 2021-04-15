@@ -197,6 +197,12 @@ class NormalActivity : AppCompatActivity() {
                 (checkedId == R.id.gotoNormalScreenWhenErrorTrue)
         }
         gotoNormalScreenWhenErrorTrue.performClick()
+
+        sensorRG.setOnCheckedChangeListener { group, checkedId ->
+            mxVideoStd.getConfig().autoRotateBySensor =
+                (checkedId == R.id.sensorTrue)
+        }
+        sensorFalse.performClick()
     }
 
     override fun onBackPressed() {
