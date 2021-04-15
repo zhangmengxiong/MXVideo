@@ -23,14 +23,13 @@ class MXSensorHelp(val context: Context, private val minChangeTime: Long = 3000)
     private val sensor by lazy { sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) }
     private var _preChangeTime = 0L
     private var isActive = false
-    private var _rotationDegree = 0
+    private var _rotationDegree: Int? = null
 
-    fun getRotationDegree() = _rotationDegree
+    fun getRotationDegree() = (_rotationDegree ?: 0)
 
     private var changeCall: ((degree: Int) -> Unit)? = null
     fun setRotationChangeCall(call: ((degree: Int) -> Unit)?) {
         changeCall = call
-        sendDegreeChange(_rotationDegree)
     }
 
     fun start() {
