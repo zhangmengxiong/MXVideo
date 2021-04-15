@@ -3,8 +3,7 @@ package com.mx.video.views
 import android.content.Context
 import android.util.AttributeSet
 import android.view.TextureView
-import com.mx.video.MXScale
-import com.mx.video.utils.MXUtils
+import com.mx.video.beans.MXScale
 
 class MXTextureView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0

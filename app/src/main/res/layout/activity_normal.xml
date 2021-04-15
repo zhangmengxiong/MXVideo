@@ -14,6 +14,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <TextView
+            android:id="@+id/statusTxv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/design_default_color_error" />
+
         <Button
             android:id="@+id/randPlay"
             android:layout_width="match_parent"
@@ -37,6 +44,13 @@
             android:layout_marginHorizontal="20dp"
             android:padding="10dp"
             android:text="预加载 开始" />
+        <Button
+            android:id="@+id/livePlay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:padding="10dp"
+            android:text="直播流 开始" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -65,6 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="IJK" />
+
             <RadioButton
                 android:id="@+id/playerEXO"
                 android:layout_width="wrap_content"

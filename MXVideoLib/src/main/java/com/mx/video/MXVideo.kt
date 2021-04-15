@@ -1,10 +1,15 @@
 package com.mx.video
 
 import android.app.AlertDialog
+import android.app.Application
 import android.content.Context
 import android.util.AttributeSet
-import android.view.*
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.FrameLayout
+import com.mx.video.beans.*
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
 import com.mx.video.utils.MXUtils
@@ -18,8 +23,6 @@ abstract class MXVideo @JvmOverloads constructor(
     companion object {
         private var hasWifiDialogShow = false
         private val parentMap = HashMap<Int, MXParentView>()
-        var mContext: Context? = null
-        fun getAppContext() = mContext!!
 
         private var playingVideo: MXVideo? = null
         fun isFullScreen(): Boolean {
@@ -39,9 +42,16 @@ abstract class MXVideo @JvmOverloads constructor(
         }
     }
 
-    init {
-        mContext = context.applicationContext
-    }
+    /**
+     * 父容器封装
+     */
+    private data class MXParentView(
+        val index: Int,
+        val parentViewGroup: ViewGroup,
+        val layoutParams: ViewGroup.LayoutParams,
+        val width: Int,
+        val height: Int
+    )
 
     abstract fun getLayoutId(): Int
 
@@ -165,6 +175,19 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun startPreload() {
         stopPlay()
+        config.isPreloading = false
+        val source = config.source ?: return
+        val isLiveSource = source.isLiveSource
+        if (isLiveSource) {
+            // 直播源不支持预加载
+            return
+        }
+        val seekTo = getSeekAfterPlay()
+        if (seekTo > 0) {
+            // 这里暂时只支持seek=0的预加载
+            return
+        }
+
         config.isPreloading = true
         startVideo()
     }
@@ -200,9 +223,7 @@ abstract class MXVideo @JvmOverloads constructor(
                     hasWifiDialogShow = true
                     startRun.invoke()
                 }
-                setNegativeButton(context.getString(R.string.mx_play_wifi_dialog_cancel)) { _, _ ->
-                    hasWifiDialogShow = true
-                }
+                setNegativeButton(context.getString(R.string.mx_play_wifi_dialog_cancel), null)
             }.create().show()
             return
         } else {
@@ -249,20 +270,23 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun seekBeforePlay() {
         val player = mxPlayer ?: return
-        val source = config.source ?: return
-        if (config.seekWhenPlay >= 0) {
-            if (config.seekWhenPlay > 0) {
-                // 0 = 是默认重头开始
-                // > 0 需要seekTo
-                player.seekTo(config.seekWhenPlay)
-            }
-            config.seekWhenPlay = -1
-        } else if (source.enableSaveProgress) {
-            val seekTo = MXUtils.getProgress(context, source.playUri)
-            if (seekTo > 0) {
-                player.seekTo(seekTo)
-            }
+        val seekTo = getSeekAfterPlay()
+        if (seekTo > 0) {
+            player.seekTo(seekTo)
         }
+        config.seekWhenPlay = -1
+    }
+
+    private fun getSeekAfterPlay(): Int {
+        val source = config.source ?: return 0
+        if (config.seekWhenPlay >= 0) { // 注意：这里seekWhenPlay=0时需要默认从0开始播放
+            return config.seekWhenPlay
+        }
+        if (source.enableSaveProgress) {
+            val seekTo = MXUtils.getProgress(context, source.playUri)
+            if (seekTo > 0) return seekTo
+        }
+        return 0
     }
 
     /**

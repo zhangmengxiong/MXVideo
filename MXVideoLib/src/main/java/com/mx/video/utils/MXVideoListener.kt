@@ -1,7 +1,7 @@
 package com.mx.video.utils
 
-import com.mx.video.MXScreen
-import com.mx.video.MXState
+import com.mx.video.beans.MXScreen
+import com.mx.video.beans.MXState
 import com.mx.video.views.MXViewProvider
 
 open class MXVideoListener {

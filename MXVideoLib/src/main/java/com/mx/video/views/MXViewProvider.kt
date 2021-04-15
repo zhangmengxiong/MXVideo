@@ -3,8 +3,10 @@ package com.mx.video.views
 import android.view.View
 import android.widget.*
 import com.mx.video.*
+import com.mx.video.beans.MXConfig
+import com.mx.video.beans.MXScreen
+import com.mx.video.beans.MXState
 import com.mx.video.utils.*
-import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -122,13 +124,14 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
 
     fun initView() {
         mxPlayBtn.setOnClickListener {
-            if (config.source == null) {
+            val source = config.source
+            if (source == null) {
                 Toast.makeText(mxVideo.context, R.string.mx_play_source_not_set, Toast.LENGTH_SHORT)
                     .show()
                 return@setOnClickListener
             }
             val player = mxVideo.getPlayer()
-            if (mState == MXState.PLAYING && config.canPauseByUser) {
+            if (mState == MXState.PLAYING && config.canPauseByUser && !source.isLiveSource) {
                 if (player != null) {
                     player.pause()
                     setPlayState(MXState.PAUSE)
@@ -201,45 +204,7 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
             }
             return@setOnTouchListener false
         }
-        touchHelp.setHorizontalTouchCall(object : MXTouchHelp.OnMXTouchListener() {
-            override fun onStart() {
-                if (!config.canSeekByUser || mState != MXState.PLAYING) return
-                allContentView.forEach {
-                    if (it == mxQuickSeekLay) {
-                        it.visibility = View.VISIBLE
-                    } else {
-                        it.visibility = View.GONE
-                    }
-                }
-            }
-
-            override fun onTouchMove(percent: Float) {
-                if (!config.canSeekByUser || mState != MXState.PLAYING) return
-
-                MXUtils.log("percent = $percent")
-                val duration = mxVideo.getDuration()
-                var position = mxVideo.getCurrentPosition() + (min(120, duration) * percent).toInt()
-                if (position < 0) position = 0
-                if (position > duration) position = duration
-
-                mxQuickSeekCurrentTxv.text = MXUtils.stringForTime(position)
-                mxQuickSeekMaxTxv.text = MXUtils.stringForTime(duration)
-                mxBottomSeekProgress.progress = position
-            }
-
-            override fun onEnd(percent: Float) {
-                mxQuickSeekLay.visibility = View.GONE
-                if (!config.canSeekByUser || mState != MXState.PLAYING) return
-
-                val duration = mxVideo.getDuration()
-                var position = mxVideo.getCurrentPosition() + (min(120, duration) * percent).toInt()
-                if (position < 0) position = 0
-                if (position > duration) position = duration
-
-                mxVideo.seekTo(position)
-                timeDelay.start()
-            }
-        })
+        touchHelp.setHorizontalTouchCall(seekTouchCall)
 
         touchHelp.setVerticalRightTouchCall(object : MXTouchHelp.OnMXTouchListener() {
             private var maxVolume = 0
@@ -332,14 +297,14 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
     private val onSeekBarListener = object : SeekBar.OnSeekBarChangeListener {
         var progress = 0
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            if (fromUser && config.canSeekByUser) {
+            if (fromUser && config.sourceCanSeek()) {
                 this.progress = progress
                 mxCurrentTimeTxv.text = MXUtils.stringForTime(progress)
             }
         }
 
         override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            if (!config.canSeekByUser) return
+            if (!config.sourceCanSeek()) return
             MXUtils.log("onStartTrackingTouch")
             this.progress = seekBar?.progress ?: return
             timeDelay.stop()
@@ -347,7 +312,7 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
         }
 
         override fun onStopTrackingTouch(seekBar: SeekBar?) {
-            if (!config.canSeekByUser) return
+            if (!config.sourceCanSeek()) return
             MXUtils.log("onStopTrackingTouch")
             mxCurrentTimeTxv.text = MXUtils.stringForTime(progress)
             mxVideo.seekTo(progress)
@@ -357,12 +322,14 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
     }
 
     fun setPlayState(state: MXState) {
+        val isLiveSource = (config.source?.isLiveSource == true)
         if (!config.canFullScreen) {
             mxFullscreenBtn.visibility = View.GONE
         } else {
             mxFullscreenBtn.visibility = View.VISIBLE
         }
-        mxSeekProgress.isEnabled = config.canSeekByUser
+        mxSeekProgress.isEnabled = config.sourceCanSeek()
+
         if (!config.canShowSystemTime) {
             mxSystemTimeTxv.visibility = View.GONE
         } else {
@@ -429,9 +396,20 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
                             it.visibility = View.GONE
                         }
                     }
-
                     mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
-                    setPlayingControl(playingVisible.any { it.isShown })
+                    if (isLiveSource) {
+                        // 直播流，需要隐藏一些按钮
+                        mxBottomSeekProgress.visibility = View.GONE
+                        mxSeekProgress.visibility = View.INVISIBLE
+                        mxCurrentTimeTxv.visibility = View.GONE
+                        mxTotalTimeTxv.visibility = View.GONE
+                        mxPlayBtn.visibility = View.GONE
+                    } else {
+                        mxSeekProgress.visibility = View.VISIBLE
+                        mxCurrentTimeTxv.visibility = View.VISIBLE
+                        mxTotalTimeTxv.visibility = View.VISIBLE
+                        setPlayingControl(playingVisible.any { it.isShown })
+                    }
 
                     timeTicket.start()
                     timeDelay.start()
@@ -483,11 +461,63 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
         }
     }
 
+    /**
+     * 快进快退滑动处理
+     */
+    private val seekTouchCall = object : MXTouchHelp.OnMXTouchListener() {
+        override fun onStart() {
+            if (!config.sourceCanSeek() || mState != MXState.PLAYING) return
+            allContentView.forEach {
+                if (it == mxQuickSeekLay) {
+                    it.visibility = View.VISIBLE
+                } else {
+                    it.visibility = View.GONE
+                }
+            }
+        }
+
+        override fun onTouchMove(percent: Float) {
+            if (!config.sourceCanSeek() || mState != MXState.PLAYING) return
+
+            MXUtils.log("percent = $percent")
+            val duration = mxVideo.getDuration()
+            var position = mxVideo.getCurrentPosition() + (min(120, duration) * percent).toInt()
+            if (position < 0) position = 0
+            if (position > duration) position = duration
+
+            mxQuickSeekCurrentTxv.text = MXUtils.stringForTime(position)
+            mxQuickSeekMaxTxv.text = MXUtils.stringForTime(duration)
+            mxBottomSeekProgress.progress = position
+        }
+
+        override fun onEnd(percent: Float) {
+            mxQuickSeekLay.visibility = View.GONE
+            if (!config.sourceCanSeek() || mState != MXState.PLAYING) return
+
+            val duration = mxVideo.getDuration()
+            var position = mxVideo.getCurrentPosition() + (min(120, duration) * percent).toInt()
+            if (position < 0) position = 0
+            if (position > duration) position = duration
+
+            mxVideo.seekTo(position)
+            timeDelay.start()
+        }
+    }
+
+    /**
+     * 播放中状态时，控制View的显示
+     */
     private fun setPlayingControl(show: Boolean) {
         playingVisible.forEach { it.visibility = if (show) View.VISIBLE else View.GONE }
         mxBottomSeekProgress.visibility = if (show) View.GONE else View.VISIBLE
+        if (config.source?.isLiveSource == true && mState == MXState.PLAYING) {
+            mxPlayBtn.visibility = View.GONE
+        }
     }
 
+    /**
+     * 设置进度
+     */
     private fun setViewProgress(position: Int, duration: Int) {
         mxSeekProgress.max = duration
         mxSeekProgress.progress = position
@@ -501,10 +531,16 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
         setPlayState(mState)
     }
 
+    /**
+     * 设置播放器宽高
+     */
     fun setViewSize(width: Int, height: Int) {
         touchHelp.setSize(width, height)
     }
 
+    /**
+     * 设置全屏状态
+     */
     fun setScreenState(screen: MXScreen) {
         mxReturnBtn.visibility = if (screen == MXScreen.FULL) View.VISIBLE else View.GONE
         mxFullscreenBtn.setImageResource(if (screen == MXScreen.FULL) R.drawable.mx_icon_small_screen else R.drawable.mx_icon_full_screen)
@@ -517,10 +553,16 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
         }
     }
 
+    /**
+     * 设置缓冲状态
+     */
     fun setOnBuffering(start: Boolean) {
         mxLoading.visibility = if (start) View.VISIBLE else View.GONE
     }
 
+    /**
+     * 释放资源，释放后无法再次播放
+     */
     fun release() {
         val batteryImg = mxBatteryImg
         if (batteryImg is MXBatteryImageView) {

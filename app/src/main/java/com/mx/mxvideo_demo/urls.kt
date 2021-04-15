@@ -47,7 +47,6 @@ val ldjVideos = arrayOf(
     "$server_name/v/ldj/35-ldj.mp4",
     "$server_name/v/ldj/36-ldj.mp4",
     "$server_name/v/ldj/37-ldj.mp4",
-    "$server_name/v/ldj/38-ldj.mp4",
     "$server_name/v/ldj/39-ldj.mp4",
     "$server_name/v/ldj/40-ldj.mp4",
     "$server_name/v/ldj/41-ldj.mp4",

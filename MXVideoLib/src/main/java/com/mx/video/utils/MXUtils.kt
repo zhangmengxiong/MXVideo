@@ -13,7 +13,6 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import com.mx.video.BuildConfig
-import java.security.MessageDigest
 import java.util.*
 
 object MXUtils {

@@ -5,8 +5,7 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Build
 import android.view.Surface
-import com.mx.video.MXPlaySource
-import com.mx.video.MXVideo
+import com.mx.video.beans.MXPlaySource
 
 class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     MediaPlayer.OnCompletionListener, MediaPlayer.OnBufferingUpdateListener,
@@ -26,12 +25,15 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
         if (!isActive()) return
         val source = mPlaySource ?: return
         val surface = mSurfaceTexture ?: return
+        val context = getMXVideo()?.context ?: return
         releaseNow()
         initHandler()
         postInThread {
             if (!isActive()) return@postInThread
 
             val mediaPlayer = MediaPlayer()
+            this.mediaPlayer = mediaPlayer
+
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
             mediaPlayer.isLooping = source.isLooping
             mediaPlayer.setOnPreparedListener(this@MXSystemPlayer)
@@ -43,15 +45,10 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
             mediaPlayer.setOnInfoListener(this@MXSystemPlayer)
             mediaPlayer.setOnVideoSizeChangedListener(this@MXSystemPlayer)
 
-            mediaPlayer.setDataSource(
-                MXVideo.getAppContext(),
-                source.playUri,
-                source.headerMap
-            )
+            mediaPlayer.setDataSource(context, source.playUri, source.headerMap)
 
             mediaPlayer.prepareAsync()
             mediaPlayer.setSurface(Surface(surface))
-            this.mediaPlayer = mediaPlayer
         }
     }
 

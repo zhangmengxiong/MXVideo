@@ -1,8 +1,6 @@
 package com.mx.video.utils
 
 import android.content.Context
-import android.media.AudioManager
-import android.media.AudioTrack.getMaxVolume
 import android.provider.Settings
 import kotlin.math.roundToInt
 

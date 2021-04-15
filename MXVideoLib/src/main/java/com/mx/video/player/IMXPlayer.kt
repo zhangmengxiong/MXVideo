@@ -5,8 +5,8 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import android.view.TextureView
-import com.mx.video.MXPlaySource
 import com.mx.video.MXVideo
+import com.mx.video.beans.MXPlaySource
 import com.mx.video.views.MXTextureView
 import java.util.concurrent.atomic.AtomicBoolean
 

@@ -7,11 +7,10 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.mx.mxvideo_demo.R
 import com.mx.mxvideo_demo.ldjVideos
-import com.mx.mxvideo_demo.player.MXIJKPlayer
 import com.mx.mxvideo_demo.thumbnails
 import com.mx.recycleview.base.BaseSimpleAdapt
 import com.mx.recycleview.base.BaseViewHolder
-import com.mx.video.MXPlaySource
+import com.mx.video.beans.MXPlaySource
 import com.mx.video.MXVideoStd
 
 class SimpleVideoAdapt : BaseSimpleAdapt<String>() {

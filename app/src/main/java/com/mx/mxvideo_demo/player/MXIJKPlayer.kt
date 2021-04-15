@@ -3,12 +3,10 @@ package com.mx.mxvideo_demo.player
 import android.graphics.SurfaceTexture
 import android.media.AudioManager
 import android.view.Surface
-import com.mx.video.MXPlaySource
-import com.mx.video.MXVideo
+import com.mx.video.beans.MXPlaySource
 import com.mx.video.player.IMXPlayer
 import tv.danmaku.ijk.media.player.IMediaPlayer
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
-import java.lang.Exception
 
 class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
     IMediaPlayer.OnCompletionListener, IMediaPlayer.OnBufferingUpdateListener,
@@ -37,12 +35,16 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
         if (!isActive()) return
         val source = mPlaySource ?: return
         val surface = mSurfaceTexture ?: return
+        val context = getMXVideo()?.context ?: return
+
         releaseNow()
         initHandler()
         postInThread {
             if (!isActive()) return@postInThread
 
             val mediaPlayer = IjkMediaPlayer()
+            this.mediaPlayer = mediaPlayer
+
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
             mediaPlayer.isLooping = source.isLooping
             mediaPlayer.setOnPreparedListener(this@MXIJKPlayer)
@@ -95,16 +97,9 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
             //1变速变调状态 0变速不变调状态
             mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "soundtouch", 1)
 
-
-            mediaPlayer.setDataSource(
-                MXVideo.getAppContext(),
-                source.playUri,
-                source.headerMap
-            )
-
+            mediaPlayer.setDataSource(context, source.playUri, source.headerMap)
             mediaPlayer.prepareAsync()
             mediaPlayer.setSurface(Surface(surface))
-            this.mediaPlayer = mediaPlayer
         }
     }
 

@@ -3,15 +3,14 @@ package com.mx.mxvideo_demo.apps
 import android.net.Uri
 import android.os.Bundle
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.mx.mxvideo_demo.*
 import com.mx.mxvideo_demo.player.MXExoPlayer
 import com.mx.mxvideo_demo.player.MXIJKPlayer
-import com.mx.video.MXPlaySource
-import com.mx.video.MXScale
-import com.mx.video.MXState
+import com.mx.video.beans.MXPlaySource
+import com.mx.video.beans.MXScale
+import com.mx.video.beans.MXState
 import com.mx.video.MXVideo
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
@@ -53,9 +52,20 @@ class NormalActivity : AppCompatActivity() {
             )
             mxVideoStd.startPreload()
         }
+        livePlay.setOnClickListener {
+            Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
+            mxVideoStd.setSource(
+                MXPlaySource(
+                    Uri.parse("http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8"),
+                    titles.random(), isLiveSource = true
+                ), clazz = playerClass, seekTo = 0
+            )
+            mxVideoStd.startPlay()
+        }
         mxVideoStd.addOnVideoListener(object : MXVideoListener() {
             override fun onStateChange(state: MXState, provider: MXViewProvider) {
-                Toast.makeText(this@NormalActivity, state.name, Toast.LENGTH_SHORT).show()
+                statusTxv.text = state.name
+                // Toast.makeText(this@NormalActivity, state.name, Toast.LENGTH_SHORT).show()
             }
 
             override fun onPlayTicket(position: Int, duration: Int) {

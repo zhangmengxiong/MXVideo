@@ -1,7 +1,6 @@
 package com.mx.mxvideo_demo.player
 
 import android.graphics.SurfaceTexture
-import android.os.Looper
 import android.view.Surface
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.MediaSource
@@ -9,18 +8,19 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.video.VideoListener
-import com.mx.video.MXPlaySource
+import com.mx.video.beans.MXPlaySource
 import com.mx.video.player.IMXPlayer
-import com.mx.video.utils.MXUtils
 import kotlin.math.max
 
 class MXExoPlayer : IMXPlayer(), VideoListener, Player.EventListener {
     var mediaPlayer: SimpleExoPlayer? = null
     var mPlaySource: MXPlaySource? = null
-    private var isPrepared = false
-    private var isStartPlay = false
+    private var isPreparedCall = false
+    private var isStartPlayCall = false
+    private var isStarted = false
     override fun start() {
         postInMainThread { mediaPlayer?.play() }
+        isStarted = true
     }
 
     override fun setSource(source: MXPlaySource) {
@@ -37,6 +37,8 @@ class MXExoPlayer : IMXPlayer(), VideoListener, Player.EventListener {
         postInMainThread {
             if (!isActive()) return@postInMainThread
             val player = SimpleExoPlayer.Builder(context).build()
+            this.mediaPlayer = player
+
             val sourceFactory = DefaultDataSourceFactory(context)
 
             val currUrl = source.playUri.toString()
@@ -58,16 +60,16 @@ class MXExoPlayer : IMXPlayer(), VideoListener, Player.EventListener {
             player.setMediaSource(videoSource)
             player.playWhenReady = false
             player.setVideoSurface(Surface(surface))
-            isPrepared = false
-            isStartPlay = false
+            isPreparedCall = false
+            isStartPlayCall = false
+            isStarted = false
             player.prepare()
-            this.mediaPlayer = player
         }
     }
 
     override fun pause() {
         if (!isActive()) return
-        postInMainThread { mediaPlayer?.pause() }
+        mediaPlayer?.pause()
     }
 
     override fun isPlaying(): Boolean {
@@ -107,11 +109,10 @@ class MXExoPlayer : IMXPlayer(), VideoListener, Player.EventListener {
     private fun releaseNow() {
         val mediaPlayer = mediaPlayer
         this.mediaPlayer = null
-
+        quitHandler()
         postInThread {
             mediaPlayer?.setVideoSurface(null)
             mediaPlayer?.release()
-            quitHandler()
         }
     }
 
@@ -158,43 +159,28 @@ class MXExoPlayer : IMXPlayer(), VideoListener, Player.EventListener {
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
         if (!isActive()) return
-        MXUtils.log("MXExoPlayer onIsPlayingChanged $isPlaying")
-        postInMainThread { getMXVideo()?.onPlayerBuffering(!isPlaying) }
-    }
-
-    override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
-        if (!isActive()) return
-        MXUtils.log("MXExoPlayer onPlayWhenReadyChanged $playWhenReady  $reason")
-    }
-
-    override fun onIsLoadingChanged(isLoading: Boolean) {
-        if (!isActive()) return
-        MXUtils.log("MXExoPlayer onIsLoadingChanged $isLoading")
+        postInMainThread {
+            if (isPlaying && !isStartPlayCall) {
+                getMXVideo()?.onPlayerStartPlay()
+                isStartPlayCall = true
+            }
+            getMXVideo()?.onPlayerBuffering(!isPlaying)
+        }
     }
 
     override fun onPlaybackStateChanged(state: Int) {
         if (!isActive()) return
-        MXUtils.log("MXExoPlayer onPlaybackStateChanged $state")
         when (state) {
-            Player.STATE_IDLE -> {
-
-            }
-            Player.STATE_BUFFERING -> {
-                if (!isPrepared) {
-                    postInMainThread { getMXVideo()?.onPlayerPrepared() }
-                    isPrepared = true
-                }
-            }
             Player.STATE_READY -> {
-                if (!isStartPlay && mediaPlayer?.isPlaying == true) {
-                    postInMainThread { getMXVideo()?.onPlayerStartPlay() }
-                    isStartPlay = true
+                if (!isPreparedCall) {
+                    postInMainThread {
+                        getMXVideo()?.onPlayerPrepared()
+                    }
+                    isPreparedCall = true
                 }
             }
             Player.STATE_ENDED -> {
                 postInMainThread { getMXVideo()?.onPlayerCompletion() }
-            }
-            else -> {
             }
         }
     }
@@ -205,8 +191,6 @@ class MXExoPlayer : IMXPlayer(), VideoListener, Player.EventListener {
             Player.DISCONTINUITY_REASON_SEEK -> {
                 postInMainThread { getMXVideo()?.onPlayerSeekComplete() }
             }
-            else -> {
-            }
         }
     }
 
@@ -216,10 +200,6 @@ class MXExoPlayer : IMXPlayer(), VideoListener, Player.EventListener {
             getMXVideo()?.onPlayerError(error.message)
             release()
         }
-    }
-
-    override fun onRenderedFirstFrame() {
-        MXUtils.log("MXExoPlayer onRenderedFirstFrame")
     }
 
     override fun onVideoSizeChanged(
