@@ -5,20 +5,24 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Handler
+import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.roundToInt
 
 /**
  * 屏幕旋转监听
  */
-class MXSensorHelp(val context: Context) {
+class MXSensorHelp(val context: Context, private val minChangeTime: Long = 3000) {
     private val DATA_X = 0
     private val DATA_Y = 1
     private val DATA_Z = 2
 
-    private var isActive = false
+    private val mHandler = Handler()
     private val sensorManager by lazy { context.getSystemService(Context.SENSOR_SERVICE) as SensorManager }
     private val sensor by lazy { sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) }
+    private var _preChangeTime = 0L
+    private var isActive = false
     private var _rotationDegree = 0
 
     fun getRotationDegree() = _rotationDegree
@@ -26,7 +30,7 @@ class MXSensorHelp(val context: Context) {
     private var changeCall: ((degree: Int) -> Unit)? = null
     fun setRotationChangeCall(call: ((degree: Int) -> Unit)?) {
         changeCall = call
-        call?.invoke(_rotationDegree)
+        sendDegreeChange(_rotationDegree)
     }
 
     fun start() {
@@ -71,14 +75,37 @@ class MXSensorHelp(val context: Context) {
                     orientation += 360
                 }
             }
-
+            if (orientation in ((90 - 45) until (90 + 45))) {
+                orientation = 90
+            } else if (orientation in ((180 - 45) until (180 + 45))) {
+                orientation = 180
+            } else if (orientation in ((270 - 45) until (270 + 45))) {
+                orientation = 270
+            } else {
+                orientation = 0
+            }
             if (orientation != _rotationDegree) {
-                _rotationDegree = orientation
-                changeCall?.invoke(orientation)
+                sendDegreeChange(orientation)
             }
         }
 
         override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
+        }
+    }
+
+    private fun sendDegreeChange(degree: Int) {
+        mHandler.removeCallbacksAndMessages(null)
+        val sendRun = {
+            _rotationDegree = degree
+            changeCall?.invoke(degree)
+            _preChangeTime = System.currentTimeMillis()
+        }
+
+        val delay = minChangeTime - abs(System.currentTimeMillis() - _preChangeTime)
+        if (delay > 0) {
+            mHandler.postDelayed(sendRun, delay)
+        } else {
+            sendRun.invoke()
         }
     }
 }
