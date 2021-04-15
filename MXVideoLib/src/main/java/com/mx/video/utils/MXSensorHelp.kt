@@ -13,7 +13,7 @@ import kotlin.math.roundToInt
 /**
  * 屏幕旋转监听
  */
-class MXSensorHelp(val context: Context, private val minChangeTime: Long = 3000) {
+class MXSensorHelp(val context: Context, private val minChangeTime: Long = 1500) {
     private val DATA_X = 0
     private val DATA_Y = 1
     private val DATA_Z = 2
