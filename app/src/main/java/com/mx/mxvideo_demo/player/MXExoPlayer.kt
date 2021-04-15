@@ -19,6 +19,7 @@ class MXExoPlayer : IMXPlayer(), VideoListener, Player.EventListener {
     private var isStartPlayCall = false
     private var isStarted = false
     override fun start() {
+        if (!isActive()) return
         postInMainThread { mediaPlayer?.play() }
         isStarted = true
     }
@@ -117,10 +118,12 @@ class MXExoPlayer : IMXPlayer(), VideoListener, Player.EventListener {
     }
 
     override fun getCurrentPosition(): Int {
+        if (!isActive()) return 0
         return mediaPlayer?.currentPosition?.div(1000)?.toInt() ?: 0
     }
 
     override fun getDuration(): Int {
+        if (!isActive()) return 0
         var duration = mediaPlayer?.duration ?: 0
         if (duration < 0) duration = 0
         return (duration / 1000).toInt()
@@ -170,27 +173,23 @@ class MXExoPlayer : IMXPlayer(), VideoListener, Player.EventListener {
 
     override fun onPlaybackStateChanged(state: Int) {
         if (!isActive()) return
-        when (state) {
-            Player.STATE_READY -> {
-                if (!isPreparedCall) {
-                    postInMainThread {
-                        getMXVideo()?.onPlayerPrepared()
-                    }
-                    isPreparedCall = true
+        if (state == Player.STATE_READY) {
+            if (!isPreparedCall) {
+                postInMainThread {
+                    getMXVideo()?.onPlayerPrepared()
                 }
+                isPreparedCall = true
             }
-            Player.STATE_ENDED -> {
-                postInMainThread { getMXVideo()?.onPlayerCompletion() }
-            }
+        }
+        else if (state == Player.STATE_ENDED) {
+            postInMainThread { getMXVideo()?.onPlayerCompletion() }
         }
     }
 
     override fun onPositionDiscontinuity(reason: Int) {
         if (!isActive()) return
-        when (reason) {
-            Player.DISCONTINUITY_REASON_SEEK -> {
-                postInMainThread { getMXVideo()?.onPlayerSeekComplete() }
-            }
+        if (reason == Player.DISCONTINUITY_REASON_SEEK) {
+            postInMainThread { getMXVideo()?.onPlayerSeekComplete() }
         }
     }
 

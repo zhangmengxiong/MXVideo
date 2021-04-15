@@ -1,8 +1,10 @@
 package com.mx.video.player
 
 import android.graphics.SurfaceTexture
+import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.media.PlaybackParams
 import android.os.Build
 import android.view.Surface
 import com.mx.video.beans.MXPlaySource
@@ -14,6 +16,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     var mediaPlayer: MediaPlayer? = null
     var mPlaySource: MXPlaySource? = null
     override fun start() {
+        if (!isActive()) return
         postInThread { mediaPlayer?.start() }
     }
 
@@ -34,7 +37,13 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
             val mediaPlayer = MediaPlayer()
             this.mediaPlayer = mediaPlayer
 
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                val build = AudioAttributes.Builder()
+                build.setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                mediaPlayer.setAudioAttributes(build.build())
+            } else {
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
+            }
             mediaPlayer.isLooping = source.isLooping
             mediaPlayer.setOnPreparedListener(this@MXSystemPlayer)
             mediaPlayer.setOnCompletionListener(this@MXSystemPlayer)
@@ -44,9 +53,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
             mediaPlayer.setOnErrorListener(this@MXSystemPlayer)
             mediaPlayer.setOnInfoListener(this@MXSystemPlayer)
             mediaPlayer.setOnVideoSizeChangedListener(this@MXSystemPlayer)
-
             mediaPlayer.setDataSource(context, source.playUri, source.headerMap)
-
             mediaPlayer.prepareAsync()
             mediaPlayer.setSurface(Surface(surface))
         }
@@ -108,10 +115,12 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun getCurrentPosition(): Int {
+        if (!isActive()) return 0
         return mediaPlayer?.currentPosition?.div(1000) ?: 0
     }
 
     override fun getDuration(): Int {
+        if (!isActive()) return 0
         var duration = mediaPlayer?.duration ?: 0
         if (duration < 0) duration = 0
         return duration / 1000
@@ -124,10 +133,12 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
     override fun setSpeed(speed: Float) {
         if (!isActive()) return
+        val mediaPlayer = mediaPlayer ?: return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val pp = mediaPlayer?.playbackParams ?: return
+            val pp = mediaPlayer.playbackParams ?: PlaybackParams()
             pp.speed = speed
-            mediaPlayer?.playbackParams = pp
+            pp.pitch
+            mediaPlayer.playbackParams = pp
         }
     }
 

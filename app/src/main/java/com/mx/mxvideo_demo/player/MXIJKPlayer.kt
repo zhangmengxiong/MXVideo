@@ -24,6 +24,7 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
     var mediaPlayer: IjkMediaPlayer? = null
     var mPlaySource: MXPlaySource? = null
     override fun start() {
+        if (!isActive()) return
         postInThread { mediaPlayer?.start() }
     }
 
@@ -152,10 +153,12 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
     }
 
     override fun getCurrentPosition(): Int {
+        if (!isActive()) return 0
         return mediaPlayer?.currentPosition?.div(1000)?.toInt() ?: 0
     }
 
     override fun getDuration(): Int {
+        if (!isActive()) return 0
         var duration = mediaPlayer?.duration ?: 0
         if (duration < 0) duration = 0
         return (duration / 1000).toInt()

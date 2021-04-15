@@ -1,7 +1,6 @@
 package com.mx.video
 
 import android.app.AlertDialog
-import android.app.Application
 import android.content.Context
 import android.util.AttributeSet
 import android.view.Gravity

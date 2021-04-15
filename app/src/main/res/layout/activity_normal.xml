@@ -1,448 +1,454 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <com.mx.video.MXVideoStd
+        android:id="@+id/mxVideoStd"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content" />
 
-        <com.mx.video.MXVideoStd
-            android:id="@+id/mxVideoStd"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/statusTxv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:textColor="@color/design_default_color_error" />
-
-        <Button
-            android:id="@+id/randPlay"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:padding="10dp"
-            android:text="随机播放" />
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/randTo10SecPlay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:padding="10dp"
-            android:text="随机第60S 开始" />
-
-        <Button
-            android:id="@+id/preloadPlay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:padding="10dp"
-            android:text="预加载 开始" />
-        <Button
-            android:id="@+id/livePlay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:padding="10dp"
-            android:text="直播流 开始" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:layout_marginTop="10dp"
-            android:text="播放器："
-            android:textColor="@color/black" />
-
-        <RadioGroup
-            android:id="@+id/playerRG"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <RadioButton
-                android:id="@+id/playerSystem"
+            <TextView
+                android:id="@+id/statusTxv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="系统播放器" />
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/design_default_color_error" />
 
-            <RadioButton
-                android:id="@+id/playerIJK"
+            <Button
+                android:id="@+id/randPlay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:padding="10dp"
+                android:text="随机播放" />
+
+            <Button
+                android:id="@+id/randTo10SecPlay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:padding="10dp"
+                android:text="随机第60S 开始" />
+
+            <Button
+                android:id="@+id/preloadPlay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:padding="10dp"
+                android:text="预加载 开始" />
+
+            <Button
+                android:id="@+id/livePlay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:padding="10dp"
+                android:text="直播流 开始" />
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="IJK" />
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="10dp"
+                android:text="播放器："
+                android:textColor="@color/black" />
 
-            <RadioButton
-                android:id="@+id/playerEXO"
+            <RadioGroup
+                android:id="@+id/playerRG"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="EXO" />
-        </RadioGroup>
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:layout_marginTop="10dp"
-            android:text="视频源比例："
-            android:textColor="@color/black" />
+                <RadioButton
+                    android:id="@+id/playerSystem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="系统播放器" />
 
-        <RadioGroup
-            android:id="@+id/videoSourceRG"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="5dp">
+                <RadioButton
+                    android:id="@+id/playerIJK"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="IJK" />
 
-            <RadioButton
-                android:id="@+id/source16x9"
+                <RadioButton
+                    android:id="@+id/playerEXO"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="EXO" />
+            </RadioGroup>
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="16*9" />
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="10dp"
+                android:text="视频源比例："
+                android:textColor="@color/black" />
 
-            <RadioButton
-                android:id="@+id/source4x3"
+            <RadioGroup
+                android:id="@+id/videoSourceRG"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="4*3" />
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
 
-            <RadioButton
-                android:id="@+id/source9x16"
+                <RadioButton
+                    android:id="@+id/source16x9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="16*9" />
+
+                <RadioButton
+                    android:id="@+id/source4x3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4*3" />
+
+                <RadioButton
+                    android:id="@+id/source9x16"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="9*16" />
+            </RadioGroup>
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="9*16" />
-        </RadioGroup>
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="10dp"
+                android:text="视频渲染旋转角度："
+                android:textColor="@color/black" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:layout_marginTop="10dp"
-            android:text="视频渲染旋转角度："
-            android:textColor="@color/black" />
-
-        <RadioGroup
-            android:id="@+id/rotationRG"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <RadioButton
-                android:id="@+id/rotation0"
+            <RadioGroup
+                android:id="@+id/rotationRG"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0度" />
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
 
-            <RadioButton
-                android:id="@+id/rotation90"
+                <RadioButton
+                    android:id="@+id/rotation0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0度" />
+
+                <RadioButton
+                    android:id="@+id/rotation90"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="90度" />
+
+                <RadioButton
+                    android:id="@+id/rotation180"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="180度" />
+
+                <RadioButton
+                    android:id="@+id/rotation270"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="270度" />
+            </RadioGroup>
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="90度" />
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="10dp"
+                android:text="填充规则："
+                android:textColor="@color/black" />
 
-            <RadioButton
-                android:id="@+id/rotation180"
+            <RadioGroup
+                android:id="@+id/fillTypeRG"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="180度" />
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
 
-            <RadioButton
-                android:id="@+id/rotation270"
+
+                <RadioButton
+                    android:id="@+id/fill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="FILL_PARENT" />
+
+                <RadioButton
+                    android:id="@+id/centerCrop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CENTER_CROP" />
+            </RadioGroup>
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="270度" />
-        </RadioGroup>
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="10dp"
+                android:text="控件约束："
+                android:textColor="@color/black" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:layout_marginTop="10dp"
-            android:text="填充规则："
-            android:textColor="@color/black" />
-
-        <RadioGroup
-            android:id="@+id/fillTypeRG"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-
-            <RadioButton
-                android:id="@+id/fill"
+            <RadioGroup
+                android:id="@+id/ratioRG"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="FILL_PARENT" />
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
 
-            <RadioButton
-                android:id="@+id/centerCrop"
+
+                <RadioButton
+                    android:id="@+id/ratioEmpty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="无" />
+
+                <RadioButton
+                    android:id="@+id/ratio200dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="200dp" />
+
+                <RadioButton
+                    android:id="@+id/ratio_16_9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="16:9" />
+
+                <RadioButton
+                    android:id="@+id/ratio_4_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4:3" />
+            </RadioGroup>
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CENTER_CROP" />
-        </RadioGroup>
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="10dp"
+                android:text="是否支持快进快退："
+                android:textColor="@color/black" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:layout_marginTop="10dp"
-            android:text="控件约束："
-            android:textColor="@color/black" />
-
-        <RadioGroup
-            android:id="@+id/ratioRG"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-
-            <RadioButton
-                android:id="@+id/ratioEmpty"
+            <RadioGroup
+                android:id="@+id/canSeekRG"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="无" />
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
 
-            <RadioButton
-                android:id="@+id/ratio200dp"
+
+                <RadioButton
+                    android:id="@+id/canSeekTrue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="支持" />
+
+                <RadioButton
+                    android:id="@+id/canSeekFalse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="不支持" />
+            </RadioGroup>
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="200dp" />
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="10dp"
+                android:text="是否支持全屏："
+                android:textColor="@color/black" />
 
-            <RadioButton
-                android:id="@+id/ratio_16_9"
+            <RadioGroup
+                android:id="@+id/canFullRG"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="16:9" />
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
 
-            <RadioButton
-                android:id="@+id/ratio_4_3"
+
+                <RadioButton
+                    android:id="@+id/canFullTrue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="支持" />
+
+                <RadioButton
+                    android:id="@+id/canFullFalse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="不支持" />
+            </RadioGroup>
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="4:3" />
-        </RadioGroup>
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="10dp"
+                android:text="是否显示时间："
+                android:textColor="@color/black" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:layout_marginTop="10dp"
-            android:text="是否支持快进快退："
-            android:textColor="@color/black" />
-
-        <RadioGroup
-            android:id="@+id/canSeekRG"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-
-            <RadioButton
-                android:id="@+id/canSeekTrue"
+            <RadioGroup
+                android:id="@+id/canShowSystemTimeRG"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="支持" />
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
 
-            <RadioButton
-                android:id="@+id/canSeekFalse"
+
+                <RadioButton
+                    android:id="@+id/canShowSystemTimeTrue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="支持" />
+
+                <RadioButton
+                    android:id="@+id/canShowSystemTimeFalse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="不支持" />
+            </RadioGroup>
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="不支持" />
-        </RadioGroup>
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="10dp"
+                android:text="是否显示电量："
+                android:textColor="@color/black" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:layout_marginTop="10dp"
-            android:text="是否支持全屏："
-            android:textColor="@color/black" />
-
-        <RadioGroup
-            android:id="@+id/canFullRG"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-
-            <RadioButton
-                android:id="@+id/canFullTrue"
+            <RadioGroup
+                android:id="@+id/canShowBatteryImgRG"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="支持" />
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
 
-            <RadioButton
-                android:id="@+id/canFullFalse"
+
+                <RadioButton
+                    android:id="@+id/canShowBatteryImgTrue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="支持" />
+
+                <RadioButton
+                    android:id="@+id/canShowBatteryImgFalse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="不支持" />
+            </RadioGroup>
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="不支持" />
-        </RadioGroup>
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="10dp"
+                android:text="是否WiFi环境播放前提醒："
+                android:textColor="@color/black" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:layout_marginTop="10dp"
-            android:text="是否显示时间："
-            android:textColor="@color/black" />
-
-        <RadioGroup
-            android:id="@+id/canShowSystemTimeRG"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-
-            <RadioButton
-                android:id="@+id/canShowSystemTimeTrue"
+            <RadioGroup
+                android:id="@+id/showTipIfNotWifiRG"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="支持" />
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
 
-            <RadioButton
-                android:id="@+id/canShowSystemTimeFalse"
+
+                <RadioButton
+                    android:id="@+id/showTipIfNotWifiTrue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="支持" />
+
+                <RadioButton
+                    android:id="@+id/showTipIfNotWifiFalse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="不支持" />
+            </RadioGroup>
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="不支持" />
-        </RadioGroup>
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="10dp"
+                android:text="播放完成后自动退出全屏："
+                android:textColor="@color/black" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:layout_marginTop="10dp"
-            android:text="是否显示电量："
-            android:textColor="@color/black" />
-
-        <RadioGroup
-            android:id="@+id/canShowBatteryImgRG"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-
-            <RadioButton
-                android:id="@+id/canShowBatteryImgTrue"
+            <RadioGroup
+                android:id="@+id/gotoNormalScreenWhenCompleteRG"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="支持" />
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
 
-            <RadioButton
-                android:id="@+id/canShowBatteryImgFalse"
+
+                <RadioButton
+                    android:id="@+id/gotoNormalScreenWhenCompleteTrue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="支持" />
+
+                <RadioButton
+                    android:id="@+id/gotoNormalScreenWhenCompleteFalse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="不支持" />
+            </RadioGroup>
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="不支持" />
-        </RadioGroup>
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="10dp"
+                android:text="播放错误后自动退出全屏："
+                android:textColor="@color/black" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:layout_marginTop="10dp"
-            android:text="是否WiFi环境播放前提醒："
-            android:textColor="@color/black" />
-
-        <RadioGroup
-            android:id="@+id/showTipIfNotWifiRG"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-
-            <RadioButton
-                android:id="@+id/showTipIfNotWifiTrue"
+            <RadioGroup
+                android:id="@+id/gotoNormalScreenWhenErrorRG"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="支持" />
-
-            <RadioButton
-                android:id="@+id/showTipIfNotWifiFalse"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="不支持" />
-        </RadioGroup>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:layout_marginTop="10dp"
-            android:text="播放完成后自动退出全屏："
-            android:textColor="@color/black" />
-
-        <RadioGroup
-            android:id="@+id/gotoNormalScreenWhenCompleteRG"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="5dp">
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
 
 
-            <RadioButton
-                android:id="@+id/gotoNormalScreenWhenCompleteTrue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="支持" />
+                <RadioButton
+                    android:id="@+id/gotoNormalScreenWhenErrorTrue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="支持" />
 
-            <RadioButton
-                android:id="@+id/gotoNormalScreenWhenCompleteFalse"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="不支持" />
-        </RadioGroup>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:layout_marginTop="10dp"
-            android:text="播放错误后自动退出全屏："
-            android:textColor="@color/black" />
-
-        <RadioGroup
-            android:id="@+id/gotoNormalScreenWhenErrorRG"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-
-            <RadioButton
-                android:id="@+id/gotoNormalScreenWhenErrorTrue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="支持" />
-
-            <RadioButton
-                android:id="@+id/gotoNormalScreenWhenErrorFalse"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="不支持" />
-        </RadioGroup>
-    </LinearLayout>
-</ScrollView>
+                <RadioButton
+                    android:id="@+id/gotoNormalScreenWhenErrorFalse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="不支持" />
+            </RadioGroup>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
