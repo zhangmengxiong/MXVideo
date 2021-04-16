@@ -34,7 +34,7 @@ data class MXPlaySource(
      * 如果 = null，会自动根据视频宽高来判断
      * 默认 = null
      */
-    val canChangeOrientationIfFullScreen: Boolean? = null,
+    val changeDegreeWhenFullScreen: Boolean? = null,
 
     /**
      * 是否循环播放，默认 = false
@@ -58,7 +58,7 @@ data class MXPlaySource(
             title,
             headerMap,
             isOnlineSource,
-            canChangeOrientationIfFullScreen,
+            changeDegreeWhenFullScreen,
             isLooping,
             enableSaveProgress,
             isLiveSource

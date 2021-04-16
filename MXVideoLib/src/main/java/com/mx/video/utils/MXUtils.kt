@@ -19,7 +19,7 @@ import java.util.*
 object MXUtils {
     private const val SP_KEY = "MX_SP_KEY"
     private val activityFlagMap = HashMap<String, Int?>()
-    private val activityOrientationMap = HashMap<String, Int?>()
+    private val activityDegreeMap = HashMap<String, Int?>()
 
     fun log(any: Any) {
         if (BuildConfig.DEBUG) {
@@ -124,11 +124,11 @@ object MXUtils {
         activity.window?.decorView?.systemUiVisibility = uiOptions
     }
 
-    fun changeOrientation(context: Context?, degree: MXDegree = MXDegree.DEGREE_0) {
+    fun changeDegree(context: Context?, degree: MXDegree = MXDegree.DEGREE_0) {
         val activity = findActivity(context) ?: return
         val currentActivityId = activity.toString()
-        if (!activityOrientationMap.containsKey(currentActivityId)) {
-            activityOrientationMap[currentActivityId] = activity.requestedOrientation
+        if (!activityDegreeMap.containsKey(currentActivityId)) {
+            activityDegreeMap[currentActivityId] = activity.requestedOrientation
         }
         activity.requestedOrientation = when (degree) {
             MXDegree.DEGREE_0 -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -144,7 +144,7 @@ object MXUtils {
 
         activity.window?.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
-        activityOrientationMap[currentActivityId]?.let {
+        activityDegreeMap[currentActivityId]?.let {
             activity.requestedOrientation = it
         }
 

@@ -111,6 +111,16 @@ class MXConfig : Serializable {
     }
 
     /**
+     * 全屏时是否变更屏幕方向
+     */
+    fun willChangeDegreeWhenFullScreen(): Boolean {
+        if (source?.changeDegreeWhenFullScreen == true) {
+            return true
+        }
+        return videoWidth > videoHeight
+    }
+
+    /**
      * 监听器列表
      */
     val videoListeners = ArrayList<MXVideoListener>()

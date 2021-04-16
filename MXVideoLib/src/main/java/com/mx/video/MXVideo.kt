@@ -461,8 +461,6 @@ abstract class MXVideo @JvmOverloads constructor(
         if (!config.canFullScreen) return
         val windows = MXUtils.findWindowsDecorView(context) ?: return
         if (provider.mScreen == screen) return
-        val willChangeOrientation = (config.source?.canChangeOrientationIfFullScreen == true
-                || config.videoWidth > config.videoHeight)
         when (screen) {
             MXScreen.FULL -> {
                 if (parentMap.containsKey(config.viewIndexId)) {
@@ -483,11 +481,12 @@ abstract class MXVideo @JvmOverloads constructor(
                 windows.addView(this, fullLayout)
 
                 MXUtils.setFullScreen(context)
-                if (willChangeOrientation) {
-                    val degree = if (config.autoRotateBySensor) {
-                        sensorHelp.getDegree()
-                    } else MXDegree.DEGREE_270
-                    MXUtils.changeOrientation(context, degree)
+                if (config.willChangeDegreeWhenFullScreen()) {
+                    var degree = sensorHelp.getDegree()
+                    if (degree.isVertical()) {
+                        degree = MXDegree.DEGREE_270
+                    }
+                    MXUtils.changeDegree(context, degree)
                 }
                 provider.setScreenState(MXScreen.FULL)
             }
@@ -497,7 +496,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 parentItem.parentViewGroup.removeViewAt(parentItem.index)
                 parentItem.parentViewGroup.addView(this, parentItem.index, parentItem.layoutParams)
 
-                MXUtils.changeOrientation(context, MXDegree.DEGREE_0)
+                MXUtils.changeDegree(context, MXDegree.DEGREE_0)
                 MXUtils.recoverFullScreen(context)
                 provider.setScreenState(MXScreen.NORMAL)
             }
@@ -583,15 +582,23 @@ abstract class MXVideo @JvmOverloads constructor(
 
     private val sensorListener = object : MXSensorListener {
         override fun onChange(degree: MXDegree) {
-            if (!config.autoRotateBySensor || !isPlaying()) {
+            if (!isPlaying()) {
                 return
             }
+            if (!config.autoRotateBySensor) {
+                if (provider.mScreen == MXScreen.FULL && degree.isHorizontal() && config.willChangeDegreeWhenFullScreen()) {
+                    // 全屏时，方向切换，变更一下
+                    MXUtils.changeDegree(context, degree)
+                }
+                return
+            }
+
             MXUtils.log("degree = $degree")
 
             if (degree.isHorizontal()) {
                 // 竖屏切换到横屏
                 if (provider.mScreen == MXScreen.FULL) {
-                    MXUtils.changeOrientation(context, degree)
+                    MXUtils.changeDegree(context, degree)
                 } else {
                     switchToScreen(MXScreen.FULL)
                 }
@@ -600,7 +607,7 @@ abstract class MXVideo @JvmOverloads constructor(
             if (degree.isVertical()) {
                 // 横屏切换到竖屏
                 if (provider.mScreen == MXScreen.NORMAL) {
-                    MXUtils.changeOrientation(context, degree)
+                    MXUtils.changeDegree(context, degree)
                 } else {
                     switchToScreen(MXScreen.NORMAL)
                 }

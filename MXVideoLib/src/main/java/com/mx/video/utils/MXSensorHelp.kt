@@ -1,5 +1,6 @@
 package com.mx.video.utils
 
+import android.app.Application
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -16,8 +17,8 @@ import kotlin.math.roundToInt
  * 屏幕旋转监听
  */
 class MXSensorHelp private constructor(
-    val context: Context,
-    private val minChangeTime: Long = 1500
+    private val context: Application,
+    private val minChangeTime: Long = 2000
 ) {
     private val DATA_X = 0
     private val DATA_Y = 1
@@ -55,7 +56,7 @@ class MXSensorHelp private constructor(
     private val sensorListener = object : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent) {
             val values: FloatArray = event.values
-            var orientation = 0
+            var dg = 0
             val x = -values[DATA_X]
             val y = -values[DATA_Y]
             val z = -values[DATA_Z]
@@ -63,16 +64,16 @@ class MXSensorHelp private constructor(
             if (magnitude * 4 >= z * z) {
                 val oneEightyOverPi = 57.29577957855f
                 val angle = (atan2(-y.toDouble(), x.toDouble()) * oneEightyOverPi).toFloat()
-                orientation = 90 - angle.roundToInt()
+                dg = 90 - angle.roundToInt()
                 // normalize to 0 - 359 range
-                while (orientation >= 360) {
-                    orientation -= 360
+                while (dg >= 360) {
+                    dg -= 360
                 }
-                while (orientation < 0) {
-                    orientation += 360
+                while (dg < 0) {
+                    dg += 360
                 }
             }
-            val degree = when (orientation) {
+            val degree = when (dg) {
                 in ((90 - 45) until (90 + 45)) -> {
                     MXDegree.DEGREE_90
                 }
@@ -121,7 +122,7 @@ class MXSensorHelp private constructor(
         @Synchronized
         fun init(context: Context) {
             if (_instance == null) {
-                _instance = MXSensorHelp(context)
+                _instance = MXSensorHelp(context.applicationContext as Application)
                 _instance?.start()
             }
         }
