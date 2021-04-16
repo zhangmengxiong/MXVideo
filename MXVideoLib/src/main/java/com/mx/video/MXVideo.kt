@@ -1,6 +1,7 @@
 package com.mx.video
 
 import android.app.AlertDialog
+import android.app.Application
 import android.content.Context
 import android.util.AttributeSet
 import android.view.Gravity
@@ -85,7 +86,7 @@ abstract class MXVideo @JvmOverloads constructor(
     init {
         View.inflate(context, getLayoutId(), this)
 
-        MXSensorHelp.init(context.applicationContext)
+        MXSensorHelp.init(context.applicationContext as Application)
         provider.initView()
         provider.setPlayState(MXState.IDLE)
 
@@ -582,11 +583,11 @@ abstract class MXVideo @JvmOverloads constructor(
 
     private val sensorListener = object : MXSensorListener {
         override fun onChange(degree: MXDegree) {
-            if (!isPlaying()) {
+            if (!isPlaying() || !config.willChangeDegreeWhenFullScreen()) {
                 return
             }
             if (!config.autoRotateBySensor) {
-                if (provider.mScreen == MXScreen.FULL && degree.isHorizontal() && config.willChangeDegreeWhenFullScreen()) {
+                if (provider.mScreen == MXScreen.FULL && degree.isHorizontal()) {
                     // 全屏时，方向切换，变更一下
                     MXUtils.changeDegree(context, degree)
                 }

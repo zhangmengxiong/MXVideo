@@ -17,7 +17,7 @@ import kotlin.math.roundToInt
  * 屏幕旋转监听
  */
 class MXSensorHelp private constructor(
-    private val context: Application,
+    private val application: Application,
     private val minChangeTime: Long = 2000
 ) {
     private val DATA_X = 0
@@ -25,8 +25,9 @@ class MXSensorHelp private constructor(
     private val DATA_Z = 2
 
     private val mHandler = Handler()
-    private val sensorManager by lazy { context.getSystemService(Context.SENSOR_SERVICE) as SensorManager }
+    private val sensorManager by lazy { application.getSystemService(Context.SENSOR_SERVICE) as SensorManager }
     private val sensor by lazy { sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) }
+    private var isStart = false
     private var _preChangeTime = 0L
     private var _degree: MXDegree = MXDegree.DEGREE_0
 
@@ -37,6 +38,9 @@ class MXSensorHelp private constructor(
         if (!listener.contains(call)) {
             listener.add(call)
         }
+        if (!isStart) {
+            start()
+        }
     }
 
     fun deleteListener(call: MXSensorListener) {
@@ -45,7 +49,9 @@ class MXSensorHelp private constructor(
 
 
     fun start() {
+        sensorManager.unregisterListener(sensorListener)
         sensorManager.registerListener(sensorListener, sensor, SensorManager.SENSOR_DELAY_NORMAL)
+        isStart = true
     }
 
     fun release() {
@@ -119,11 +125,13 @@ class MXSensorHelp private constructor(
         val instance: MXSensorHelp
             get() = _instance!!
 
+        /**
+         * 使用前初始化感应器
+         */
         @Synchronized
-        fun init(context: Context) {
+        fun init(application: Application) {
             if (_instance == null) {
-                _instance = MXSensorHelp(context.applicationContext as Application)
-                _instance?.start()
+                _instance = MXSensorHelp(application)
             }
         }
     }
