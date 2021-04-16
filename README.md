@@ -5,7 +5,7 @@
 最新版本：[![](https://jitpack.io/v/com.gitee.zhangmengxiong/MXVideo.svg)](https://jitpack.io/#com.gitee.zhangmengxiong/MXVideo)
 
 #### 功能特性
-- 任意播放器内核（包含IJK、阿里云等等）
+- 任意播放器内核（包含开源IJK、谷歌Exo、阿里云等等）
 - 单例播放，只能同时播放一个节目
 - 0代码集成全屏功能
 - 可以调节音量、屏幕亮度
@@ -110,7 +110,7 @@ mxVideoStd.setSource(MXPlaySource(Uri.parse("xxx"), "xxx"), clazz = MXSystemPlay
 - 视频渲染旋转角度
 ```kotlin
 // 默认旋转角度 = MXDegree.DEGREE_0
-mxVideoStd.setDegree(MXDegree.DEGREE_0)
+mxVideoStd.setDegree(MXDegree.DEGREE_90)
 ```
 
 - 视频填充规则
