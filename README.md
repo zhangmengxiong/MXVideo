@@ -35,7 +35,7 @@
 // 设置播放占位图
 Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
 
-// 默认读取上一次进度播放
+// 默认从上一次进度播放
 mxVideoStd.setSource(MXPlaySource(Uri.parse("https://aaa.bbb.com/xxx.mp4"), "标题1"))
 mxVideoStd.startPlay()
 
