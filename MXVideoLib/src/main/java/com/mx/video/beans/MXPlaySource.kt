@@ -24,12 +24,6 @@ data class MXPlaySource(
     val headerMap: MutableMap<String, String> = HashMap(),
 
     /**
-     * 是否在线资源，播放本地文件时需要定义为false，网络资源定义为true
-     * 默认 = true
-     */
-    val isOnlineSource: Boolean = true,
-
-    /**
      * 全屏时是否需要变更Activity方向
      * 如果 = null，会自动根据视频宽高来判断
      * 默认 = null
@@ -57,7 +51,6 @@ data class MXPlaySource(
             playUri,
             title,
             headerMap,
-            isOnlineSource,
             changeDegreeWhenFullScreen,
             isLooping,
             enableSaveProgress,

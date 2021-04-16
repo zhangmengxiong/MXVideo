@@ -31,7 +31,7 @@ class SimpleVideoAdapt : BaseSimpleAdapt<String>() {
 //            mxVideoStd.setDimensionRatio(16.0 / 9.0)
         mxVideoStd.reset()
         mxVideoStd.setSource(
-            MXPlaySource(Uri.parse(record), "" + position, isOnlineSource = true)
+            MXPlaySource(Uri.parse(record), "" + position)
         )
     }
 

@@ -35,10 +35,20 @@
 // 设置播放占位图
 Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
 
+// 默认从
 mxVideoStd.setSource(MXPlaySource(Uri.parse("https://aaa.bbb.com/xxx.mp4"), "标题1"))
 mxVideoStd.startPlay()
-
+ 
 ```
+> MXPlaySource 可选参数说明：
+| 姓名   | 年龄 |
+| :----- | :--: |
+| title | 标题 |
+| headerMap | 网络请求头部 |
+| changeDegreeWhenFullScreen | 全屏时是否需要变更Activity方向，如果 = null，会自动根据视频宽高来判断 |
+| isLooping | 是否循环播放，默认 = false |
+| enableSaveProgress | 是否存储、读取播放进度 |
+| isLiveSource | 是否直播源，当时直播时，不显示进度，无法快进快退暂停 |
 
 ##### 4、监听播放进度
 ```kotlin
@@ -54,11 +64,10 @@ mxVideoStd.addOnVideoListener(object : MXVideoListener() {
 ```
 
 ##### 5、全屏返回 + 释放资源
+
+>  这里MXVideo默认持有当前播放的MXVideoStd，可以使用静态方法操作退出全屏、释放资源等功能。
+>  也可以直接使用viewId：mxVideoStd.isFullScreen()，mxVideoStd.isFullScreen()，mxVideoStd.release() 等方法。
 ```kotlin
-    // 这里MXVideo默认持有当前播放的MXVideoStd，可以使用静态方法操作退出全屏、释放资源等功能。
-    // 也可以直接使用viewId：mxVideoStd.isFullScreen()，mxVideoStd.isFullScreen()，mxVideoStd.release() 等方法。
-
-
     override fun onBackPressed() {
         if (MXVideo.isFullScreen()) {
             MXVideo.gotoNormalScreen()
@@ -105,15 +114,15 @@ mxVideoStd.setScaleType(MXScale.CENTER_CROP)
 ```
 
 - MXVideoStd 控件宽高约束
-```xml
-    <!-- 在页面xml中添加，layout_width一般设置match_parent，高度wrap_content -->
+> 在页面xml中添加，layout_width一般设置match_parent，高度wrap_content
+```xml 
     <com.mx.video.MXVideoStd
         android:id="@+id/mxVideoStd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 ```
-可以设置任意宽高比，如果设置宽高比，则控件高度需要设置android:layout_height="wrap_content"，否则不生效。 
-当取消约束、MXVideo高度自适应、填充规则=MXScale.CENTER_CROP时，控件高度会自动根据视频宽高自动填充高度 
+> 可以设置任意宽高比，如果设置宽高比，则控件高度需要设置android:layout_height="wrap_content"，否则不生效。 
+> 当取消约束、MXVideo高度自适应、填充规则=MXScale.CENTER_CROP时，控件高度会自动根据视频宽高自动填充高度 
 ```kotlin
 // MXVideoStd控件设置宽高比= 16：9
 mxVideoStd.setDimensionRatio(16.0 / 9.0)
