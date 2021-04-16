@@ -126,7 +126,7 @@ class MXSensorHelp private constructor(
             get() = _instance!!
 
         /**
-         * 使用前初始化感应器
+         * 使用前初始化感应器，这里使用单例模式来创建
          */
         @Synchronized
         fun init(application: Application) {

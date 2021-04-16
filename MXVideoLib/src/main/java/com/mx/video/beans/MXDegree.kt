@@ -9,10 +9,16 @@ enum class MXDegree {
     DEGREE_180,
     DEGREE_270;
 
+    /**
+     * 是否横屏
+     */
     fun isHorizontal(): Boolean {
         return this == DEGREE_90 || this == DEGREE_270
     }
 
+    /**
+     * 是否竖屏
+     */
     fun isVertical(): Boolean {
         return this == DEGREE_0 || this == DEGREE_180
     }

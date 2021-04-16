@@ -89,7 +89,6 @@ abstract class MXVideo @JvmOverloads constructor(
         MXSensorHelp.init(context.applicationContext as Application)
         provider.initView()
         provider.setPlayState(MXState.IDLE)
-
     }
 
     fun addOnVideoListener(listener: MXVideoListener) {
@@ -584,6 +583,7 @@ abstract class MXVideo @JvmOverloads constructor(
     private val sensorListener = object : MXSensorListener {
         override fun onChange(degree: MXDegree) {
             if (!isPlaying() || !config.willChangeDegreeWhenFullScreen()) {
+                // 当不在播放，或者不需要变更方向时，不处理
                 return
             }
             if (!config.autoRotateBySensor) {
@@ -593,9 +593,6 @@ abstract class MXVideo @JvmOverloads constructor(
                 }
                 return
             }
-
-            MXUtils.log("degree = $degree")
-
             if (degree.isHorizontal()) {
                 // 竖屏切换到横屏
                 if (provider.mScreen == MXScreen.FULL) {
