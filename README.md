@@ -75,6 +75,7 @@ mxVideoStd.addOnVideoListener(object : MXVideoListener() {
 ##### 5、全屏返回 + 释放资源
 
 >  这里MXVideo默认持有当前播放的MXVideoStd，可以使用静态方法操作退出全屏、释放资源等功能。
+>
 >  也可以直接使用viewId：mxVideoStd.isFullScreen()，mxVideoStd.isFullScreen()，mxVideoStd.release() 等方法。
 ```kotlin
     override fun onBackPressed() {
@@ -131,6 +132,7 @@ mxVideoStd.setScaleType(MXScale.CENTER_CROP)
         android:layout_height="wrap_content" />
 ```
 > 可以设置任意宽高比，如果设置宽高比，则控件高度需要设置android:layout_height="wrap_content"，否则不生效。 
+>
 > 当取消约束、MXVideo高度自适应、填充规则=MXScale.CENTER_CROP时，控件高度会自动根据视频宽高自动填充高度 
 ```kotlin
 // MXVideoStd控件设置宽高比= 16：9
