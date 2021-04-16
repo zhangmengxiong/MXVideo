@@ -18,12 +18,25 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/statusTxv"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:textColor="@color/design_default_color_error" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/statusTxv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/design_default_color_error" />
+
+                <TextView
+                    android:id="@+id/timeTxv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/design_default_color_error" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/randPlay"

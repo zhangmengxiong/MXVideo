@@ -52,7 +52,7 @@ object MXUtils {
         return sp.getInt(uri.toString(), 0)
     }
 
-    fun stringForTime(time: Int): String? {
+    fun stringForTime(time: Int): String {
         if (time <= 0 || time >= 24 * 60 * 60 * 1000) {
             return "00:00"
         }

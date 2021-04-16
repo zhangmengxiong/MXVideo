@@ -14,6 +14,7 @@ import com.mx.video.beans.MXState
 import com.mx.video.MXVideo
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
+import com.mx.video.utils.MXUtils
 import com.mx.video.utils.MXVideoListener
 import com.mx.video.views.MXViewProvider
 import kotlinx.android.synthetic.main.activity_normal.*
@@ -69,6 +70,7 @@ class NormalActivity : AppCompatActivity() {
             }
 
             override fun onPlayTicket(position: Int, duration: Int) {
+                timeTxv.text = "${MXUtils.stringForTime(position)} / ${MXUtils.stringForTime(duration)}"
                 // println("MXUtils $position / $duration")
             }
         })
