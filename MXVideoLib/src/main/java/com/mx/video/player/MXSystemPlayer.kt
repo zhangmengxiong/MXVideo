@@ -137,7 +137,6 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val pp = mediaPlayer.playbackParams ?: PlaybackParams()
             pp.speed = speed
-            pp.pitch
             mediaPlayer.playbackParams = pp
         }
     }
