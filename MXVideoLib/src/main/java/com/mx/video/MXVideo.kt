@@ -80,26 +80,15 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     private val provider by lazy { MXViewProvider(this, config) }
 
-    private val rotateHelp = MXSensorHelp(context)
+    private val sensorHelp by lazy { MXSensorHelp.instance }
 
     init {
         View.inflate(context, getLayoutId(), this)
 
+        MXSensorHelp.init(context.applicationContext)
         provider.initView()
         provider.setPlayState(MXState.IDLE)
-        rotateHelp.setRotationChangeCall { degree ->
-            if (!config.autoRotateBySensor) {
-                rotateHelp.stop()
-                return@setRotationChangeCall
-            }
 
-            MXUtils.log("degree = $degree")
-            if (degree == 90 || degree == 270) {
-                switchToScreen(MXScreen.FULL)
-            } else {
-                switchToScreen(MXScreen.NORMAL)
-            }
-        }
     }
 
     fun addOnVideoListener(listener: MXVideoListener) {
@@ -230,9 +219,7 @@ abstract class MXVideo @JvmOverloads constructor(
             playingVideo = this
             MXUtils.findWindows(context)?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             provider.setPlayState(MXState.PREPARING)
-            if (config.autoRotateBySensor) {
-                rotateHelp.start()
-            }
+            sensorHelp.addListener(sensorListener)
         }
         if (!MXUtils.isWifiConnected(context) && config.showTipIfNotWifi && !hasWifiDialogShow) {
             AlertDialog.Builder(context).apply {
@@ -405,7 +392,9 @@ abstract class MXVideo @JvmOverloads constructor(
         if (playingVideo == this) {
             playingVideo = null
         }
-        rotateHelp.stop()
+
+        sensorHelp.deleteListener(sensorListener)
+
         if (config.source == null) {
             provider.setPlayState(MXState.IDLE)
         } else {
@@ -493,11 +482,13 @@ abstract class MXVideo @JvmOverloads constructor(
                 )
                 windows.addView(this, fullLayout)
 
-                MXUtils.setFullScreen(
-                    context,
-                    willChangeOrientation,
-                    degree = rotateHelp.getRotationDegree()
-                )
+                MXUtils.setFullScreen(context)
+                if (willChangeOrientation) {
+                    val degree = if (config.autoRotateBySensor) {
+                        sensorHelp.getDegree()
+                    } else MXDegree.DEGREE_270
+                    MXUtils.changeOrientation(context, degree)
+                }
                 provider.setScreenState(MXScreen.FULL)
             }
             MXScreen.NORMAL -> {
@@ -506,6 +497,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 parentItem.parentViewGroup.removeViewAt(parentItem.index)
                 parentItem.parentViewGroup.addView(this, parentItem.index, parentItem.layoutParams)
 
+                MXUtils.changeOrientation(context, MXDegree.DEGREE_0)
                 MXUtils.recoverFullScreen(context)
                 provider.setScreenState(MXScreen.NORMAL)
             }
@@ -589,6 +581,34 @@ abstract class MXVideo @JvmOverloads constructor(
         postInvalidate()
     }
 
+    private val sensorListener = object : MXSensorListener {
+        override fun onChange(degree: MXDegree) {
+            if (!config.autoRotateBySensor || !isPlaying()) {
+                return
+            }
+            MXUtils.log("degree = $degree")
+
+            if (degree.isHorizontal()) {
+                // 竖屏切换到横屏
+                if (provider.mScreen == MXScreen.FULL) {
+                    MXUtils.changeOrientation(context, degree)
+                } else {
+                    switchToScreen(MXScreen.FULL)
+                }
+                return
+            }
+            if (degree.isVertical()) {
+                // 横屏切换到竖屏
+                if (provider.mScreen == MXScreen.NORMAL) {
+                    MXUtils.changeOrientation(context, degree)
+                } else {
+                    switchToScreen(MXScreen.NORMAL)
+                }
+                return
+            }
+        }
+
+    }
 
     /**
      * 销毁Activity或Fragment时调用
@@ -597,7 +617,6 @@ abstract class MXVideo @JvmOverloads constructor(
     fun release() {
         config.release()
         provider.release()
-        rotateHelp.release()
         stopPlay()
     }
 }

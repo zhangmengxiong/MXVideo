@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import com.mx.video.BuildConfig
+import com.mx.video.beans.MXDegree
 import java.util.*
 
 object MXUtils {
@@ -101,7 +102,7 @@ object MXUtils {
      * @param context 页面上下文
      * @param willChangeOrientation 是否需要更改页面方向
      */
-    fun setFullScreen(context: Context?, willChangeOrientation: Boolean, degree: Int = 0) {
+    fun setFullScreen(context: Context) {
         val activity = findActivity(context) ?: return
         val currentActivityId = activity.toString()
 
@@ -109,13 +110,6 @@ object MXUtils {
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
-
-        if (willChangeOrientation) {
-            activityOrientationMap[currentActivityId] = activity.requestedOrientation
-            activity.requestedOrientation = getOrientationByDegree(degree)
-        } else {
-            activityOrientationMap.remove(currentActivityId)
-        }
 
         var uiOptions = (View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -130,13 +124,17 @@ object MXUtils {
         activity.window?.decorView?.systemUiVisibility = uiOptions
     }
 
-    private fun getOrientationByDegree(degree: Int): Int {
-        return when (degree) {
-            0 -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            90 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
-            180 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
-            270 -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-            else -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    fun changeOrientation(context: Context?, degree: MXDegree = MXDegree.DEGREE_0) {
+        val activity = findActivity(context) ?: return
+        val currentActivityId = activity.toString()
+        if (!activityOrientationMap.containsKey(currentActivityId)) {
+            activityOrientationMap[currentActivityId] = activity.requestedOrientation
+        }
+        activity.requestedOrientation = when (degree) {
+            MXDegree.DEGREE_0 -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            MXDegree.DEGREE_90 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+            MXDegree.DEGREE_180 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
+            MXDegree.DEGREE_270 -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         }
     }
 

@@ -6,6 +6,8 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Handler
+import com.mx.video.beans.MXDegree
+import com.mx.video.beans.MXSensorListener
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.roundToInt
@@ -13,7 +15,10 @@ import kotlin.math.roundToInt
 /**
  * 屏幕旋转监听
  */
-class MXSensorHelp(val context: Context, private val minChangeTime: Long = 1500) {
+class MXSensorHelp private constructor(
+    val context: Context,
+    private val minChangeTime: Long = 1500
+) {
     private val DATA_X = 0
     private val DATA_Y = 1
     private val DATA_Z = 2
@@ -22,35 +27,28 @@ class MXSensorHelp(val context: Context, private val minChangeTime: Long = 1500)
     private val sensorManager by lazy { context.getSystemService(Context.SENSOR_SERVICE) as SensorManager }
     private val sensor by lazy { sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) }
     private var _preChangeTime = 0L
-    private var isActive = false
-    private var _rotationDegree: Int? = null
+    private var _degree: MXDegree = MXDegree.DEGREE_0
 
-    fun getRotationDegree() = (_rotationDegree ?: 0)
+    fun getDegree() = _degree
 
-    private var changeCall: ((degree: Int) -> Unit)? = null
-    fun setRotationChangeCall(call: ((degree: Int) -> Unit)?) {
-        changeCall = call
+    private val listener = ArrayList<MXSensorListener>()
+    fun addListener(call: MXSensorListener) {
+        if (!listener.contains(call)) {
+            listener.add(call)
+        }
     }
+
+    fun deleteListener(call: MXSensorListener) {
+        listener.remove(call)
+    }
+
 
     fun start() {
-        if (isActive) return
-        sensorManager.unregisterListener(sensorListener)
-        sensorManager.registerListener(
-            sensorListener,
-            sensor,
-            SensorManager.SENSOR_DELAY_NORMAL
-        )
-        isActive = true
-    }
-
-    fun stop() {
-        sensorManager.unregisterListener(sensorListener)
-        isActive = false
+        sensorManager.registerListener(sensorListener, sensor, SensorManager.SENSOR_DELAY_NORMAL)
     }
 
     fun release() {
-        changeCall = null
-        isActive = false
+        listener.clear()
         sensorManager.unregisterListener(sensorListener)
     }
 
@@ -74,17 +72,25 @@ class MXSensorHelp(val context: Context, private val minChangeTime: Long = 1500)
                     orientation += 360
                 }
             }
-            if (orientation in ((90 - 45) until (90 + 45))) {
-                orientation = 90
-            } else if (orientation in ((180 - 45) until (180 + 45))) {
-                orientation = 180
-            } else if (orientation in ((270 - 45) until (270 + 45))) {
-                orientation = 270
-            } else {
-                orientation = 0
+            val degree = when (orientation) {
+                in ((90 - 45) until (90 + 45)) -> {
+                    MXDegree.DEGREE_90
+                }
+                in ((180 - 45) until (180 + 45)) -> {
+                    MXDegree.DEGREE_180
+                }
+                in ((270 - 45) until (270 + 45)) -> {
+                    MXDegree.DEGREE_270
+                }
+                else -> {
+                    MXDegree.DEGREE_0
+                }
             }
-            if (orientation != _rotationDegree) {
-                sendDegreeChange(orientation)
+            synchronized(this@MXSensorHelp) {
+                if (degree != _degree) {
+                    _degree = degree
+                    sendDegreeChange(degree)
+                }
             }
         }
 
@@ -92,11 +98,10 @@ class MXSensorHelp(val context: Context, private val minChangeTime: Long = 1500)
         }
     }
 
-    private fun sendDegreeChange(degree: Int) {
+    private fun sendDegreeChange(degree: MXDegree) {
         mHandler.removeCallbacksAndMessages(null)
-        val sendRun = {
-            _rotationDegree = degree
-            changeCall?.invoke(degree)
+        val sendRun = Runnable {
+            listener.toList().forEach { it.onChange(degree) }
             _preChangeTime = System.currentTimeMillis()
         }
 
@@ -104,7 +109,21 @@ class MXSensorHelp(val context: Context, private val minChangeTime: Long = 1500)
         if (delay > 0) {
             mHandler.postDelayed(sendRun, delay)
         } else {
-            sendRun.invoke()
+            sendRun.run()
+        }
+    }
+
+    companion object {
+        private var _instance: MXSensorHelp? = null
+        val instance: MXSensorHelp
+            get() = _instance!!
+
+        @Synchronized
+        fun init(context: Context) {
+            if (_instance == null) {
+                _instance = MXSensorHelp(context)
+                _instance?.start()
+            }
         }
     }
 }
