@@ -72,3 +72,18 @@ mxVideoStd.addOnVideoListener(object : MXVideoListener() {
         super.onDestroy()
     }
 ```
+
+### 功能相关
+- 切换播放器内核
+```kotlin
+// 默认MediaPlayer播放器
+com.mx.video.player.MXSystemPlayer
+
+// 谷歌的Exo播放器
+com.mx.mxvideo_demo.player.MXExoPlayer
+
+// IJK播放器
+com.mx.mxvideo_demo.player.MXIJKPlayer
+
+mxVideoStd.setSource(MXPlaySource(Uri.parse("xxx"), "xxx"), clazz = MXSystemPlayer::class.java)
+```
