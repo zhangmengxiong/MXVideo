@@ -35,11 +35,18 @@
 // 设置播放占位图
 Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
 
-// 默认从
+// 默认读取上一次进度播放
+mxVideoStd.setSource(MXPlaySource(Uri.parse("https://aaa.bbb.com/xxx.mp4"), "标题1"))
+mxVideoStd.startPlay()
+
+// 从头开始播放
 mxVideoStd.setSource(MXPlaySource(Uri.parse("https://aaa.bbb.com/xxx.mp4"), "标题1"), seekTo = 0)
 mxVideoStd.startPlay()
-```
-> seekTo 参数默认=-1，当设置>=0时，会在播放时跳转到指定位置，当<0时，会获取上一次播放进度进行跳转
+
+// 从第10秒开始播放
+mxVideoStd.setSource(MXPlaySource(Uri.parse("https://aaa.bbb.com/xxx.mp4"), "标题1"), seekTo = 10)
+mxVideoStd.startPlay()
+``` 
 
 > MXPlaySource 可选参数说明：
 
