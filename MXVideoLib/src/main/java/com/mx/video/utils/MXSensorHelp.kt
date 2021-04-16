@@ -38,7 +38,7 @@ class MXSensorHelp private constructor(
         if (!listener.contains(call)) {
             listener.add(call)
         }
-        if (!isStart) {
+        if (!isStart) { // 有注册监听才开始服务
             start()
         }
     }
@@ -48,15 +48,16 @@ class MXSensorHelp private constructor(
     }
 
 
-    fun start() {
+    private fun start() {
         sensorManager.unregisterListener(sensorListener)
         sensorManager.registerListener(sensorListener, sensor, SensorManager.SENSOR_DELAY_NORMAL)
         isStart = true
     }
 
-    fun release() {
+    fun stop() {
         listener.clear()
         sensorManager.unregisterListener(sensorListener)
+        isStart = false
     }
 
     private val sensorListener = object : SensorEventListener {

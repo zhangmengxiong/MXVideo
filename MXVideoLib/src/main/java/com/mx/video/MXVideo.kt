@@ -54,6 +54,9 @@ abstract class MXVideo @JvmOverloads constructor(
         val height: Int
     )
 
+    /**
+     * 布局资源文件
+     */
     abstract fun getLayoutId(): Int
 
     /**
@@ -81,6 +84,9 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     private val provider by lazy { MXViewProvider(this, config) }
 
+    /**
+     * 设备旋转感应器
+     */
     private val sensorHelp by lazy { MXSensorHelp.instance }
 
     init {
@@ -308,12 +314,13 @@ abstract class MXVideo @JvmOverloads constructor(
     fun onPlayerCompletion() {
         MXUtils.log("onPlayerCompletion")
         config.source?.playUri?.let { MXUtils.saveProgress(context, it, 0) }
-        if (config.gotoNormalScreenWhenComplete && provider.mScreen == MXScreen.FULL) {
-            gotoNormalScreen()
-        }
         mxPlayer?.release()
         MXUtils.findWindows(context)?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         provider.setPlayState(MXState.COMPLETE)
+
+        if (config.gotoNormalScreenWhenComplete && provider.mScreen == MXScreen.FULL) {
+            switchToScreen(MXScreen.NORMAL)
+        }
     }
 
     /**
@@ -343,7 +350,7 @@ abstract class MXVideo @JvmOverloads constructor(
         }
         provider.setPlayState(MXState.ERROR)
         if (config.gotoNormalScreenWhenError && provider.mScreen == MXScreen.FULL) {
-            gotoNormalScreen()
+            switchToScreen(MXScreen.NORMAL)
         }
     }
 
@@ -357,8 +364,10 @@ abstract class MXVideo @JvmOverloads constructor(
         MXUtils.log("onPlayerBuffering:$start")
         provider.setOnBuffering(start)
 
-        config.videoListeners.toList().forEach { listener ->
-            listener.onBuffering(start)
+        post {
+            config.videoListeners.toList().forEach { listener ->
+                listener.onBuffering(start)
+            }
         }
     }
 
@@ -375,8 +384,10 @@ abstract class MXVideo @JvmOverloads constructor(
         textureView?.setVideoSize(width, height)
         postInvalidate()
 
-        config.videoListeners.toList().forEach { listener ->
-            listener.onVideoSizeChange(width, height)
+        post {
+            config.videoListeners.toList().forEach { listener ->
+                listener.onVideoSizeChange(width, height)
+            }
         }
     }
 
@@ -627,6 +638,7 @@ abstract class MXVideo @JvmOverloads constructor(
     fun release() {
         config.release()
         provider.release()
+        sensorHelp.deleteListener(sensorListener)
         stopPlay()
     }
 }

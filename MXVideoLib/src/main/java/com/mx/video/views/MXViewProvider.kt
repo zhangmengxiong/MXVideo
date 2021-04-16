@@ -187,8 +187,10 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
                         MXUtils.saveProgress(mxVideo.context, source.playUri, position)
                     }
 
-                    config.videoListeners.toList().forEach { listener ->
-                        listener.onPlayTicket(position, duration)
+                    mxVideo.post {
+                        config.videoListeners.toList().forEach { listener ->
+                            listener.onPlayTicket(position, duration)
+                        }
                     }
                 }
                 preTicketTime = position
@@ -455,8 +457,10 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
         val oldState = mState
         mState = state
         if (oldState != state) {
-            config.videoListeners.toList().forEach { listener ->
-                listener.onStateChange(state, this)
+            mxVideo.post {
+                config.videoListeners.toList().forEach { listener ->
+                    listener.onStateChange(state, this)
+                }
             }
         }
     }
@@ -547,8 +551,10 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
         val oldScreen = mScreen
         mScreen = screen
         if (oldScreen != screen) {
-            config.videoListeners.toList().forEach { listener ->
-                listener.onScreenChange(screen, this)
+            mxVideo.post {
+                config.videoListeners.toList().forEach { listener ->
+                    listener.onScreenChange(screen, this)
+                }
             }
         }
     }

@@ -18,7 +18,7 @@ open class MXVideoListener {
     open fun onPlayTicket(position: Int, duration: Int) = Unit
 
     /**
-     * 屏幕状态监听
+     * 全屏/小屏 状态监听
      */
     open fun onScreenChange(screen: MXScreen, provider: MXViewProvider) = Unit
 
