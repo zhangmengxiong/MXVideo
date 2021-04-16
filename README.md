@@ -42,14 +42,14 @@ mxVideoStd.startPlay()
 ```
 > MXPlaySource 可选参数说明：
 
-| 姓名   | 年龄 |
-| :----- | :--: |
-| title | 标题 |
-| headerMap | 网络请求头部 |
-| changeDegreeWhenFullScreen | 全屏时是否需要变更Activity方向，如果 = null，会自动根据视频宽高来判断 |
-| isLooping | 是否循环播放，默认 = false |
-| enableSaveProgress | 是否存储、读取播放进度 |
-| isLiveSource | 是否直播源，当时直播时，不显示进度，无法快进快退暂停 |
+| 参数   | 说明 | 默认值 |
+| :----- | :--: | -------: |
+| title | 标题 | "" |
+| headerMap | 网络请求头部 | null |
+| changeDegreeWhenFullScreen | 全屏时是否需要变更Activity方向，如果 = null，会自动根据视频宽高来判断 | null |
+| isLooping | 是否循环播放 | false |
+| enableSaveProgress | 是否存储、读取播放进度 | true |
+| isLiveSource | 是否直播源，当时直播时，不显示进度，无法快进快退暂停 | false |
 
 ##### 4、监听播放进度
 ```kotlin
