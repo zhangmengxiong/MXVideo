@@ -41,6 +41,7 @@ mxVideoStd.startPlay()
  
 ```
 > MXPlaySource 可选参数说明：
+
 | 姓名   | 年龄 |
 | :----- | :--: |
 | title | 标题 |
