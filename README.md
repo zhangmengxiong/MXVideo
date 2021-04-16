@@ -112,9 +112,8 @@ mxVideoStd.setScaleType(MXScale.CENTER_CROP)
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 ```
-
--- 可以设置任意宽高比，如果设置宽高比，则控件高度需要设置android:layout_height="wrap_content"，否则不生效。 --
--- 当取消约束、MXVideo高度自适应、填充规则=MXScale.CENTER_CROP时，控件高度会自动根据视频宽高自动填充高度 --
+可以设置任意宽高比，如果设置宽高比，则控件高度需要设置android:layout_height="wrap_content"，否则不生效。 
+当取消约束、MXVideo高度自适应、填充规则=MXScale.CENTER_CROP时，控件高度会自动根据视频宽高自动填充高度 
 ```kotlin
 // MXVideoStd控件设置宽高比= 16：9
 mxVideoStd.setDimensionRatio(16.0 / 9.0)
