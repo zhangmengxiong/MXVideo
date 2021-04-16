@@ -158,6 +158,7 @@ class MXConfig : Serializable {
         gotoNormalScreenWhenComplete = true
         gotoNormalScreenWhenError = true
         canPauseByUser = true
+        autoRotateBySensor = false
     }
 
     fun release() {

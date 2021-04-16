@@ -121,3 +121,54 @@ mxVideoStd.setDimensionRatio(4.0 / 3.0)
 
 // 可以设置任意宽高比，如果设置宽高比，则控件高度需要设置android:layout_height="wrap_content"，否则不生效。
 ```
+
+
+- 设置不能快进快退
+```kotlin
+// 播放前设置 默认=true
+mxVideoStd.getConfig().canSeekByUser = false
+```
+
+- 设置不能全屏
+```kotlin
+// 播放前设置 默认=true
+mxVideoStd.getConfig().canFullScreen = false
+```
+
+- 设置不显示控件右上角时间
+```kotlin
+// 播放前设置 默认=true
+mxVideoStd.getConfig().canShowSystemTime = false
+```
+
+
+- 设置不显示控件右上角电量图
+```kotlin
+// 播放前设置 默认=true
+mxVideoStd.getConfig().canShowBatteryImg = false
+```
+
+- 设置关闭WiFi环境播放前提醒
+```kotlin
+// 播放前设置 默认=true
+mxVideoStd.getConfig().showTipIfNotWifi = false
+```
+
+- 设置播放完成后自动退出全屏
+```kotlin
+// 播放前设置 默认=true
+mxVideoStd.getConfig().gotoNormalScreenWhenComplete = true
+```
+
+- 设置播放错误后自动退出全屏
+```kotlin
+// 播放前设置 默认=true
+mxVideoStd.getConfig().gotoNormalScreenWhenError = true
+```
+
+- 设置屏幕方向根据重力感应自动进入全屏、小屏模式
+```kotlin
+// 播放前设置 默认=false
+mxVideoStd.getConfig().autoRotateBySensor = true
+```
+
