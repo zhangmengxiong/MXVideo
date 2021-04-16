@@ -17,11 +17,9 @@ class MXExoPlayer : IMXPlayer(), VideoListener, Player.EventListener {
     var mPlaySource: MXPlaySource? = null
     private var isPreparedCall = false
     private var isStartPlayCall = false
-    private var isStarted = false
     override fun start() {
         if (!isActive()) return
         postInMainThread { mediaPlayer?.play() }
-        isStarted = true
     }
 
     override fun setSource(source: MXPlaySource) {
@@ -63,7 +61,6 @@ class MXExoPlayer : IMXPlayer(), VideoListener, Player.EventListener {
             player.setVideoSurface(Surface(surface))
             isPreparedCall = false
             isStartPlayCall = false
-            isStarted = false
             player.prepare()
         }
     }
@@ -180,8 +177,7 @@ class MXExoPlayer : IMXPlayer(), VideoListener, Player.EventListener {
                 }
                 isPreparedCall = true
             }
-        }
-        else if (state == Player.STATE_ENDED) {
+        } else if (state == Player.STATE_ENDED) {
             postInMainThread { getMXVideo()?.onPlayerCompletion() }
         }
     }
