@@ -76,7 +76,7 @@ mxVideoStd.addOnVideoListener(object : MXVideoListener() {
 ### 功能相关
 - 切换播放器内核
 ```kotlin
-// 默认MediaPlayer播放器
+// 默认MediaPlayer播放器，库默认内置
 com.mx.video.player.MXSystemPlayer
 
 // 谷歌的Exo播放器
@@ -85,7 +85,39 @@ com.mx.mxvideo_demo.player.MXExoPlayer
 // IJK播放器
 com.mx.mxvideo_demo.player.MXIJKPlayer
 
+// 设置播放源是可以设置内核，默认 = MXSystemPlayer
 mxVideoStd.setSource(MXPlaySource(Uri.parse("xxx"), "xxx"), clazz = MXSystemPlayer::class.java)
 ```
 
 - 视频渲染旋转角度
+```kotlin
+// 默认旋转角度 = MXDegree.DEGREE_0
+mxVideoStd.setDegree(MXDegree.DEGREE_0)
+```
+
+- 视频填充规则
+```kotlin
+// 强制填充宽高 MXScale.FILL_PARENT
+// 根据视频大小，自适应宽高 MXScale.CENTER_CROP
+
+// 默认填充规则 = MXScale.CENTER_CROP
+mxVideoStd.setScaleType(MXScale.CENTER_CROP)
+```
+
+- MXVideoStd 控件宽高约束
+```xml
+    <!-- 在页面xml中添加，layout_width一般设置match_parent，高度wrap_content -->
+    <com.mx.video.MXVideoStd
+        android:id="@+id/mxVideoStd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+```
+```kotlin
+// MXVideoStd控件设置宽高比= 16：9
+mxVideoStd.setDimensionRatio(16.0 / 9.0)
+
+// MXVideoStd控件设置宽高比= 4：3
+mxVideoStd.setDimensionRatio(4.0 / 3.0)
+
+// 可以设置任意宽高比，如果设置宽高比，则控件高度需要设置android:layout_height="wrap_content"，否则不生效。
+```
