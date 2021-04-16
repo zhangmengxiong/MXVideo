@@ -36,10 +36,11 @@
 Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
 
 // 默认从
-mxVideoStd.setSource(MXPlaySource(Uri.parse("https://aaa.bbb.com/xxx.mp4"), "标题1"))
+mxVideoStd.setSource(MXPlaySource(Uri.parse("https://aaa.bbb.com/xxx.mp4"), "标题1"), seekTo = 0)
 mxVideoStd.startPlay()
- 
 ```
+> seekTo 参数默认=-1，当设置>=0时，会在播放时跳转到指定位置，当<0时，会获取上一次播放进度进行跳转
+
 > MXPlaySource 可选参数说明：
 
 | 参数   | 说明 | 默认值 |
@@ -135,6 +136,11 @@ mxVideoStd.setDimensionRatio(4.0 / 3.0)
 mxVideoStd.setDimensionRatio(0.0)
 ```
 
+- 进度跳转
+```kotlin
+// 进度单位：秒  可以在启动播放后、错误或播完之前调用
+mxVideoStd.seekTo(55)
+```
 
 - 设置不能快进快退
 ```kotlin
