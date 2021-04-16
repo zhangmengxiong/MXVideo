@@ -418,16 +418,19 @@ abstract class MXVideo @JvmOverloads constructor(
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
         val heightMode = MeasureSpec.getMode(heightMeasureSpec)
         val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
 
         if (dimensionRatio > 0.0
             && provider.mScreen == MXScreen.NORMAL
             && widthMode == MeasureSpec.EXACTLY
         ) {
+            var height = (widthSize / dimensionRatio).toInt()
+            if (height > heightSize && heightMode == MeasureSpec.AT_MOST) {
+                height = heightSize
+            }
+
             // 当外部设置固定宽高比，且非全屏时，调整测量高度
-            val measureSpec = MeasureSpec.makeMeasureSpec(
-                (widthSize / dimensionRatio).toInt(),
-                MeasureSpec.EXACTLY
-            )
+            val measureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
             super.onMeasure(widthMeasureSpec, measureSpec)
             return
         }
@@ -437,11 +440,13 @@ abstract class MXVideo @JvmOverloads constructor(
             && widthMode == MeasureSpec.EXACTLY
             && heightMode != MeasureSpec.EXACTLY
         ) {
+            var height = (widthSize * config.videoHeight.toFloat() / config.videoWidth).toInt()
+            if (height > heightSize && heightMode == MeasureSpec.AT_MOST) {
+                height = heightSize
+            }
+
             //  当视频宽高有数据，，且非全屏时，按照视频宽高比调整整个View的高度，默认视频宽高比= 1280 x 720
-            val measureSpec = MeasureSpec.makeMeasureSpec(
-                (widthSize * config.videoHeight.toFloat() / config.videoWidth).toInt(),
-                MeasureSpec.EXACTLY
-            )
+            val measureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
             super.onMeasure(widthMeasureSpec, measureSpec)
             return
         }
