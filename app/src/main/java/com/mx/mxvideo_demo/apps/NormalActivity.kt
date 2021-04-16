@@ -12,6 +12,7 @@ import com.mx.video.beans.MXPlaySource
 import com.mx.video.beans.MXScale
 import com.mx.video.beans.MXState
 import com.mx.video.MXVideo
+import com.mx.video.beans.MXDegree
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
 import com.mx.video.utils.MXUtils
@@ -70,7 +71,8 @@ class NormalActivity : AppCompatActivity() {
             }
 
             override fun onPlayTicket(position: Int, duration: Int) {
-                timeTxv.text = "${MXUtils.stringForTime(position)} / ${MXUtils.stringForTime(duration)}"
+                timeTxv.text =
+                    "${MXUtils.stringForTime(position)} / ${MXUtils.stringForTime(duration)}"
                 // println("MXUtils $position / $duration")
             }
         })
@@ -152,13 +154,13 @@ class NormalActivity : AppCompatActivity() {
 
         rotationRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.rotation0) {
-                mxVideoStd.setTextureViewRotation(0)
+                mxVideoStd.setDegree(MXDegree.DEGREE_0)
             } else if (checkedId == R.id.rotation90) {
-                mxVideoStd.setTextureViewRotation(90)
+                mxVideoStd.setDegree(MXDegree.DEGREE_90)
             } else if (checkedId == R.id.rotation180) {
-                mxVideoStd.setTextureViewRotation(180)
+                mxVideoStd.setDegree(MXDegree.DEGREE_180)
             } else if (checkedId == R.id.rotation270) {
-                mxVideoStd.setTextureViewRotation(270)
+                mxVideoStd.setDegree(MXDegree.DEGREE_270)
             }
         }
         rotation0.performClick()

@@ -30,7 +30,7 @@ class MXConfig : Serializable {
     /**
      * 旋转角度
      */
-    var rotation: Int = 0
+    var degree: MXDegree = MXDegree.DEGREE_0
 
     /**
      * 视频宽度
@@ -126,7 +126,7 @@ class MXConfig : Serializable {
     val videoListeners = ArrayList<MXVideoListener>()
 
     fun cloneBy(target: MXConfig) {
-        rotation = target.rotation
+        degree = target.degree
         videoWidth = target.videoWidth
         videoHeight = target.videoHeight
         scale = target.scale
@@ -144,7 +144,7 @@ class MXConfig : Serializable {
     }
 
     fun reset() {
-        rotation = 0
+        degree = MXDegree.DEGREE_0
         videoWidth = 16
         videoHeight = 9
         scale = MXScale.CENTER_CROP

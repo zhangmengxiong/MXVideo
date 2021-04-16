@@ -143,9 +143,9 @@ abstract class MXVideo @JvmOverloads constructor(
         provider.setPlayState(MXState.NORMAL)
     }
 
-    fun setTextureViewRotation(rotation: Int) {
-        config.rotation = rotation
-        textureView?.rotation = rotation.toFloat()
+    fun setDegree(degree: MXDegree) {
+        config.degree = degree
+        textureView?.setDegree(degree)
     }
 
     /**
@@ -248,7 +248,7 @@ abstract class MXVideo @JvmOverloads constructor(
         val textureView = MXTextureView(context.applicationContext)
         textureView.setVideoSize(config.videoWidth, config.videoHeight)
         textureView.setDisplayType(config.scale)
-        textureView.rotation = config.rotation.toFloat()
+        textureView.setDegree(config.degree)
 
         val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         layoutParams.gravity = Gravity.CENTER

@@ -87,3 +87,5 @@ com.mx.mxvideo_demo.player.MXIJKPlayer
 
 mxVideoStd.setSource(MXPlaySource(Uri.parse("xxx"), "xxx"), clazz = MXSystemPlayer::class.java)
 ```
+
+- 视频渲染旋转角度
