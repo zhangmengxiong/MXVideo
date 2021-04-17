@@ -492,6 +492,35 @@
                     android:layout_height="wrap_content"
                     android:text="不支持" />
             </RadioGroup>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="10dp"
+                android:text="直播流报错时自动重试播放："
+                android:textColor="@color/black" />
+
+            <RadioGroup
+                android:id="@+id/liveRetryRG"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+
+                <RadioButton
+                    android:id="@+id/liveRetryTrue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="支持" />
+
+                <RadioButton
+                    android:id="@+id/liveRetryFalse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="不支持" />
+            </RadioGroup>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

@@ -8,11 +8,11 @@ import com.bumptech.glide.Glide
 import com.mx.mxvideo_demo.*
 import com.mx.mxvideo_demo.player.MXExoPlayer
 import com.mx.mxvideo_demo.player.MXIJKPlayer
+import com.mx.video.MXVideo
+import com.mx.video.beans.MXDegree
 import com.mx.video.beans.MXPlaySource
 import com.mx.video.beans.MXScale
 import com.mx.video.beans.MXState
-import com.mx.video.MXVideo
-import com.mx.video.beans.MXDegree
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
 import com.mx.video.utils.MXUtils
@@ -207,6 +207,12 @@ class NormalActivity : AppCompatActivity() {
                 (checkedId == R.id.sensorTrue)
         }
         sensorFalse.performClick()
+
+        liveRetryRG.setOnCheckedChangeListener { group, checkedId ->
+            mxVideoStd.getConfig().replayLiveSourceWhenError =
+                (checkedId == R.id.liveRetryTrue)
+        }
+        liveRetryFalse.performClick()
     }
 
     override fun onBackPressed() {
