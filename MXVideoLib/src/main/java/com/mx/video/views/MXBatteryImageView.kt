@@ -35,7 +35,6 @@ class MXBatteryImageView @JvmOverloads constructor(
                 val status = intent.getIntExtra("status", BatteryManager.BATTERY_STATUS_UNKNOWN)
                 val percent = (level.toDouble() / scale) * 100.0
                 val isCharging = (status == BatteryManager.BATTERY_STATUS_CHARGING)
-                MXUtils.log("percent=$percent  isCharging=$isCharging")
                 setLevel(percent.toInt(), isCharging)
             }
         }

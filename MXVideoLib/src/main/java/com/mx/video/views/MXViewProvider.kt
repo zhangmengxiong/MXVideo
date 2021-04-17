@@ -222,7 +222,6 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
             }
 
             override fun onTouchMove(percent: Float) {
-                MXUtils.log("percent = $percent")
                 var targetVolume = startVolume + (maxVolume * percent).toInt()
                 if (targetVolume < 0) targetVolume = 0
                 if (targetVolume > maxVolume) targetVolume = maxVolume
@@ -255,7 +254,6 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
             }
 
             override fun onTouchMove(percent: Float) {
-                MXUtils.log("percent = $percent")
                 val maxBrightness = brightnessHelp.getMaxBrightness()
                 var targetBrightness = startBrightness + (maxBrightness * percent * 0.7).toInt()
                 if (targetBrightness < 0) targetBrightness = 0
@@ -482,8 +480,6 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
 
         override fun onTouchMove(percent: Float) {
             if (!config.sourceCanSeek() || mState != MXState.PLAYING) return
-
-            MXUtils.log("percent = $percent")
             val duration = mxVideo.getDuration()
             var position = mxVideo.getCurrentPosition() + (min(120, duration) * percent).toInt()
             if (position < 0) position = 0
