@@ -342,6 +342,13 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun onPlayerError(error: String?) {
         MXUtils.log("onPlayerError  $error")
+            && provider.mState in arrayOf(MXState.PLAYING, MXState.PAUSE, MXState.PREPARING)
+        ) {
+            // 直播重试
+            startPlay()
+            return
+        }
+
         if (config.isPreloading && provider.mState == MXState.PREPARING) {
             // 预加载失败，状态重置成NORMAL
             config.isPreloading = false

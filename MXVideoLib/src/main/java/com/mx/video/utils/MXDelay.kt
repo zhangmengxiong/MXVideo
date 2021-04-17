@@ -5,9 +5,9 @@ import android.os.Handler
 class MXDelay {
     private val mHandler = Handler()
     private var isTicketStart = false
-    private var timeDelay = 5000L
+    private var timeDelay = 2000L
     private var runnable: Runnable? = null
-    fun setDelayRun(timeDelay: Long = 300, runnable: Runnable) {
+    fun setDelayRun(timeDelay: Long, runnable: Runnable) {
         this.runnable = runnable
         this.timeDelay = timeDelay
     }

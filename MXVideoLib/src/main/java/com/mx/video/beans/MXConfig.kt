@@ -104,6 +104,11 @@ class MXConfig : Serializable {
     var autoRotateBySensor = false
 
     /**
+     * 直播流，播放失败时自动重新播放
+     */
+    var replayLiveSourceWhenError = true
+
+    /**
      * 是否可以快进快退
      */
     fun sourceCanSeek(): Boolean {
@@ -141,6 +146,7 @@ class MXConfig : Serializable {
         gotoNormalScreenWhenError = target.gotoNormalScreenWhenError
         canPauseByUser = target.canPauseByUser
         autoRotateBySensor = target.autoRotateBySensor
+        replayLiveSourceWhenError = target.replayLiveSourceWhenError
     }
 
     fun reset() {
@@ -159,6 +165,7 @@ class MXConfig : Serializable {
         gotoNormalScreenWhenError = true
         canPauseByUser = true
         autoRotateBySensor = false
+        replayLiveSourceWhenError = false
     }
 
     fun release() {

@@ -168,7 +168,7 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
             }
         }
 
-        timeDelay.setDelayRun(5000) {
+        timeDelay.setDelayRun(3000) {
             if (!mxVideo.isShown || mState != MXState.PLAYING) {
                 return@setDelayRun
             }
@@ -176,7 +176,7 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
             mxBottomLay.visibility = View.GONE
             mxTopLay.visibility = View.GONE
         }
-        timeTicket.setTicketRun(300) {
+        timeTicket.setTicketRun(330) {
             if (!mxVideo.isShown) return@setTicketRun
             val source = config.source ?: return@setTicketRun
             if (mxVideo.isPlaying()) {

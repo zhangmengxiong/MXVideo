@@ -5,9 +5,9 @@ import android.os.Handler
 class MXTicket {
     private val mHandler = Handler()
     private var isTicketStart = false
-    private var timeDiff = 300L
+    private var timeDiff = 0L
     private var runnable: Runnable? = null
-    fun setTicketRun(timeDiff: Long = 300, runnable: Runnable) {
+    fun setTicketRun(timeDiff: Long, runnable: Runnable) {
         this.runnable = runnable
         this.timeDiff = timeDiff
     }
@@ -32,7 +32,9 @@ class MXTicket {
             } catch (e: Exception) {
             } finally {
                 mHandler.removeCallbacksAndMessages(null)
-                mHandler.postDelayed(this, timeDiff)
+                if (timeDiff > 0) {
+                    mHandler.postDelayed(this, timeDiff)
+                }
             }
         }
     }
