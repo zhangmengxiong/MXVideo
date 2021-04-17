@@ -106,7 +106,7 @@ class MXConfig : Serializable {
     /**
      * 直播流，播放失败时自动重新播放
      */
-    var replayLiveSourceWhenError = true
+    var replayLiveSourceWhenError = false
 
     /**
      * 是否可以快进快退
