@@ -342,6 +342,8 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     fun onPlayerError(error: String?) {
         MXUtils.log("onPlayerError  $error")
+        if (config.source?.isLiveSource == true
+            && config.replayLiveSourceWhenError
             && provider.mState in arrayOf(MXState.PLAYING, MXState.PAUSE, MXState.PREPARING)
         ) {
             // 直播重试
