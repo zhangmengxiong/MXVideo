@@ -105,7 +105,7 @@ com.mx.mxvideo_demo.player.MXExoPlayer
 com.mx.mxvideo_demo.player.MXIJKPlayer
 
 // 设置播放源是可以设置内核，默认 = MXSystemPlayer
-mxVideoStd.setSource(MXPlaySource(Uri.parse("xxx"), "xxx"), clazz = MXSystemPlayer::class.java)
+mxVideoStd.setSource(MXPlaySource(Uri.parse("xxx"), "xxx"), player = MXSystemPlayer::class.java)
 ```
 
 - 视频渲染旋转角度
