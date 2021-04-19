@@ -130,13 +130,13 @@ abstract class MXVideo @JvmOverloads constructor(
     /**
      * 设置播放数据源
      * @param source 播放源
-     * @param clazz 播放器
-     * @param seekTo 跳转
+     * @param player 播放器类
+     * @param seekTo 跳转 >=0 时播放后会跳转到对应时间，单位：秒
      */
-    fun setSource(source: MXPlaySource, clazz: Class<out IMXPlayer>? = null, seekTo: Int = -1) {
+    fun setSource(source: MXPlaySource, player: Class<out IMXPlayer>? = null, seekTo: Int = -1) {
         stopPlay()
         config.source = source
-        mxPlayerClass = clazz
+        mxPlayerClass = player
 
         config.seekWhenPlay = seekTo
         provider.mxTitleTxv.text = source.title
@@ -511,7 +511,7 @@ abstract class MXVideo @JvmOverloads constructor(
                     if (degree.isVertical()) {
                         degree = MXDegree.DEGREE_270
                     }
-                    MXUtils.changeDegree(context, degree)
+                    MXUtils.setScreenDegree(context, degree)
                 }
                 provider.setScreenState(MXScreen.FULL)
             }
@@ -521,7 +521,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 parentItem.parentViewGroup.removeViewAt(parentItem.index)
                 parentItem.parentViewGroup.addView(this, parentItem.index, parentItem.layoutParams)
 
-                MXUtils.changeDegree(context, MXDegree.DEGREE_0)
+                MXUtils.recoverScreenDegree(context)
                 MXUtils.recoverFullScreen(context)
                 provider.setScreenState(MXScreen.NORMAL)
             }
@@ -614,14 +614,14 @@ abstract class MXVideo @JvmOverloads constructor(
             if (!config.autoRotateBySensor) {
                 if (provider.mScreen == MXScreen.FULL && degree.isHorizontal()) {
                     // 全屏时，方向切换，变更一下
-                    MXUtils.changeDegree(context, degree)
+                    MXUtils.setScreenDegree(context, degree)
                 }
                 return
             }
             if (degree.isHorizontal()) {
                 // 竖屏切换到横屏
                 if (provider.mScreen == MXScreen.FULL) {
-                    MXUtils.changeDegree(context, degree)
+                    MXUtils.setScreenDegree(context, degree)
                 } else {
                     switchToScreen(MXScreen.FULL)
                 }
@@ -630,7 +630,7 @@ abstract class MXVideo @JvmOverloads constructor(
             if (degree.isVertical()) {
                 // 横屏切换到竖屏
                 if (provider.mScreen == MXScreen.NORMAL) {
-                    MXUtils.changeDegree(context, degree)
+                    MXUtils.setScreenDegree(context, degree)
                 } else {
                     switchToScreen(MXScreen.NORMAL)
                 }

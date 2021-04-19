@@ -18,7 +18,7 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     private val isActive = AtomicBoolean(false)
 
     /**
-     * 播放器是否可用，当=FALSE时，这个Player已经被释放！
+     * 播放器是否可用
      */
     fun isActive() = isActive.get()
 

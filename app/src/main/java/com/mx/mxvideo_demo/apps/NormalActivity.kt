@@ -30,7 +30,7 @@ class NormalActivity : AppCompatActivity() {
             Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
             mxVideoStd.setSource(
                 MXPlaySource(Uri.parse(ldjVideos.random()), titles.random()),
-                clazz = playerClass, seekTo = 0
+                player = playerClass, seekTo = 0
             )
             mxVideoStd.startPlay()
         }
@@ -40,7 +40,7 @@ class NormalActivity : AppCompatActivity() {
                 MXPlaySource(
                     Uri.parse(ldjVideos.random()),
                     titles.random()
-                ), seekTo = 60, clazz = playerClass
+                ), seekTo = 60, player = playerClass
             )
             mxVideoStd.startPlay()
         }
@@ -50,7 +50,7 @@ class NormalActivity : AppCompatActivity() {
                 MXPlaySource(
                     Uri.parse(ldjVideos.random()),
                     titles.random()
-                ), clazz = playerClass, seekTo = 0
+                ), player = playerClass, seekTo = 0
             )
             mxVideoStd.startPreload()
         }
@@ -60,7 +60,7 @@ class NormalActivity : AppCompatActivity() {
                 MXPlaySource(
                     Uri.parse("http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8"),
                     titles.random(), isLiveSource = true
-                ), clazz = playerClass, seekTo = 0
+                ), player = playerClass, seekTo = 0
             )
             mxVideoStd.startPlay()
         }

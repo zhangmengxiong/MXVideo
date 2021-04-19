@@ -99,8 +99,35 @@ object MXUtils {
     }
 
     /**
+     * 变更屏幕方向
+     */
+    fun setScreenDegree(context: Context, degree: MXDegree = MXDegree.DEGREE_0) {
+        val activity = findActivity(context) ?: return
+        val currentActivityId = activity.toString()
+        if (!activityDegreeMap.containsKey(currentActivityId)) {
+            activityDegreeMap[currentActivityId] = activity.requestedOrientation
+        }
+        activity.requestedOrientation = when (degree) {
+            MXDegree.DEGREE_0 -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            MXDegree.DEGREE_90 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+            MXDegree.DEGREE_180 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
+            MXDegree.DEGREE_270 -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        }
+    }
+
+    /**
+     * 设置屏幕方向为默认方向
+     */
+    fun recoverScreenDegree(context: Context) {
+        val activity = findActivity(context) ?: return
+        val currentActivityId = activity.toString()
+        activityDegreeMap[currentActivityId]?.let {
+            activity.requestedOrientation = it
+        }
+    }
+
+    /**
      * @param context 页面上下文
-     * @param willChangeOrientation 是否需要更改页面方向
      */
     fun setFullScreen(context: Context) {
         val activity = findActivity(context) ?: return
@@ -120,34 +147,20 @@ object MXUtils {
             uiOptions = uiOptions or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         }
         val currentSystemVisibility = activity.window?.decorView?.systemUiVisibility
-        activityFlagMap[currentActivityId] = currentSystemVisibility
+        if (!activityFlagMap.containsKey(currentActivityId)) {
+            activityFlagMap[currentActivityId] = currentSystemVisibility
+        }
         activity.window?.decorView?.systemUiVisibility = uiOptions
     }
 
-    fun changeDegree(context: Context?, degree: MXDegree = MXDegree.DEGREE_0) {
-        val activity = findActivity(context) ?: return
-        val currentActivityId = activity.toString()
-        if (!activityDegreeMap.containsKey(currentActivityId)) {
-            activityDegreeMap[currentActivityId] = activity.requestedOrientation
-        }
-        activity.requestedOrientation = when (degree) {
-            MXDegree.DEGREE_0 -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            MXDegree.DEGREE_90 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
-            MXDegree.DEGREE_180 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
-            MXDegree.DEGREE_270 -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        }
-    }
-
-    fun recoverFullScreen(context: Context?) {
+    /**
+     * 退出全屏
+     */
+    fun recoverFullScreen(context: Context) {
         val activity = findActivity(context) ?: return
         val currentActivityId = activity.toString()
 
         activity.window?.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-
-        activityDegreeMap[currentActivityId]?.let {
-            activity.requestedOrientation = it
-        }
-
         activityFlagMap[currentActivityId]?.let {
             activity.window?.decorView?.setSystemUiVisibility(it)
         }
