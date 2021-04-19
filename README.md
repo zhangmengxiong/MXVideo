@@ -54,7 +54,7 @@ mxVideoStd.startPlay()
 | :----- | :--: | -------: |
 | title | 标题 | "" |
 | headerMap | 网络请求头部 | null |
-| changeDegreeWhenFullScreen | 全屏时是否需要变更Activity方向，如果 = null，会自动根据视频宽高来判断 | null |
+| changeOrientationWhenFullScreen | 全屏时是否需要变更Activity方向，如果 = null，会自动根据视频宽高来判断 | null |
 | isLooping | 是否循环播放 | false |
 | enableSaveProgress | 是否存储、读取播放进度 | true |
 | isLiveSource | 是否直播源，当时直播时，不显示进度，无法快进快退暂停 | false |
@@ -110,8 +110,8 @@ mxVideoStd.setSource(MXPlaySource(Uri.parse("xxx"), "xxx"), clazz = MXSystemPlay
 
 - 视频渲染旋转角度
 ```kotlin
-// 默认旋转角度 = MXDegree.DEGREE_0
-mxVideoStd.setDegree(MXDegree.DEGREE_90)
+// 默认旋转角度 = MXOrientation.DEGREE_0
+mxVideoStd.setOrientation(MXOrientation.DEGREE_90)
 ```
 
 - 视频填充规则

@@ -13,13 +13,13 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import com.mx.video.BuildConfig
-import com.mx.video.beans.MXDegree
+import com.mx.video.beans.MXOrientation
 import java.util.*
 
 object MXUtils {
     private const val SP_KEY = "MX_SP_KEY"
     private val activityFlagMap = HashMap<String, Int?>()
-    private val activityDegreeMap = HashMap<String, Int?>()
+    private val activityOrientationMap = HashMap<String, Int?>()
 
     fun log(any: Any) {
         if (BuildConfig.DEBUG) {
@@ -101,27 +101,27 @@ object MXUtils {
     /**
      * 变更屏幕方向
      */
-    fun setScreenDegree(context: Context, degree: MXDegree = MXDegree.DEGREE_0) {
+    fun setScreenOrientation(context: Context, orientation: MXOrientation = MXOrientation.DEGREE_0) {
         val activity = findActivity(context) ?: return
         val currentActivityId = activity.toString()
-        if (!activityDegreeMap.containsKey(currentActivityId)) {
-            activityDegreeMap[currentActivityId] = activity.requestedOrientation
+        if (!activityOrientationMap.containsKey(currentActivityId)) {
+            activityOrientationMap[currentActivityId] = activity.requestedOrientation
         }
-        activity.requestedOrientation = when (degree) {
-            MXDegree.DEGREE_0 -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            MXDegree.DEGREE_90 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
-            MXDegree.DEGREE_180 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
-            MXDegree.DEGREE_270 -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        activity.requestedOrientation = when (orientation) {
+            MXOrientation.DEGREE_0 -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            MXOrientation.DEGREE_90 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
+            MXOrientation.DEGREE_180 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
+            MXOrientation.DEGREE_270 -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         }
     }
 
     /**
      * 设置屏幕方向为默认方向
      */
-    fun recoverScreenDegree(context: Context) {
+    fun recoverScreenOrientation(context: Context) {
         val activity = findActivity(context) ?: return
         val currentActivityId = activity.toString()
-        activityDegreeMap[currentActivityId]?.let {
+        activityOrientationMap[currentActivityId]?.let {
             activity.requestedOrientation = it
         }
     }

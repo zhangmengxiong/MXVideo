@@ -9,7 +9,7 @@ import com.mx.mxvideo_demo.*
 import com.mx.mxvideo_demo.player.MXExoPlayer
 import com.mx.mxvideo_demo.player.MXIJKPlayer
 import com.mx.video.MXVideo
-import com.mx.video.beans.MXDegree
+import com.mx.video.beans.MXOrientation
 import com.mx.video.beans.MXPlaySource
 import com.mx.video.beans.MXScale
 import com.mx.video.beans.MXState
@@ -154,13 +154,13 @@ class NormalActivity : AppCompatActivity() {
 
         rotationRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.rotation0) {
-                mxVideoStd.setDegree(MXDegree.DEGREE_0)
+                mxVideoStd.setTextureOrientation(MXOrientation.DEGREE_0)
             } else if (checkedId == R.id.rotation90) {
-                mxVideoStd.setDegree(MXDegree.DEGREE_90)
+                mxVideoStd.setTextureOrientation(MXOrientation.DEGREE_90)
             } else if (checkedId == R.id.rotation180) {
-                mxVideoStd.setDegree(MXDegree.DEGREE_180)
+                mxVideoStd.setTextureOrientation(MXOrientation.DEGREE_180)
             } else if (checkedId == R.id.rotation270) {
-                mxVideoStd.setDegree(MXDegree.DEGREE_270)
+                mxVideoStd.setTextureOrientation(MXOrientation.DEGREE_270)
             }
         }
         rotation0.performClick()

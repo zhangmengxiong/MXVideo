@@ -197,12 +197,7 @@ class MXExoPlayer : IMXPlayer(), VideoListener, Player.EventListener {
         }
     }
 
-    override fun onVideoSizeChanged(
-        width: Int,
-        height: Int,
-        unappliedRotationDegrees: Int,
-        pixelWidthHeightRatio: Float
-    ) {
+    override fun onVideoSizeChanged(width: Int, height: Int, i: Int, j: Float) {
         if (!isActive()) return
         postInMainThread { getMXVideo()?.onPlayerVideoSizeChanged(width, height) }
     }

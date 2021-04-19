@@ -30,7 +30,7 @@ class MXConfig : Serializable {
     /**
      * 旋转角度
      */
-    var degree: MXDegree = MXDegree.DEGREE_0
+    var orientation: MXOrientation = MXOrientation.DEGREE_0
 
     /**
      * 视频宽度
@@ -118,8 +118,8 @@ class MXConfig : Serializable {
     /**
      * 全屏时是否变更屏幕方向
      */
-    fun willChangeDegreeWhenFullScreen(): Boolean {
-        if (source?.changeDegreeWhenFullScreen == true) {
+    fun willChangeOrientationWhenFullScreen(): Boolean {
+        if (source?.changeOrientationWhenFullScreen == true) {
             return true
         }
         return videoWidth > videoHeight
@@ -131,7 +131,7 @@ class MXConfig : Serializable {
     val videoListeners = ArrayList<MXVideoListener>()
 
     fun cloneBy(target: MXConfig) {
-        degree = target.degree
+        orientation = target.orientation
         videoWidth = target.videoWidth
         videoHeight = target.videoHeight
         scale = target.scale
@@ -150,7 +150,7 @@ class MXConfig : Serializable {
     }
 
     fun reset() {
-        degree = MXDegree.DEGREE_0
+        orientation = MXOrientation.DEGREE_0
         videoWidth = 16
         videoHeight = 9
         scale = MXScale.CENTER_CROP

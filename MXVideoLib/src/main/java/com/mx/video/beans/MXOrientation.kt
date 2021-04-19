@@ -3,7 +3,7 @@ package com.mx.video.beans
 /**
  * 手机旋转角度
  */
-enum class MXDegree(val degree: Int) {
+enum class MXOrientation(val degree: Int) {
     DEGREE_0(0),
     DEGREE_90(90),
     DEGREE_180(180),

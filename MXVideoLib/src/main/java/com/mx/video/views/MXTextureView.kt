@@ -3,7 +3,7 @@ package com.mx.video.views
 import android.content.Context
 import android.util.AttributeSet
 import android.view.TextureView
-import com.mx.video.beans.MXDegree
+import com.mx.video.beans.MXOrientation
 import com.mx.video.beans.MXScale
 
 class MXTextureView @JvmOverloads constructor(
@@ -28,8 +28,8 @@ class MXTextureView @JvmOverloads constructor(
         }
     }
 
-    fun setDegree(degree: MXDegree) {
-        val degree = degree.degree.toFloat()
+    fun setOrientation(orientation: MXOrientation) {
+        val degree = orientation.degree.toFloat()
         if (degree != rotation) {
             super.setRotation(degree)
             requestLayout()

@@ -143,9 +143,13 @@ abstract class MXVideo @JvmOverloads constructor(
         provider.setPlayState(MXState.NORMAL)
     }
 
-    fun setDegree(degree: MXDegree) {
-        config.degree = degree
-        textureView?.setDegree(degree)
+    /**
+     * @hide
+     * 设置方向
+     */
+    fun setTextureOrientation(orientation: MXOrientation) {
+        config.orientation = orientation
+        textureView?.setOrientation(orientation)
     }
 
     /**
@@ -248,7 +252,7 @@ abstract class MXVideo @JvmOverloads constructor(
         val textureView = MXTextureView(context.applicationContext)
         textureView.setVideoSize(config.videoWidth, config.videoHeight)
         textureView.setDisplayType(config.scale)
-        textureView.setDegree(config.degree)
+        textureView.setOrientation(config.orientation)
 
         val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         layoutParams.gravity = Gravity.CENTER
@@ -506,12 +510,12 @@ abstract class MXVideo @JvmOverloads constructor(
                 windows.addView(this, fullLayout)
 
                 MXUtils.setFullScreen(context)
-                if (config.willChangeDegreeWhenFullScreen()) {
-                    var degree = sensorHelp.getDegree()
-                    if (degree.isVertical()) {
-                        degree = MXDegree.DEGREE_270
+                if (config.willChangeOrientationWhenFullScreen()) {
+                    var orientation = sensorHelp.getOrientation()
+                    if (orientation.isVertical()) {
+                        orientation = MXOrientation.DEGREE_270
                     }
-                    MXUtils.setScreenDegree(context, degree)
+                    MXUtils.setScreenOrientation(context, orientation)
                 }
                 provider.setScreenState(MXScreen.FULL)
             }
@@ -521,7 +525,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 parentItem.parentViewGroup.removeViewAt(parentItem.index)
                 parentItem.parentViewGroup.addView(this, parentItem.index, parentItem.layoutParams)
 
-                MXUtils.recoverScreenDegree(context)
+                MXUtils.recoverScreenOrientation(context)
                 MXUtils.recoverFullScreen(context)
                 provider.setScreenState(MXScreen.NORMAL)
             }
@@ -606,31 +610,31 @@ abstract class MXVideo @JvmOverloads constructor(
     }
 
     private val sensorListener = object : MXSensorListener {
-        override fun onChange(degree: MXDegree) {
-            if (!isPlaying() || !config.willChangeDegreeWhenFullScreen()) {
+        override fun onChange(orientation: MXOrientation) {
+            if (!isPlaying() || !config.willChangeOrientationWhenFullScreen()) {
                 // 当不在播放，或者不需要变更方向时，不处理
                 return
             }
             if (!config.autoRotateBySensor) {
-                if (provider.mScreen == MXScreen.FULL && degree.isHorizontal()) {
+                if (provider.mScreen == MXScreen.FULL && orientation.isHorizontal()) {
                     // 全屏时，方向切换，变更一下
-                    MXUtils.setScreenDegree(context, degree)
+                    MXUtils.setScreenOrientation(context, orientation)
                 }
                 return
             }
-            if (degree.isHorizontal()) {
+            if (orientation.isHorizontal()) {
                 // 竖屏切换到横屏
                 if (provider.mScreen == MXScreen.FULL) {
-                    MXUtils.setScreenDegree(context, degree)
+                    MXUtils.setScreenOrientation(context, orientation)
                 } else {
                     switchToScreen(MXScreen.FULL)
                 }
                 return
             }
-            if (degree.isVertical()) {
+            if (orientation.isVertical()) {
                 // 横屏切换到竖屏
                 if (provider.mScreen == MXScreen.NORMAL) {
-                    MXUtils.setScreenDegree(context, degree)
+                    MXUtils.setScreenOrientation(context, orientation)
                 } else {
                     switchToScreen(MXScreen.NORMAL)
                 }

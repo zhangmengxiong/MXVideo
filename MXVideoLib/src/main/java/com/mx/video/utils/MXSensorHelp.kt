@@ -7,7 +7,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Handler
-import com.mx.video.beans.MXDegree
+import com.mx.video.beans.MXOrientation
 import com.mx.video.beans.MXSensorListener
 import kotlin.math.abs
 import kotlin.math.atan2
@@ -29,9 +29,9 @@ class MXSensorHelp private constructor(
     private val sensor by lazy { sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) }
     private var isStart = false
     private var _preChangeTime = 0L
-    private var _degree: MXDegree = MXDegree.DEGREE_0
+    private var _orientation: MXOrientation = MXOrientation.DEGREE_0
 
-    fun getDegree() = _degree
+    fun getOrientation() = _orientation
 
     private val listener = ArrayList<MXSensorListener>()
     fun addListener(call: MXSensorListener) {
@@ -80,24 +80,24 @@ class MXSensorHelp private constructor(
                     dg += 360
                 }
             }
-            val degree = when (dg) {
+            val orientation = when (dg) {
                 in ((90 - 45) until (90 + 45)) -> {
-                    MXDegree.DEGREE_90
+                    MXOrientation.DEGREE_90
                 }
                 in ((180 - 45) until (180 + 45)) -> {
-                    MXDegree.DEGREE_180
+                    MXOrientation.DEGREE_180
                 }
                 in ((270 - 45) until (270 + 45)) -> {
-                    MXDegree.DEGREE_270
+                    MXOrientation.DEGREE_270
                 }
                 else -> {
-                    MXDegree.DEGREE_0
+                    MXOrientation.DEGREE_0
                 }
             }
             synchronized(this@MXSensorHelp) {
-                if (degree != _degree) {
-                    _degree = degree
-                    sendDegreeChange(degree)
+                if (orientation != _orientation) {
+                    _orientation = orientation
+                    sendOrientationChange(orientation)
                 }
             }
         }
@@ -106,10 +106,10 @@ class MXSensorHelp private constructor(
         }
     }
 
-    private fun sendDegreeChange(degree: MXDegree) {
+    private fun sendOrientationChange(orientation: MXOrientation) {
         mHandler.removeCallbacksAndMessages(null)
         val sendRun = Runnable {
-            listener.toList().forEach { it.onChange(degree) }
+            listener.toList().forEach { it.onChange(orientation) }
             _preChangeTime = System.currentTimeMillis()
         }
 
