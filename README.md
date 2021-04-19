@@ -1,7 +1,7 @@
 # MXVideo
 
 #### 介绍
-基于饺子播放器、kotlin编写的开源播放器
+基于饺子播放器、kotlin编写的 Android 开源播放器, 开箱即用，欢迎提 issue 和 pull request
 最新版本：[![](https://jitpack.io/v/com.gitee.zhangmengxiong/MXVideo.svg)](https://jitpack.io/#com.gitee.zhangmengxiong/MXVideo)
 
 #### 功能特性
@@ -33,7 +33,7 @@
 ##### 3、开始播放
 ```kotlin
 // 设置播放占位图
-Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
+Glide.with(this).load("http://www.xxx.com/xxx.png").into(mxVideoStd.getPosterImageView())
 
 // 默认从上一次进度播放
 mxVideoStd.setSource(MXPlaySource(Uri.parse("https://aaa.bbb.com/xxx.mp4"), "标题1"))
