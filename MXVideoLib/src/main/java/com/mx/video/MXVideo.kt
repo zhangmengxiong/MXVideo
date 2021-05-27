@@ -122,6 +122,11 @@ abstract class MXVideo @JvmOverloads constructor(
     fun getConfig() = config
 
     /**
+     * 获取状态值
+     */
+    fun getState() = provider.mState
+
+    /**
      * 获取播放器
      */
     fun getPlayer() = mxPlayer
@@ -182,6 +187,28 @@ abstract class MXVideo @JvmOverloads constructor(
         stopPlay()
         config.isPreloading = false
         startVideo()
+    }
+
+    /**
+     * 暂停播放
+     */
+    fun pausePlay() {
+        if (provider.mState != MXState.PLAYING) return
+        if (!config.canPauseByUser) return
+        val source = config.source ?: return
+        if (source.isLiveSource) return
+
+        mxPlayer?.pause()
+        provider.setPlayState(MXState.PAUSE)
+    }
+
+    /**
+     * 暂停播放后，继续播放
+     */
+    fun continuePlay() {
+        if (provider.mState != MXState.PAUSE) return
+        mxPlayer?.start()
+        provider.setPlayState(MXState.PLAYING)
     }
 
     /**

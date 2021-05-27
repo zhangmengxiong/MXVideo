@@ -132,15 +132,9 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
             }
             val player = mxVideo.getPlayer()
             if (mState == MXState.PLAYING && config.canPauseByUser && !source.isLiveSource) {
-                if (player != null) {
-                    player.pause()
-                    setPlayState(MXState.PAUSE)
-                }
+                mxVideo.pausePlay()
             } else if (mState == MXState.PAUSE) {
-                if (player != null) {
-                    player.start()
-                    setPlayState(MXState.PLAYING)
-                }
+                mxVideo.continuePlay()
             } else if (mState == MXState.PREPARED) { // 预加载完成
                 if (player != null) {
                     player.start()
