@@ -38,6 +38,13 @@ abstract class MXVideo @JvmOverloads constructor(
             playingVideo?.gotoFullScreen()
         }
 
+        fun stopAll() {
+            playingVideo?.stopPlay()
+        }
+
+        /**
+         * 释放当前播放器
+         */
         fun releaseAll() {
             playingVideo?.release()
         }
