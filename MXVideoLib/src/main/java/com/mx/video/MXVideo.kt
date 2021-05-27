@@ -127,6 +127,11 @@ abstract class MXVideo @JvmOverloads constructor(
     fun getState() = provider.mState
 
     /**
+     * 获取视图Provider
+     */
+    fun getViewProvider() = provider
+
+    /**
      * 获取播放器
      */
     fun getPlayer() = mxPlayer

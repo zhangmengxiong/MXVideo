@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
-import com.mx.video.BuildConfig
 import com.mx.video.beans.MXOrientation
 import java.util.*
 
@@ -21,8 +20,13 @@ object MXUtils {
     private val activityFlagMap = HashMap<String, Int?>()
     private val activityOrientationMap = HashMap<String, Int?>()
 
+    private var isDebug = false
+    fun setDebug(debug: Boolean) {
+        isDebug = debug
+    }
+
     fun log(any: Any) {
-        if (BuildConfig.DEBUG) {
+        if (isDebug) {
             Log.v(MXUtils::class.java.simpleName, any.toString())
         }
     }
@@ -101,7 +105,10 @@ object MXUtils {
     /**
      * 变更屏幕方向
      */
-    fun setScreenOrientation(context: Context, orientation: MXOrientation = MXOrientation.DEGREE_0) {
+    fun setScreenOrientation(
+        context: Context,
+        orientation: MXOrientation = MXOrientation.DEGREE_0
+    ) {
         val activity = findActivity(context) ?: return
         val currentActivityId = activity.toString()
         if (!activityOrientationMap.containsKey(currentActivityId)) {

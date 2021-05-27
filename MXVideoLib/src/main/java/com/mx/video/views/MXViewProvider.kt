@@ -23,7 +23,7 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
         private set
     var preTicketTime: Int = -1
 
-    private val mxPlayerRootLay: FrameLayout by lazy {
+    val mxPlayerRootLay: FrameLayout by lazy {
         mxVideo.findViewById(R.id.mxPlayerRootLay) ?: FrameLayout(mxVideo.context)
     }
     val mxSurfaceContainer: FrameLayout by lazy {
@@ -53,37 +53,37 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
     val mxReturnBtn: ImageView by lazy {
         mxVideo.findViewById(R.id.mxReturnBtn) ?: ImageView(mxVideo.context)
     }
-    private val mxBatteryImg: ImageView by lazy {
+    val mxBatteryImg: ImageView by lazy {
         mxVideo.findViewById(R.id.mxBatteryImg) ?: ImageView(mxVideo.context)
     }
     val mxCurrentTimeTxv: TextView by lazy {
         mxVideo.findViewById(R.id.mxCurrentTimeTxv) ?: TextView(mxVideo.context)
     }
-    private val mxSystemTimeTxv: TextView by lazy {
+    val mxSystemTimeTxv: TextView by lazy {
         mxVideo.findViewById(R.id.mxSystemTimeTxv) ?: TextView(mxVideo.context)
     }
-    private val mxTotalTimeTxv: TextView by lazy {
+    val mxTotalTimeTxv: TextView by lazy {
         mxVideo.findViewById(R.id.mxTotalTimeTxv) ?: TextView(mxVideo.context)
     }
     val mxTitleTxv: TextView by lazy {
         mxVideo.findViewById(R.id.mxTitleTxv) ?: TextView(mxVideo.context)
     }
-    private val mxSeekProgress: SeekBar by lazy {
+    val mxSeekProgress: SeekBar by lazy {
         mxVideo.findViewById(R.id.mxSeekProgress) ?: SeekBar(mxVideo.context)
     }
-    private val mxBottomLay: LinearLayout by lazy {
+    val mxBottomLay: LinearLayout by lazy {
         mxVideo.findViewById(R.id.mxBottomLay) ?: LinearLayout(mxVideo.context)
     }
-    private val mxTopLay: LinearLayout by lazy {
+    val mxTopLay: LinearLayout by lazy {
         mxVideo.findViewById(R.id.mxTopLay) ?: LinearLayout(mxVideo.context)
     }
-    private val mxReplayLay: LinearLayout by lazy {
+    val mxReplayLay: LinearLayout by lazy {
         mxVideo.findViewById(R.id.mxReplayLay) ?: LinearLayout(mxVideo.context)
     }
-    private val mxQuickSeekLay: LinearLayout by lazy {
+    val mxQuickSeekLay: LinearLayout by lazy {
         mxVideo.findViewById(R.id.mxQuickSeekLay) ?: LinearLayout(mxVideo.context)
     }
-    private val mxVolumeLightLay: LinearLayout by lazy {
+    val mxVolumeLightLay: LinearLayout by lazy {
         mxVideo.findViewById(R.id.mxVolumeLightLay) ?: LinearLayout(mxVideo.context)
     }
     val mxVolumeLightTypeTxv: TextView by lazy {
