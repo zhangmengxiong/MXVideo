@@ -74,7 +74,8 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
     // 这里不需要处理未播放状态的快进快退，MXVideo会判断。
     override fun seekTo(time: Int) {
-        if (!isActive()) return
+        val source = mPlaySource ?: return
+        if (!isActive() || source.isLiveSource) return
         val duration = getDuration()
         if (duration != 0 && time >= duration) {
             // 如果直接跳转到结束位置，则直接complete

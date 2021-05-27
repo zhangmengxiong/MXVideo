@@ -16,7 +16,7 @@ data class MXPlaySource(
     /**
      * 标题
      */
-    val title: String = "",
+    val title: String? = "",
 
     /**
      * 请求头部
