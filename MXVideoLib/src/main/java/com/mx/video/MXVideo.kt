@@ -675,7 +675,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 销毁Activity或Fragment时调用
      * 销毁后，不能再次进行播放操作
      */
-    fun release() {
+    open fun release() {
         config.release()
         provider.release()
         sensorHelp.deleteListener(sensorListener)

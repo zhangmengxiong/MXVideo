@@ -6,7 +6,7 @@ import com.mx.video.beans.MXState
 import com.mx.video.utils.MXVideoListener
 import com.mx.video.views.MXViewProvider
 
-class MXVideoStd @JvmOverloads constructor(
+open class MXVideoStd @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : MXVideo(context, attrs, defStyleAttr) {
     override fun getLayoutId(): Int {
