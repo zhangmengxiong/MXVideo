@@ -373,11 +373,21 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
                     timeDelay.stop()
                 }
                 MXState.PREPARED -> {
-                    allContentView.forEach {
-                        if (it in arrayOf(mxPlaceImg, mxPlayBtn)) {
-                            it.visibility = View.VISIBLE
-                        } else {
-                            it.visibility = View.GONE
+                    if (config.isPreloading) {
+                        allContentView.forEach {
+                            if (it in arrayOf(mxPlaceImg, mxPlayBtn)) {
+                                it.visibility = View.VISIBLE
+                            } else {
+                                it.visibility = View.GONE
+                            }
+                        }
+                    } else {
+                        allContentView.forEach {
+                            if (it in arrayOf(mxPlaceImg, mxLoading)) {
+                                it.visibility = View.VISIBLE
+                            } else {
+                                it.visibility = View.GONE
+                            }
                         }
                     }
                     timeTicket.stop()

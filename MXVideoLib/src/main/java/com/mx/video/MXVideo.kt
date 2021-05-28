@@ -319,9 +319,9 @@ abstract class MXVideo @JvmOverloads constructor(
         MXUtils.log("onPlayerPrepared")
         val player = mxPlayer ?: return
 
+        provider.setPlayState(MXState.PREPARED)
         if (config.isPreloading) {
             config.isPreloading = false
-            provider.setPlayState(MXState.PREPARED)
         } else {
             player.start()
             seekBeforePlay()
