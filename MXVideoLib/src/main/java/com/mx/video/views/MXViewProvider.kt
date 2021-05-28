@@ -21,7 +21,9 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
         private set
     var mScreen: MXScreen = MXScreen.NORMAL
         private set
-    var preTicketTime: Int = -1
+
+    var curDuration: Int = -1
+    var curPosition: Int = -1
 
     val mxPlayerRootLay: FrameLayout by lazy {
         mxVideo.findViewById(R.id.mxPlayerRootLay) ?: FrameLayout(mxVideo.context)
@@ -176,7 +178,7 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
             if (mxVideo.isPlaying()) {
                 val duration = mxVideo.getDuration()
                 val position = mxVideo.getCurrentPosition()
-                if (preTicketTime != position) {
+                if (curPosition != position) {
                     if (duration > 0 && position > 0 && source.enableSaveProgress) {
                         MXUtils.saveProgress(mxVideo.context, source.playUri, position)
                     }
@@ -187,7 +189,8 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
                         }
                     }
                 }
-                preTicketTime = position
+                curPosition = position
+                curDuration = duration
 
                 setViewProgress(position, duration)
             }
@@ -269,6 +272,15 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
         })
 
         mxRetryLay.setOnClickListener {
+            // 播放错误重试，需要还原播放时间
+            val source = config.source ?: return@setOnClickListener
+            if (curPosition > 0 && curDuration > 0 // 有旧的观看进度
+                && config.seekWhenPlay < 0  // 没有跳转值
+                && !source.isLiveSource // 非直播源
+            ) {
+                config.seekWhenPlay = curPosition
+            }
+
             mxVideo.startPlay()
         }
         mxReplayLay.setOnClickListener {

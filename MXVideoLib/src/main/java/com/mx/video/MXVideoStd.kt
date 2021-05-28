@@ -15,6 +15,7 @@ open class MXVideoStd @JvmOverloads constructor(
 
     private var onCompleteListener: (() -> Unit)? = null
     private var onErrorListener: (() -> Unit)? = null
+    private var onStartPrepareListener: (() -> Unit)? = null
     private var onPreparedListener: (() -> Unit)? = null
 
     private var onTimeListener: ((position: Int, duration: Int) -> Unit)? = null
@@ -22,6 +23,9 @@ open class MXVideoStd @JvmOverloads constructor(
     private val videoListener = object : MXVideoListener() {
         override fun onStateChange(state: MXState, provider: MXViewProvider) {
             when (state) {
+                MXState.PREPARING -> {
+                    onStartPrepareListener?.invoke()
+                }
                 MXState.PREPARED -> {
                     onPreparedListener?.invoke()
                 }
@@ -45,6 +49,13 @@ open class MXVideoStd @JvmOverloads constructor(
 
     init {
         addOnVideoListener(videoListener)
+    }
+
+    /**
+     * 回调：视频准备启动播放
+     */
+    fun setOnStartPrepareListener(listener: (() -> Unit)?) {
+        onStartPrepareListener = listener
     }
 
     /**
@@ -75,11 +86,20 @@ open class MXVideoStd @JvmOverloads constructor(
         onBufferListener = listener
     }
 
-
     /**
      * 回调：视频播放时间变更
      */
     fun setOnTimeListener(listener: ((position: Int, duration: Int) -> Unit)?) {
         onTimeListener = listener
+    }
+
+    override fun release() {
+        onBufferListener = null
+        onCompleteListener = null
+        onErrorListener = null
+        onPreparedListener = null
+        onStartPrepareListener = null
+        onTimeListener = null
+        super.release()
     }
 }
