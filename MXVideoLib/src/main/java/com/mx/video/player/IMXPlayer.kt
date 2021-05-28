@@ -32,7 +32,7 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     protected fun initHandler() {
         quitHandler()
         mHandler = Handler()
-        val threadHandler = HandlerThread("MXSystemPlayer")
+        val threadHandler = HandlerThread("IMXPlayer")
         threadHandler.start()
         mThreadHandler = Handler(threadHandler.looper)
         this.threadHandler = threadHandler
@@ -62,11 +62,21 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      * @param run 运行回调
      */
     fun postInMainThread(run: () -> Unit) {
+        if (!isActive.get()) return
         val handler = mHandler ?: return
+
+        // 包装一下，抓异常
+        val catchRun = {
+            try {
+                run.invoke()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            run.invoke()
+            catchRun.invoke()
         } else {
-            handler.post(run)
+            handler.post(catchRun)
         }
     }
 
@@ -75,7 +85,15 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      * @param run 运行回调
      */
     fun postInThread(run: () -> Unit) {
-        mThreadHandler?.post(run)
+        if (!isActive.get()) return
+        mThreadHandler?.post {
+            // 包装一下，抓异常
+            try {
+                run.invoke()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     /**

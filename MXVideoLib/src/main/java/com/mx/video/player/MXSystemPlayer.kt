@@ -95,13 +95,12 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
     override fun release() {
         super.release() // 释放父类资源，必不可少
-
         val mediaPlayer = mediaPlayer
         this.mediaPlayer = null
         mSurfaceTexture = null
 
+        mediaPlayer?.setSurface(null)
         postInThread {
-            mediaPlayer?.setSurface(null)
             mediaPlayer?.release()
             quitHandler()
         }
