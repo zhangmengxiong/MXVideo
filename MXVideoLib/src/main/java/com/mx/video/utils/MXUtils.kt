@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import com.mx.video.BuildConfig
 import com.mx.video.beans.MXOrientation
 import java.util.*
 
@@ -26,7 +27,7 @@ object MXUtils {
     }
 
     fun log(any: Any) {
-        if (isDebug) {
+        if (isDebug || BuildConfig.DEBUG) {
             Log.v(MXUtils::class.java.simpleName, any.toString())
         }
     }
