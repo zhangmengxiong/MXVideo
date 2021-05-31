@@ -38,26 +38,41 @@ class MXSensorHelp private constructor(
         if (!listener.contains(call)) {
             listener.add(call)
         }
-        if (!isStart) { // 有注册监听才开始服务
+
+        if (listener.isNotEmpty() && !isStart) {
+            // 有注册监听才开始服务
             start()
         }
     }
 
     fun deleteListener(call: MXSensorListener) {
         listener.remove(call)
+        if (listener.isEmpty() && isStart) {
+            stop()
+        }
     }
-
 
     private fun start() {
-        sensorManager.unregisterListener(sensorListener)
-        sensorManager.registerListener(sensorListener, sensor, SensorManager.SENSOR_DELAY_NORMAL)
-        isStart = true
+        MXUtils.log("MXSensorHelp -> start")
+        synchronized(this) {
+            if (isStart) return
+            sensorManager.unregisterListener(sensorListener)
+            sensorManager.registerListener(
+                sensorListener,
+                sensor,
+                SensorManager.SENSOR_DELAY_NORMAL
+            )
+            isStart = true
+        }
     }
 
-    fun stop() {
-        listener.clear()
-        sensorManager.unregisterListener(sensorListener)
-        isStart = false
+    private fun stop() {
+        MXUtils.log("MXSensorHelp -> stop")
+        synchronized(this) {
+            listener.clear()
+            sensorManager.unregisterListener(sensorListener)
+            isStart = false
+        }
     }
 
     private val sensorListener = object : SensorEventListener {
@@ -117,7 +132,7 @@ class MXSensorHelp private constructor(
         if (delay > 0) {
             mHandler.postDelayed(sendRun, delay)
         } else {
-            sendRun.run()
+            mHandler.post(sendRun)
         }
     }
 
