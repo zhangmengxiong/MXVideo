@@ -3,9 +3,10 @@ package com.mx.video.utils
 import android.content.Context
 import android.view.MotionEvent
 import android.view.ViewConfiguration
+import com.mx.video.utils.touch.MXTouchListener
 import kotlin.math.abs
 
-class MXTouchHelp(private val context: Context) {
+class MXTouchHelp(context: Context) {
     // 最低滑动距离
     private val minMoveDistance = ViewConfiguration.get(context).scaledTouchSlop * 2
     private var downX = 0f
@@ -24,20 +25,9 @@ class MXTouchHelp(private val context: Context) {
         viewHeight = height
     }
 
-    private var onHorizontalListener: OnMXTouchListener? = null
-    fun setHorizontalTouchCall(call: OnMXTouchListener?) {
-        onHorizontalListener = call
-    }
-
-    private var onVerticalLeftListener: OnMXTouchListener? = null
-    fun setVerticalLeftTouchCall(call: OnMXTouchListener) {
-        onVerticalLeftListener = call
-    }
-
-    private var onVerticalRightListener: OnMXTouchListener? = null
-    fun setVerticalRightTouchCall(call: OnMXTouchListener) {
-        onVerticalRightListener = call
-    }
+    var onHorizontalListener: MXTouchListener? = null
+    var onVerticalLeftListener: MXTouchListener? = null
+    var onVerticalRightListener: MXTouchListener? = null
 
     fun onTouch(motionEvent: MotionEvent): Boolean {
         if (viewWidth == 0 || viewHeight == 0) return false
@@ -114,13 +104,11 @@ class MXTouchHelp(private val context: Context) {
         return false
     }
 
-    open class OnMXTouchListener {
-        open fun onStart() {}
-        open fun onTouchMove(percent: Float) {}
-        open fun onEnd(percent: Float) {}
-    }
-
     fun release() {
+        onHorizontalListener?.release()
+        onVerticalLeftListener?.release()
+        onVerticalRightListener?.release()
+
         onHorizontalListener = null
         onVerticalLeftListener = null
         onVerticalRightListener = null
