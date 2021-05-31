@@ -22,8 +22,8 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
     var mScreen: MXScreen = MXScreen.NORMAL
         private set
 
-    var curDuration: Int = -1
-    var curPosition: Int = -1
+    private var curDuration: Int = -1
+    private var curPosition: Int = -1
 
     val mxPlayerRootLay: FrameLayout by lazy {
         mxVideo.findViewById(R.id.mxPlayerRootLay) ?: FrameLayout(mxVideo.context)
@@ -329,31 +329,15 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
 
     fun setPlayState(state: MXState) {
         val isLiveSource = (config.source?.isLiveSource == true)
-        if (!config.canFullScreen) {
-            mxFullscreenBtn.visibility = View.GONE
-        } else {
-            mxFullscreenBtn.visibility = View.VISIBLE
-        }
         mxSeekProgress.isEnabled = config.sourceCanSeek()
+        setViewShow(mxFullscreenBtn, config.showFullScreenBtn)
+        setViewShow(mxSystemTimeTxv, config.canShowSystemTime)
+        setViewShow(mxBatteryImg, config.canShowBatteryImg)
 
-        if (!config.canShowSystemTime) {
-            mxSystemTimeTxv.visibility = View.GONE
-        } else {
-            mxSystemTimeTxv.visibility = View.VISIBLE
-        }
-        if (!config.canShowBatteryImg) {
-            mxBatteryImg.visibility = View.GONE
-        } else {
-            mxBatteryImg.visibility = View.VISIBLE
-        }
         if (config.isPreloading && state == MXState.PREPARING) {
             // 正在预加载中
             allContentView.forEach {
-                if (it in arrayOf(mxPlaceImg, mxPlayBtn)) {
-                    it.visibility = View.VISIBLE
-                } else {
-                    it.visibility = View.GONE
-                }
+                setViewShow(it, it in arrayOf(mxPlaceImg, mxPlayBtn))
             }
             mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
             timeTicket.stop()
@@ -362,11 +346,7 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
             when (state) {
                 MXState.IDLE, MXState.NORMAL -> {
                     allContentView.forEach {
-                        if (it in arrayOf(mxPlaceImg, mxPlayBtn)) {
-                            it.visibility = View.VISIBLE
-                        } else {
-                            it.visibility = View.GONE
-                        }
+                        setViewShow(it, it in arrayOf(mxPlaceImg, mxPlayBtn))
                     }
                     mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
                     timeTicket.stop()
@@ -375,11 +355,7 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
                 }
                 MXState.PREPARING -> {
                     allContentView.forEach {
-                        if (it in arrayOf(mxPlaceImg, mxLoading)) {
-                            it.visibility = View.VISIBLE
-                        } else {
-                            it.visibility = View.GONE
-                        }
+                        setViewShow(it, it in arrayOf(mxPlaceImg, mxLoading))
                     }
                     timeTicket.stop()
                     timeDelay.stop()
@@ -387,19 +363,11 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
                 MXState.PREPARED -> {
                     if (config.isPreloading) {
                         allContentView.forEach {
-                            if (it in arrayOf(mxPlaceImg, mxPlayBtn)) {
-                                it.visibility = View.VISIBLE
-                            } else {
-                                it.visibility = View.GONE
-                            }
+                            setViewShow(it, it in arrayOf(mxPlaceImg, mxPlayBtn))
                         }
                     } else {
                         allContentView.forEach {
-                            if (it in arrayOf(mxPlaceImg, mxLoading)) {
-                                it.visibility = View.VISIBLE
-                            } else {
-                                it.visibility = View.GONE
-                            }
+                            setViewShow(it, it in arrayOf(mxPlaceImg, mxLoading))
                         }
                     }
                     timeTicket.stop()
@@ -432,11 +400,7 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
                 }
                 MXState.PAUSE -> {
                     allContentView.forEach {
-                        if (it in playingVisible) {
-                            it.visibility = View.VISIBLE
-                        } else {
-                            it.visibility = View.GONE
-                        }
+                        setViewShow(it, it in playingVisible)
                     }
                     mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
                     timeTicket.start()
@@ -444,29 +408,21 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
                 }
                 MXState.ERROR -> {
                     allContentView.forEach {
-                        if (it in arrayOf(mxPlaceImg, mxRetryLay, mxTopLay)) {
-                            it.visibility = View.VISIBLE
-                        } else {
-                            it.visibility = View.GONE
-                        }
+                        setViewShow(it, it in arrayOf(mxPlaceImg, mxRetryLay, mxTopLay))
                     }
                     timeTicket.stop()
                     timeDelay.stop()
                 }
                 MXState.COMPLETE -> {
                     allContentView.forEach {
-                        if (it in arrayOf(mxPlaceImg, mxReplayLay, mxTopLay)) {
-                            it.visibility = View.VISIBLE
-                        } else {
-                            it.visibility = View.GONE
-                        }
+                        setViewShow(it, it in arrayOf(mxPlaceImg, mxReplayLay, mxTopLay))
                     }
                     timeTicket.stop()
                     timeDelay.stop()
                 }
             }
         }
-        mxReturnBtn.visibility = if (mScreen == MXScreen.FULL) View.VISIBLE else View.GONE
+        setViewShow(mxReturnBtn, mScreen == MXScreen.FULL)
 
         val oldState = mState
         mState = state
@@ -486,11 +442,8 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
         override fun onStart() {
             if (!config.sourceCanSeek() || mState != MXState.PLAYING) return
             allContentView.forEach {
-                if (it == mxQuickSeekLay) {
-                    it.visibility = View.VISIBLE
-                } else {
-                    it.visibility = View.GONE
-                }
+                val show = it == mxQuickSeekLay
+                setViewShow(it, show)
             }
         }
 
@@ -524,10 +477,20 @@ class MXViewProvider(private val mxVideo: MXVideo, private val config: MXConfig)
      * 播放中状态时，控制View的显示
      */
     private fun setPlayingControl(show: Boolean) {
-        playingVisible.forEach { it.visibility = if (show) View.VISIBLE else View.GONE }
-        mxBottomSeekProgress.visibility = if (show) View.GONE else View.VISIBLE
+        playingVisible.forEach { setViewShow(it, show) }
+        setViewShow(mxBottomSeekProgress, !show)
+
         if (config.source?.isLiveSource == true && mState == MXState.PLAYING) {
-            mxPlayBtn.visibility = View.GONE
+            setViewShow(mxPlayBtn, false)
+        }
+    }
+
+    private fun setViewShow(view: View, show: Boolean, animation: Boolean = false) {
+        if (!animation) {
+            view.visibility = if (show) View.VISIBLE else View.GONE
+        } else {
+            // 这里待完成，添加动画功能
+            view.visibility = if (show) View.VISIBLE else View.GONE
         }
     }
 

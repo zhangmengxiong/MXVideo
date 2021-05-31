@@ -536,7 +536,6 @@ abstract class MXVideo @JvmOverloads constructor(
      * 切换全屏、小屏显示
      */
     private fun switchToScreen(screen: MXScreen) {
-        if (!config.canFullScreen) return
         val windows = MXUtils.findWindowsDecorView(context) ?: return
         if (provider.mScreen == screen) return
         when (screen) {
