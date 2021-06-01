@@ -79,7 +79,7 @@ class MXTouchHelp(context: Context) {
                     }
                 }
             }
-            MotionEvent.ACTION_OUTSIDE, MotionEvent.ACTION_UP -> {
+            MotionEvent.ACTION_OUTSIDE, MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 when {
                     isSeekHorizontal -> {
                         val px = (motionEvent.x - downX) / viewWidth
