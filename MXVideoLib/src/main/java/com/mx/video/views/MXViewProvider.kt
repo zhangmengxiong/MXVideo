@@ -196,9 +196,9 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             return@setOnTouchListener false
         }
 
-        touchHelp.onHorizontalListener = SeekTouchListener(this)
-        touchHelp.onVerticalRightListener = VolumeTouchListener(this)
-        touchHelp.onVerticalLeftListener = BrightnessTouchListener(this)
+        touchHelp.horizontalTouch = SeekTouchListener(this)
+        touchHelp.verticalRightTouch = VolumeTouchListener(this)
+        touchHelp.verticalLeftTouch = BrightnessTouchListener(this)
 
         mxRetryLay.setOnClickListener {
             // 播放错误重试，需要还原播放时间

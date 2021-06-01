@@ -25,9 +25,9 @@ class MXTouchHelp(context: Context) {
         viewHeight = height
     }
 
-    var onHorizontalListener: MXTouchListener? = null
-    var onVerticalLeftListener: MXTouchListener? = null
-    var onVerticalRightListener: MXTouchListener? = null
+    var horizontalTouch: MXTouchListener? = null
+    var verticalLeftTouch: MXTouchListener? = null
+    var verticalRightTouch: MXTouchListener? = null
 
     fun onTouch(motionEvent: MotionEvent): Boolean {
         if (viewWidth == 0 || viewHeight == 0) return false
@@ -46,16 +46,16 @@ class MXTouchHelp(context: Context) {
                     val dy = motionEvent.y - downY
                     if (abs(dx) > minMoveDistance) {
                         isSeekHorizontal = true
-                        onHorizontalListener?.onStart()
+                        horizontalTouch?.touchStart()
                         return true
                     } else if (abs(dy) > minMoveDistance) {
                         val dpx = downX / viewWidth
                         if (dpx < 0.5f) {
                             isSeekVerticalLeft = true
-                            onVerticalLeftListener?.onStart()
+                            verticalLeftTouch?.touchStart()
                         } else {
                             isSeekVerticalRight = true
-                            onVerticalRightListener?.onStart()
+                            verticalRightTouch?.touchStart()
                         }
                         return true
                     }
@@ -63,17 +63,17 @@ class MXTouchHelp(context: Context) {
                     when {
                         isSeekHorizontal -> {
                             val px = (motionEvent.x - downX) / viewWidth
-                            onHorizontalListener?.onTouchMove(px)
+                            horizontalTouch?.touchMove(px)
                             return true
                         }
                         isSeekVerticalLeft -> {
                             val py = (downY - motionEvent.y) / viewHeight
-                            onVerticalLeftListener?.onTouchMove(py)
+                            verticalLeftTouch?.touchMove(py)
                             return true
                         }
                         isSeekVerticalRight -> {
                             val py = (downY - motionEvent.y) / viewHeight
-                            onVerticalRightListener?.onTouchMove(py)
+                            verticalRightTouch?.touchMove(py)
                             return true
                         }
                     }
@@ -83,17 +83,17 @@ class MXTouchHelp(context: Context) {
                 when {
                     isSeekHorizontal -> {
                         val px = (motionEvent.x - downX) / viewWidth
-                        onHorizontalListener?.onEnd(px)
+                        horizontalTouch?.touchEnd(px)
                         return true
                     }
                     isSeekVerticalLeft -> {
                         val py = (downY - motionEvent.y) / viewHeight
-                        onVerticalLeftListener?.onEnd(py)
+                        verticalLeftTouch?.touchEnd(py)
                         return true
                     }
                     isSeekVerticalRight -> {
                         val py = (downY - motionEvent.y) / viewHeight
-                        onVerticalRightListener?.onEnd(py)
+                        verticalRightTouch?.touchEnd(py)
                         return true
                     }
                 }
@@ -105,13 +105,13 @@ class MXTouchHelp(context: Context) {
     }
 
     fun release() {
-        onHorizontalListener?.release()
-        onVerticalLeftListener?.release()
-        onVerticalRightListener?.release()
+        horizontalTouch?.release()
+        verticalLeftTouch?.release()
+        verticalRightTouch?.release()
 
-        onHorizontalListener = null
-        onVerticalLeftListener = null
-        onVerticalRightListener = null
+        horizontalTouch = null
+        verticalLeftTouch = null
+        verticalRightTouch = null
         viewWidth = 0
         viewHeight = 0
     }

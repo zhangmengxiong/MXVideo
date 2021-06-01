@@ -10,7 +10,7 @@ class VolumeTouchListener(private val provider: MXViewProvider) : MXTouchListene
     private val volumeHelp by lazy { MXVolumeHelp(provider.mxVideo.context) }
     private var maxVolume = 0
     private var startVolume = 0
-    override fun onStart() {
+    override fun touchStart() {
         provider.mxVolumeLightLay.visibility = View.VISIBLE
         maxVolume = volumeHelp.getMaxVolume()
         startVolume = volumeHelp.getVolume()
@@ -20,7 +20,7 @@ class VolumeTouchListener(private val provider: MXViewProvider) : MXTouchListene
         provider.mxVolumeLightTxv.text = "${percent}%"
     }
 
-    override fun onTouchMove(percent: Float) {
+    override fun touchMove(percent: Float) {
         var targetVolume = startVolume + (maxVolume * percent).toInt()
         if (targetVolume < 0) targetVolume = 0
         if (targetVolume > maxVolume) targetVolume = maxVolume
@@ -30,7 +30,7 @@ class VolumeTouchListener(private val provider: MXViewProvider) : MXTouchListene
         provider.mxVolumeLightTxv.text = "${percent}%"
     }
 
-    override fun onEnd(percent: Float) {
+    override fun touchEnd(percent: Float) {
         provider.mxVolumeLightLay.visibility = View.GONE
         var targetVolume = startVolume + (maxVolume * percent).toInt()
         if (targetVolume < 0) targetVolume = 0

@@ -13,7 +13,7 @@ class BrightnessTouchListener(private val provider: MXViewProvider) : MXTouchLis
     private val brightnessHelp by lazy { MXBrightnessHelp(provider.mxVideo.context) }
     private var maxBrightness = 0
     private var startBrightness = 0
-    override fun onStart() {
+    override fun touchStart() {
         provider.mxVolumeLightLay.visibility = View.VISIBLE
         maxBrightness = brightnessHelp.getMaxBrightness()
         startBrightness = brightnessHelp.getBrightness()
@@ -23,7 +23,7 @@ class BrightnessTouchListener(private val provider: MXViewProvider) : MXTouchLis
         provider.mxVolumeLightTxv.text = "${percent}%"
     }
 
-    override fun onTouchMove(percent: Float) {
+    override fun touchMove(percent: Float) {
         val maxBrightness = brightnessHelp.getMaxBrightness()
         var targetBrightness = startBrightness + (maxBrightness * percent * 0.7).toInt()
         if (targetBrightness < 0) targetBrightness = 0
@@ -34,7 +34,7 @@ class BrightnessTouchListener(private val provider: MXViewProvider) : MXTouchLis
         provider.mxVolumeLightTxv.text = "${percent}%"
     }
 
-    override fun onEnd(percent: Float) {
+    override fun touchEnd(percent: Float) {
         provider.mxVolumeLightLay.visibility = View.GONE
         var targetBrightness = startBrightness + (maxBrightness * percent * 0.7).toInt()
         if (targetBrightness < 0) targetBrightness = 0
