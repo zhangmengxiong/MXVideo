@@ -245,7 +245,7 @@ abstract class MXVideo @JvmOverloads constructor(
             // 直播源不支持预加载
             return
         }
-        val seekTo = getSeekAfterPlay()
+        val seekTo = getSeekPosition()
         if (seekTo > 0) {
             // 这里暂时只支持seek=0的预加载
             return
@@ -324,7 +324,7 @@ abstract class MXVideo @JvmOverloads constructor(
             config.isPreloading = false
         } else {
             player.start()
-            seekBeforePlay()
+            seekToWhenPlay()
         }
     }
 
@@ -332,17 +332,20 @@ abstract class MXVideo @JvmOverloads constructor(
      * 播放前跳转
      * 必须在player.start()调用之后再使用
      */
-    open fun seekBeforePlay() {
+    open fun seekToWhenPlay() {
         val player = mxPlayer ?: return
-        val seekTo = getSeekAfterPlay()
+        val seekTo = getSeekPosition()
         if (seekTo > 0) {
             player.seekTo(seekTo)
         }
         config.seekWhenPlay = -1
     }
 
-    private fun getSeekAfterPlay(): Int {
-        val source = config.source ?: return 0
+    /**
+     * 获取需要跳转的位置
+     */
+    private fun getSeekPosition(): Int {
+        val source = config.source ?: return -1
         if (config.seekWhenPlay >= 0) { // 注意：这里seekWhenPlay=0时需要默认从0开始播放
             return config.seekWhenPlay
         }
@@ -350,7 +353,7 @@ abstract class MXVideo @JvmOverloads constructor(
             val seekTo = MXUtils.getProgress(context, source.playUri)
             if (seekTo > 0) return seekTo
         }
-        return 0
+        return -1
     }
 
     /**
@@ -536,7 +539,6 @@ abstract class MXVideo @JvmOverloads constructor(
      * 切换全屏、小屏显示
      */
     private fun switchToScreen(screen: MXScreen) {
-        if (!config.canFullScreen) return
         val windows = MXUtils.findWindowsDecorView(context) ?: return
         if (provider.mScreen == screen) return
         when (screen) {

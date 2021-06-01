@@ -33,6 +33,11 @@
             android:name=".apps.NormalActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".apps.FullScreenActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="landscape"
+            android:theme="@style/FullScreen" />
     </application>
 
 </manifest>

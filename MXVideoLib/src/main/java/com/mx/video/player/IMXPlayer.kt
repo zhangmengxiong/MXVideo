@@ -85,7 +85,6 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      * @param run 运行回调
      */
     fun postInThread(run: () -> Unit) {
-        if (!isActive.get()) return
         mThreadHandler?.post {
             // 包装一下，抓异常
             try {

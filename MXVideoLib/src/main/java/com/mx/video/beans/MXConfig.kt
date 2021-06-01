@@ -64,9 +64,9 @@ class MXConfig : Serializable {
     var canSeekByUser = true
 
     /**
-     * 是否支持全屏
+     * 是否显示全屏按钮
      */
-    var canFullScreen = true
+    var showFullScreenBtn = true
 
     /**
      * 是否显示右上角的时间
@@ -138,7 +138,7 @@ class MXConfig : Serializable {
         seekWhenPlay = target.seekWhenPlay
         source = target.source?.clone()
         canSeekByUser = target.canSeekByUser
-        canFullScreen = target.canFullScreen
+        showFullScreenBtn = target.showFullScreenBtn
         canShowSystemTime = target.canShowSystemTime
         canShowBatteryImg = target.canShowBatteryImg
         showTipIfNotWifi = target.showTipIfNotWifi
@@ -157,7 +157,7 @@ class MXConfig : Serializable {
         seekWhenPlay = -1
         source = null
         canSeekByUser = true
-        canFullScreen = true
+        showFullScreenBtn = true
         canShowSystemTime = true
         canShowBatteryImg = true
         showTipIfNotWifi = true

@@ -3,9 +3,10 @@ package com.mx.video.utils
 import android.content.Context
 import android.view.MotionEvent
 import android.view.ViewConfiguration
+import com.mx.video.utils.touch.MXTouchListener
 import kotlin.math.abs
 
-class MXTouchHelp(private val context: Context) {
+class MXTouchHelp(context: Context) {
     // 最低滑动距离
     private val minMoveDistance = ViewConfiguration.get(context).scaledTouchSlop * 2
     private var downX = 0f
@@ -24,20 +25,9 @@ class MXTouchHelp(private val context: Context) {
         viewHeight = height
     }
 
-    private var onHorizontalListener: OnMXTouchListener? = null
-    fun setHorizontalTouchCall(call: OnMXTouchListener?) {
-        onHorizontalListener = call
-    }
-
-    private var onVerticalLeftListener: OnMXTouchListener? = null
-    fun setVerticalLeftTouchCall(call: OnMXTouchListener) {
-        onVerticalLeftListener = call
-    }
-
-    private var onVerticalRightListener: OnMXTouchListener? = null
-    fun setVerticalRightTouchCall(call: OnMXTouchListener) {
-        onVerticalRightListener = call
-    }
+    var horizontalTouch: MXTouchListener? = null
+    var verticalLeftTouch: MXTouchListener? = null
+    var verticalRightTouch: MXTouchListener? = null
 
     fun onTouch(motionEvent: MotionEvent): Boolean {
         if (viewWidth == 0 || viewHeight == 0) return false
@@ -56,16 +46,16 @@ class MXTouchHelp(private val context: Context) {
                     val dy = motionEvent.y - downY
                     if (abs(dx) > minMoveDistance) {
                         isSeekHorizontal = true
-                        onHorizontalListener?.onStart()
+                        horizontalTouch?.touchStart()
                         return true
                     } else if (abs(dy) > minMoveDistance) {
                         val dpx = downX / viewWidth
                         if (dpx < 0.5f) {
                             isSeekVerticalLeft = true
-                            onVerticalLeftListener?.onStart()
+                            verticalLeftTouch?.touchStart()
                         } else {
                             isSeekVerticalRight = true
-                            onVerticalRightListener?.onStart()
+                            verticalRightTouch?.touchStart()
                         }
                         return true
                     }
@@ -73,17 +63,17 @@ class MXTouchHelp(private val context: Context) {
                     when {
                         isSeekHorizontal -> {
                             val px = (motionEvent.x - downX) / viewWidth
-                            onHorizontalListener?.onTouchMove(px)
+                            horizontalTouch?.touchMove(px)
                             return true
                         }
                         isSeekVerticalLeft -> {
                             val py = (downY - motionEvent.y) / viewHeight
-                            onVerticalLeftListener?.onTouchMove(py)
+                            verticalLeftTouch?.touchMove(py)
                             return true
                         }
                         isSeekVerticalRight -> {
                             val py = (downY - motionEvent.y) / viewHeight
-                            onVerticalRightListener?.onTouchMove(py)
+                            verticalRightTouch?.touchMove(py)
                             return true
                         }
                     }
@@ -93,17 +83,17 @@ class MXTouchHelp(private val context: Context) {
                 when {
                     isSeekHorizontal -> {
                         val px = (motionEvent.x - downX) / viewWidth
-                        onHorizontalListener?.onEnd(px)
+                        horizontalTouch?.touchEnd(px)
                         return true
                     }
                     isSeekVerticalLeft -> {
                         val py = (downY - motionEvent.y) / viewHeight
-                        onVerticalLeftListener?.onEnd(py)
+                        verticalLeftTouch?.touchEnd(py)
                         return true
                     }
                     isSeekVerticalRight -> {
                         val py = (downY - motionEvent.y) / viewHeight
-                        onVerticalRightListener?.onEnd(py)
+                        verticalRightTouch?.touchEnd(py)
                         return true
                     }
                 }
@@ -114,16 +104,14 @@ class MXTouchHelp(private val context: Context) {
         return false
     }
 
-    open class OnMXTouchListener {
-        open fun onStart() {}
-        open fun onTouchMove(percent: Float) {}
-        open fun onEnd(percent: Float) {}
-    }
-
     fun release() {
-        onHorizontalListener = null
-        onVerticalLeftListener = null
-        onVerticalRightListener = null
+        horizontalTouch?.release()
+        verticalLeftTouch?.release()
+        verticalRightTouch?.release()
+
+        horizontalTouch = null
+        verticalLeftTouch = null
+        verticalRightTouch = null
         viewWidth = 0
         viewHeight = 0
     }
