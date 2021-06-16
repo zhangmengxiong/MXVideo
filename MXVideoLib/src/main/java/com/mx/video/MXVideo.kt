@@ -102,6 +102,11 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     private val sensorHelp by lazy { MXSensorHelp.instance }
 
+    /**
+     * 播放器 暂停状态
+     */
+    private var isStopState: Boolean = false
+
     init {
         MXUtils.init(context)
         View.inflate(context, getLayoutId(), this)
@@ -230,6 +235,24 @@ abstract class MXVideo @JvmOverloads constructor(
         if (provider.mState != MXState.PAUSE) return
         mxPlayer?.start()
         provider.setPlayState(MXState.PLAYING)
+    }
+
+    /**
+     * Activity/Fragment 生命周期onStart() 需要调用暂停
+     */
+    open fun onStart() {
+        if (provider.mState != MXState.PAUSE || !isStopState) return
+        continuePlay()
+        isStopState = false
+    }
+
+    /**
+     * Activity/Fragment 生命周期onStop() 需要调用暂停
+     */
+    open fun onStop() {
+        if (provider.mState != MXState.PLAYING) return
+        pausePlay()
+        isStopState = true
     }
 
     /**

@@ -29,6 +29,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 ```
+```kotlin
+    // Activity或者Fragment中生命周期变更，处理进入后台/前台时的暂停/续播功能
+    override fun onStart() {
+        mxVideoStd.onStart()
+        super.onStart()
+    }
+    
+    override fun onStop() {
+        mxVideoStd.onStop()
+        super.onStop()
+    }
+```
 
 ##### 3、开始播放
 ```kotlin

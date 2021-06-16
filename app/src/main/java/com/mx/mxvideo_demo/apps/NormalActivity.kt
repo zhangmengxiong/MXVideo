@@ -215,6 +215,16 @@ class NormalActivity : AppCompatActivity() {
         liveRetryFalse.performClick()
     }
 
+    override fun onStart() {
+        mxVideoStd.onStart()
+        super.onStart()
+    }
+
+    override fun onStop() {
+        mxVideoStd.onStop()
+        super.onStop()
+    }
+
     override fun onBackPressed() {
         if (MXVideo.isFullScreen()) {
             MXVideo.gotoNormalScreen()

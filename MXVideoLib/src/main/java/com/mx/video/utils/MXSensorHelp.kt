@@ -17,7 +17,7 @@ import kotlin.math.roundToInt
  */
 class MXSensorHelp private constructor(
     private val context: Context,
-    private val minChangeTime: Long = 2000
+    private val minChangeTime: Long = 1500
 ) {
     private val DATA_X = 0
     private val DATA_Y = 1
