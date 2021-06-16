@@ -1,7 +1,6 @@
 package com.mx.video.utils
 
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.ActivityInfo
@@ -21,14 +20,14 @@ object MXUtils {
     private val activityFlagMap = HashMap<String, Int?>()
     private val activityOrientationMap = HashMap<String, Int?>()
 
-    private var _application: Application? = null
-    val context: Context
-        get() = _application!!
-    private val historyDb by lazy { MXHistoryDB(context) }
+    private var _appContext: Context? = null
+    val applicationContext: Context
+        get() = _appContext!!
+    private val historyDb by lazy { MXHistoryDB(applicationContext) }
 
     fun init(context: Context) {
-        if (_application == null) {
-            this._application = context.applicationContext as Application?
+        if (_appContext == null) {
+            this._appContext = context.applicationContext
         }
     }
 

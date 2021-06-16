@@ -1,6 +1,5 @@
 package com.mx.video.utils
 
-import android.app.Application
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -138,7 +137,7 @@ class MXSensorHelp private constructor(
 
     companion object {
         val instance by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
-            MXSensorHelp(MXUtils.context)
+            MXSensorHelp(MXUtils.applicationContext)
         }
     }
 }
