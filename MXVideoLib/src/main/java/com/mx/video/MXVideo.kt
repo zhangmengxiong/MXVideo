@@ -165,6 +165,7 @@ abstract class MXVideo @JvmOverloads constructor(
         player: Class<out IMXPlayer>? = null,
         seekTo: Int = -1
     ) {
+        isStopState = false
         stopPlay()
         config.source = source
         mxPlayerClass = player
@@ -245,8 +246,15 @@ abstract class MXVideo @JvmOverloads constructor(
      * Activity/Fragment 生命周期onStart() 需要调用暂停
      */
     open fun onStart() {
-        if (provider.mState != MXState.PAUSE || !isStopState) return
-        continuePlay()
+        if (!isStopState) return
+        val source = config.source ?: return
+        if (source.isLiveSource) {
+            startPlay()
+        } else {
+            if (provider.mState == MXState.PAUSE) {
+                continuePlay()
+            }
+        }
         isStopState = false
     }
 
@@ -255,7 +263,12 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun onStop() {
         if (provider.mState != MXState.PLAYING) return
-        pausePlay()
+        val source = config.source ?: return
+        if (source.isLiveSource) {// 直播无法暂停，这里直接停止播放
+            stopPlay()
+        } else {
+            pausePlay()
+        }
         isStopState = true
     }
 
