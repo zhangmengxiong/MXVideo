@@ -103,9 +103,8 @@ abstract class MXVideo @JvmOverloads constructor(
     private val sensorHelp by lazy { MXSensorHelp.instance }
 
     init {
+        MXUtils.init(context)
         View.inflate(context, getLayoutId(), this)
-
-        MXSensorHelp.init(context.applicationContext as Application)
         provider.initView()
         provider.setPlayState(MXState.IDLE)
     }
@@ -350,7 +349,8 @@ abstract class MXVideo @JvmOverloads constructor(
             return config.seekWhenPlay
         }
         if (source.enableSaveProgress) {
-            val seekTo = MXUtils.getProgress(context, source.playUri)
+            // 默认seek提前5秒
+            val seekTo = (MXUtils.getProgress(source.playUri) - 5)
             if (seekTo > 0) return seekTo
         }
         return -1
@@ -369,7 +369,7 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun onPlayerCompletion() {
         MXUtils.log("onPlayerCompletion")
-        config.source?.playUri?.let { MXUtils.saveProgress(context, it, 0) }
+        config.source?.playUri?.let { MXUtils.saveProgress(it, 0) }
         mxPlayer?.release()
         MXUtils.findWindows(context)?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         provider.setPlayState(MXState.COMPLETE)

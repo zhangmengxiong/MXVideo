@@ -13,27 +13,33 @@ class MXTicket {
     }
 
     fun start() {
-        isTicketStart = true
-        if (runnable != null) {
-            mHandler.post(ticketRun)
+        synchronized(this) {
+            isTicketStart = true
+            if (runnable != null) {
+                mHandler.post(ticketRun)
+            }
         }
     }
 
     fun stop() {
-        isTicketStart = false
-        mHandler.removeCallbacksAndMessages(null)
+        synchronized(this) {
+            isTicketStart = false
+            mHandler.removeCallbacksAndMessages(null)
+        }
     }
 
     private val ticketRun = object : Runnable {
         override fun run() {
-            if (!isTicketStart || runnable == null) return
-            try {
-                runnable?.run()
-            } catch (e: Exception) {
-            } finally {
-                mHandler.removeCallbacksAndMessages(null)
-                if (timeDiff > 0) {
-                    mHandler.postDelayed(this, timeDiff)
+            synchronized(this) {
+                if (!isTicketStart || runnable == null) return
+                try {
+                    runnable?.run()
+                } catch (e: Exception) {
+                } finally {
+                    mHandler.removeCallbacksAndMessages(null)
+                    if (timeDiff > 0) {
+                        mHandler.postDelayed(this, timeDiff)
+                    }
                 }
             }
         }

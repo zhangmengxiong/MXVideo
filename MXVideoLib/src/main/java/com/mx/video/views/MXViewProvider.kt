@@ -171,8 +171,8 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                 val duration = mxVideo.getDuration()
                 val position = mxVideo.getCurrentPosition()
                 if (curPosition != position) {
-                    if (duration > 0 && position > 0 && source.enableSaveProgress) {
-                        MXUtils.saveProgress(mxVideo.context, source.playUri, position)
+                    if (duration > 0 && position > 0 && source.enableSaveProgress && position % 5 == 0) {
+                        MXUtils.saveProgress(source.playUri, position)
                     }
 
                     mxVideo.post {

@@ -13,26 +13,32 @@ class MXDelay {
     }
 
     fun start() {
-        isTicketStart = true
-        mHandler.removeCallbacksAndMessages(null)
-        mHandler.postDelayed(ticketRun, timeDelay)
+        synchronized(this) {
+            isTicketStart = true
+            mHandler.removeCallbacksAndMessages(null)
+            mHandler.postDelayed(ticketRun, timeDelay)
+        }
     }
 
     fun stop() {
-        isTicketStart = false
-        mHandler.removeCallbacksAndMessages(null)
+        synchronized(this) {
+            isTicketStart = false
+            mHandler.removeCallbacksAndMessages(null)
+        }
     }
 
     private val ticketRun = object : Runnable {
         override fun run() {
-            if (!isTicketStart || runnable == null) return
-            runnable?.run()
+            synchronized(this) {
+                if (!isTicketStart || runnable == null) return
+                runnable?.run()
+            }
         }
     }
 
     fun release() {
-        mHandler.removeCallbacksAndMessages(null)
         isTicketStart = false
         runnable = null
+        mHandler.removeCallbacksAndMessages(null)
     }
 }
