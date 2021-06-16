@@ -120,8 +120,11 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         mxPlayBtn.setOnClickListener {
             val source = config.source
             if (source == null) {
-                Toast.makeText(mxVideo.context, R.string.mx_play_source_not_set, Toast.LENGTH_SHORT)
-                    .show()
+                mxVideo.post {
+                    config.videoListeners.toList().forEach { listener ->
+                        listener.onEmptyPlay()
+                    }
+                }
                 return@setOnClickListener
             }
             val player = mxVideo.getPlayer()
@@ -172,7 +175,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                 val position = mxVideo.getCurrentPosition()
                 if (curPosition != position) {
                     if (duration > 0 && position > 0 && source.enableSaveProgress) {
-                        MXUtils.saveProgress(mxVideo.context, source.playUri, position)
+                        MXUtils.saveProgress(source.playUri, position)
                     }
 
                     mxVideo.post {
@@ -230,10 +233,10 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
     }
 
     private val onSeekBarListener = object : SeekBar.OnSeekBarChangeListener {
-        var progress = 0
+        var touchProgress = 0
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
             if (fromUser && config.sourceCanSeek()) {
-                this.progress = progress
+                this.touchProgress = progress
                 mxCurrentTimeTxv.text = MXUtils.stringForTime(progress)
             }
         }
@@ -241,7 +244,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         override fun onStartTrackingTouch(seekBar: SeekBar?) {
             if (!config.sourceCanSeek()) return
             MXUtils.log("onStartTrackingTouch")
-            this.progress = seekBar?.progress ?: return
+            this.touchProgress = seekBar?.progress ?: return
             timeDelay.stop()
             timeTicket.stop()
         }
@@ -249,8 +252,8 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         override fun onStopTrackingTouch(seekBar: SeekBar?) {
             if (!config.sourceCanSeek()) return
             MXUtils.log("onStopTrackingTouch")
-            mxCurrentTimeTxv.text = MXUtils.stringForTime(progress)
-            mxVideo.seekTo(progress)
+            mxCurrentTimeTxv.text = MXUtils.stringForTime(touchProgress)
+            mxVideo.seekTo(touchProgress)
             timeDelay.start()
             timeTicket.start()
         }

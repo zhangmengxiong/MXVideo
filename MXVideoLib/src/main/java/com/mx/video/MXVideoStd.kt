@@ -2,6 +2,7 @@ package com.mx.video
 
 import android.content.Context
 import android.util.AttributeSet
+import android.widget.Toast
 import com.mx.video.beans.MXState
 import com.mx.video.utils.MXVideoListener
 import com.mx.video.views.MXViewProvider
@@ -17,6 +18,7 @@ open class MXVideoStd @JvmOverloads constructor(
     private var onErrorListener: (() -> Unit)? = null
     private var onStartPrepareListener: (() -> Unit)? = null
     private var onPreparedListener: (() -> Unit)? = null
+    private var onEmptyPlayListener: (() -> Unit)? = null
 
     private var onTimeListener: ((position: Int, duration: Int) -> Unit)? = null
     private var onBufferListener: ((inBuffer: Boolean) -> Unit)? = null
@@ -44,6 +46,18 @@ open class MXVideoStd @JvmOverloads constructor(
 
         override fun onBuffering(inBuffer: Boolean) {
             onBufferListener?.invoke(inBuffer)
+        }
+
+        override fun onEmptyPlay() {
+            if (onEmptyPlayListener != null) {
+                onEmptyPlayListener?.invoke()
+            } else {
+                Toast.makeText(
+                    this@MXVideoStd.context,
+                    R.string.mx_play_source_not_set,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
@@ -91,6 +105,13 @@ open class MXVideoStd @JvmOverloads constructor(
      */
     fun setOnTimeListener(listener: ((position: Int, duration: Int) -> Unit)?) {
         onTimeListener = listener
+    }
+
+    /**
+     * 回调：没有源时点击播放按钮
+     */
+    fun setOnEmptyPlayListener(listener: (() -> Unit)?) {
+        onEmptyPlayListener = listener
     }
 
     override fun release() {

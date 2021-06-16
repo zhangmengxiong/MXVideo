@@ -31,4 +31,9 @@ open class MXVideoListener {
      * 加载缓冲监听
      */
     open fun onBuffering(inBuffer: Boolean) = Unit
+
+    /**
+     * 没有播放源时，点击播放回调
+     */
+    open fun onEmptyPlay() = Unit
 }

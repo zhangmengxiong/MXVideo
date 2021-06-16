@@ -102,10 +102,14 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     private val sensorHelp by lazy { MXSensorHelp.instance }
 
-    init {
-        View.inflate(context, getLayoutId(), this)
+    /**
+     * 播放器 暂停状态
+     */
+    private var isStopState: Boolean = false
 
-        MXSensorHelp.init(context.applicationContext as Application)
+    init {
+        MXUtils.init(context)
+        View.inflate(context, getLayoutId(), this)
         provider.initView()
         provider.setPlayState(MXState.IDLE)
     }
@@ -157,7 +161,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * @param seekTo 跳转 >=0 时播放后会跳转到对应时间，单位：秒
      */
     open fun setSource(
-        source: MXPlaySource,
+        source: MXPlaySource?,
         player: Class<out IMXPlayer>? = null,
         seekTo: Int = -1
     ) {
@@ -166,8 +170,12 @@ abstract class MXVideo @JvmOverloads constructor(
         mxPlayerClass = player
 
         config.seekWhenPlay = seekTo
-        provider.mxTitleTxv.text = source.title
-        provider.setPlayState(MXState.NORMAL)
+        provider.mxTitleTxv.text = source?.title
+        if (source != null) {
+            provider.setPlayState(MXState.NORMAL)
+        } else {
+            provider.setPlayState(MXState.IDLE)
+        }
     }
 
     /**
@@ -231,6 +239,24 @@ abstract class MXVideo @JvmOverloads constructor(
         if (provider.mState != MXState.PAUSE) return
         mxPlayer?.start()
         provider.setPlayState(MXState.PLAYING)
+    }
+
+    /**
+     * Activity/Fragment 生命周期onStart() 需要调用暂停
+     */
+    open fun onStart() {
+        if (provider.mState != MXState.PAUSE || !isStopState) return
+        continuePlay()
+        isStopState = false
+    }
+
+    /**
+     * Activity/Fragment 生命周期onStop() 需要调用暂停
+     */
+    open fun onStop() {
+        if (provider.mState != MXState.PLAYING) return
+        pausePlay()
+        isStopState = true
     }
 
     /**
@@ -350,7 +376,8 @@ abstract class MXVideo @JvmOverloads constructor(
             return config.seekWhenPlay
         }
         if (source.enableSaveProgress) {
-            val seekTo = MXUtils.getProgress(context, source.playUri)
+            // 默认seek提前5秒
+            val seekTo = (MXUtils.getProgress(source.playUri) - 5)
             if (seekTo > 0) return seekTo
         }
         return -1
@@ -369,7 +396,7 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun onPlayerCompletion() {
         MXUtils.log("onPlayerCompletion")
-        config.source?.playUri?.let { MXUtils.saveProgress(context, it, 0) }
+        config.source?.playUri?.let { MXUtils.saveProgress(it, 0) }
         mxPlayer?.release()
         MXUtils.findWindows(context)?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         provider.setPlayState(MXState.COMPLETE)
@@ -692,7 +719,6 @@ abstract class MXVideo @JvmOverloads constructor(
                 return
             }
         }
-
     }
 
     /**

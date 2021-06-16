@@ -17,9 +17,19 @@ import com.mx.video.beans.MXOrientation
 import java.util.*
 
 object MXUtils {
-    private const val SP_KEY = "MX_SP_KEY"
     private val activityFlagMap = HashMap<String, Int?>()
     private val activityOrientationMap = HashMap<String, Int?>()
+
+    private var _appContext: Context? = null
+    val applicationContext: Context
+        get() = _appContext!!
+    private val historyDb by lazy { MXHistoryDB(applicationContext) }
+
+    fun init(context: Context) {
+        if (_appContext == null) {
+            this._appContext = context.applicationContext
+        }
+    }
 
     private var isDebug = false
     fun setDebug(debug: Boolean) {
@@ -35,26 +45,23 @@ object MXUtils {
     /**
      * 清空所有播放进度
      */
-    fun clearProgress(context: Context) {
-        val sp = context.getSharedPreferences(SP_KEY, Context.MODE_PRIVATE)
-        sp.edit().clear().apply()
+    fun clearProgress() {
+        historyDb.cleanAll()
     }
 
     /**
      * 保存播放度条
      */
-    fun saveProgress(context: Context, uri: Uri, time: Int) {
-        val sp = context.getSharedPreferences(SP_KEY, Context.MODE_PRIVATE)
-        sp.edit().putInt(uri.toString(), time).apply()
+    fun saveProgress(uri: Uri, time: Int) {
+        historyDb.addPlayTime(uri.toString(), time)
     }
 
     /**
      * 获取播放进度
      */
-    fun getProgress(context: Context, uri: Uri?): Int {
+    fun getProgress(uri: Uri?): Int {
         if (uri == null) return 0
-        val sp = context.getSharedPreferences(SP_KEY, Context.MODE_PRIVATE)
-        return sp.getInt(uri.toString(), 0)
+        return historyDb.getPlayTime(uri.toString())
     }
 
     fun stringForTime(time: Int): String {
