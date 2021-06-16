@@ -26,6 +26,15 @@ class NormalActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_normal)
+
+        mxVideoStd.setOnEmptyPlayListener {
+            Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
+            mxVideoStd.setSource(
+                MXPlaySource(Uri.parse(ldjVideos.random()), titles.random()),
+                player = playerClass, seekTo = 0
+            )
+            mxVideoStd.startPlay()
+        }
         randPlay.setOnClickListener {
             Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
             mxVideoStd.setSource(

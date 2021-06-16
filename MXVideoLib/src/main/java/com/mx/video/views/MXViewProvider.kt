@@ -120,8 +120,11 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         mxPlayBtn.setOnClickListener {
             val source = config.source
             if (source == null) {
-                Toast.makeText(mxVideo.context, R.string.mx_play_source_not_set, Toast.LENGTH_SHORT)
-                    .show()
+                mxVideo.post {
+                    config.videoListeners.toList().forEach { listener ->
+                        listener.onEmptyPlay()
+                    }
+                }
                 return@setOnClickListener
             }
             val player = mxVideo.getPlayer()
@@ -171,7 +174,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                 val duration = mxVideo.getDuration()
                 val position = mxVideo.getCurrentPosition()
                 if (curPosition != position) {
-                    if (duration > 0 && position > 0 && source.enableSaveProgress && position % 5 == 0) {
+                    if (duration > 0 && position > 0 && source.enableSaveProgress) {
                         MXUtils.saveProgress(source.playUri, position)
                     }
 

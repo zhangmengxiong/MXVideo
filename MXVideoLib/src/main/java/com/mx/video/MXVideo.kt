@@ -161,7 +161,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * @param seekTo 跳转 >=0 时播放后会跳转到对应时间，单位：秒
      */
     open fun setSource(
-        source: MXPlaySource,
+        source: MXPlaySource?,
         player: Class<out IMXPlayer>? = null,
         seekTo: Int = -1
     ) {
@@ -170,8 +170,12 @@ abstract class MXVideo @JvmOverloads constructor(
         mxPlayerClass = player
 
         config.seekWhenPlay = seekTo
-        provider.mxTitleTxv.text = source.title
-        provider.setPlayState(MXState.NORMAL)
+        provider.mxTitleTxv.text = source?.title
+        if (source != null) {
+            provider.setPlayState(MXState.NORMAL)
+        } else {
+            provider.setPlayState(MXState.IDLE)
+        }
     }
 
     /**
@@ -715,7 +719,6 @@ abstract class MXVideo @JvmOverloads constructor(
                 return
             }
         }
-
     }
 
     /**
