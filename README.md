@@ -2,7 +2,14 @@
 
 #### 介绍
 基于饺子播放器、kotlin编写的 Android 开源播放器, 开箱即用，欢迎提 issue 和 pull request
+简书相关介绍（待完善）：https://www.jianshu.com/nb/50294642
+
 最新版本：[![](https://jitpack.io/v/com.gitee.zhangmengxiong/MXVideo.svg)](https://jitpack.io/#com.gitee.zhangmengxiong/MXVideo)
+
+![Image text](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/1.png)
+![Image text](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/2.png)
+![Image text](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/3.png)
+![Image text](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/4.png)
 
 #### 功能特性
 - 任意播放器内核（包含开源IJK、谷歌Exo、阿里云等等）
