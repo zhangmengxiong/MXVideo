@@ -3,9 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.mx.video.MXVideoStd
-        android:id="@+id/mxVideoStd"
+    <com.mx.video.views.MXPlayerContainer
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
 
+        <com.mx.video.MXVideoStd
+            android:id="@+id/mxVideoStd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.mx.video.views.MXPlayerContainer>
 </FrameLayout>

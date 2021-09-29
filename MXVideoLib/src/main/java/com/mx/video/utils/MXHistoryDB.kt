@@ -14,7 +14,7 @@ class MXHistoryDB(val context: Context) {
 
     fun addPlayTime(videoPath: String, playTime: Int) {
         if (videoPath.isEmpty() || playTime < 0) return
-        MXUtils.log("savePlayTime  $videoPath $playTime")
+        // MXUtils.log("savePlayTime  $videoPath $playTime")
         try {
             val values = ContentValues()
             values.put(DBHelp.DB_KEY_VIDEO_PATH, videoPath.trim())
