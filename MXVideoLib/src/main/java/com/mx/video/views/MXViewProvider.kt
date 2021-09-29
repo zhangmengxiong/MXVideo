@@ -12,6 +12,10 @@ import com.mx.video.utils.touch.SeekTouchListener
 import com.mx.video.utils.touch.VolumeTouchListener
 
 class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
+    init {
+        MXUtils.log("MXViewProvider init")
+    }
+
     val timeTicket = MXTicket()
     val touchHelp by lazy { MXTouchHelp(mxVideo.context) }
     val timeDelay = MXDelay()
@@ -19,10 +23,15 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
     var curDuration: Int = -1
     var curPosition: Int = -1
 
-    var mState: MXState = MXState.IDLE
-        private set
-    var mScreen: MXScreen = MXScreen.NORMAL
-        private set
+    private var mState: MXState = MXState.IDLE
+    private var mScreen: MXScreen = MXScreen.NORMAL
+        set(value) {
+            MXUtils.log("屏幕状态变更：${value.name}")
+            field = value
+        }
+
+    fun getState() = mState
+    fun getScreen() = mScreen
 
     val mxPlayerRootLay: FrameLayout by lazy {
         mxVideo.findViewById(R.id.mxPlayerRootLay) ?: FrameLayout(mxVideo.context)

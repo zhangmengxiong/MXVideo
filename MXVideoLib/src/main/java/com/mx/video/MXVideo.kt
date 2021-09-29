@@ -1,7 +1,6 @@
 package com.mx.video
 
 import android.app.AlertDialog
-import android.app.Application
 import android.content.Context
 import android.util.AttributeSet
 import android.view.Gravity
@@ -141,7 +140,7 @@ abstract class MXVideo @JvmOverloads constructor(
     /**
      * 获取状态值
      */
-    fun getState() = provider.mState
+    fun getState() = provider.getState()
 
     /**
      * 获取视图Provider
@@ -194,7 +193,7 @@ abstract class MXVideo @JvmOverloads constructor(
     open fun seekTo(seek: Int) {
         MXUtils.log("seekTo ${MXUtils.stringForTime(seek)}")
         val player = mxPlayer
-        if (player != null && provider.mState in arrayOf(MXState.PLAYING, MXState.PAUSE)) {
+        if (player != null && provider.getState() in arrayOf(MXState.PLAYING, MXState.PAUSE)) {
             player.seekTo(seek)
         } else {
             config.seekWhenPlay = seek
@@ -224,7 +223,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 暂停播放
      */
     open fun pausePlay() {
-        if (provider.mState != MXState.PLAYING) return
+        if (provider.getState() != MXState.PLAYING) return
         if (!config.canPauseByUser) return
         val source = config.source ?: return
         if (source.isLiveSource) return
@@ -237,7 +236,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 暂停播放后，继续播放
      */
     open fun continuePlay() {
-        if (provider.mState != MXState.PAUSE) return
+        if (provider.getState() != MXState.PAUSE) return
         mxPlayer?.start()
         provider.setPlayState(MXState.PLAYING)
     }
@@ -251,7 +250,7 @@ abstract class MXVideo @JvmOverloads constructor(
         if (source.isLiveSource) {
             startPlay()
         } else {
-            if (provider.mState == MXState.PAUSE) {
+            if (provider.getState() == MXState.PAUSE) {
                 continuePlay()
             }
         }
@@ -262,7 +261,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * Activity/Fragment 生命周期onStop() 需要调用暂停
      */
     open fun onStop() {
-        if (provider.mState != MXState.PLAYING) return
+        if (provider.getState() != MXState.PLAYING) return
         val source = config.source ?: return
         if (source.isLiveSource) {// 直播无法暂停，这里直接停止播放
             stopPlay()
@@ -414,7 +413,7 @@ abstract class MXVideo @JvmOverloads constructor(
         MXUtils.findWindows(context)?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         provider.setPlayState(MXState.COMPLETE)
 
-        if (config.gotoNormalScreenWhenComplete && provider.mScreen == MXScreen.FULL) {
+        if (config.gotoNormalScreenWhenComplete && provider.getScreen() == MXScreen.FULL) {
             switchToScreen(MXScreen.NORMAL)
         }
     }
@@ -440,21 +439,21 @@ abstract class MXVideo @JvmOverloads constructor(
         MXUtils.log("onPlayerError  $error")
         if (config.source?.isLiveSource == true
             && config.replayLiveSourceWhenError
-            && provider.mState in arrayOf(MXState.PLAYING, MXState.PAUSE, MXState.PREPARING)
+            && provider.getState() in arrayOf(MXState.PLAYING, MXState.PAUSE, MXState.PREPARING)
         ) {
             // 直播重试
             startPlay()
             return
         }
 
-        if (config.isPreloading && provider.mState == MXState.PREPARING) {
+        if (config.isPreloading && provider.getState() == MXState.PREPARING) {
             // 预加载失败，状态重置成NORMAL
             config.isPreloading = false
             stopPlay()
             return
         }
         provider.setPlayState(MXState.ERROR)
-        if (config.gotoNormalScreenWhenError && provider.mScreen == MXScreen.FULL) {
+        if (config.gotoNormalScreenWhenError && provider.getScreen() == MXScreen.FULL) {
             switchToScreen(MXScreen.NORMAL)
         }
     }
@@ -537,7 +536,7 @@ abstract class MXVideo @JvmOverloads constructor(
         val heightSize = MeasureSpec.getSize(heightMeasureSpec)
 
         if (dimensionRatio > 0.0
-            && provider.mScreen == MXScreen.NORMAL
+            && provider.getScreen() == MXScreen.NORMAL
             && widthMode == MeasureSpec.EXACTLY
         ) {
             var height = (widthSize / dimensionRatio).toInt()
@@ -552,7 +551,7 @@ abstract class MXVideo @JvmOverloads constructor(
         }
 
         if (config.videoWidth > 0 && config.videoHeight > 0
-            && provider.mScreen == MXScreen.NORMAL
+            && provider.getScreen() == MXScreen.NORMAL
             && widthMode == MeasureSpec.EXACTLY
             && heightMode != MeasureSpec.EXACTLY
         ) {
@@ -579,8 +578,9 @@ abstract class MXVideo @JvmOverloads constructor(
      * 切换全屏、小屏显示
      */
     private fun switchToScreen(screen: MXScreen) {
+        MXUtils.log("switchToScreen  ${provider.getScreen().name} -> ${screen.name}")
         val windows = MXUtils.findWindowsDecorView(context) ?: return
-        if (provider.mScreen == screen) return
+        if (provider.getScreen() == screen) return
         when (screen) {
             MXScreen.FULL -> {
                 if (parentMap.containsKey(config.viewIndexId)) {
@@ -645,7 +645,7 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun isPlaying(): Boolean {
         val player = mxPlayer ?: return false
-        return (provider.mState in arrayOf(
+        return (provider.getState() in arrayOf(
             MXState.PLAYING,
             MXState.PAUSE,
             MXState.PREPARING,
@@ -657,7 +657,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 判断是否全屏
      */
     open fun isFullScreen(): Boolean {
-        return provider.mScreen == MXScreen.FULL
+        return provider.getScreen() == MXScreen.FULL
     }
 
     /**
@@ -707,7 +707,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 return
             }
             if (!config.autoRotateBySensor) {
-                if (provider.mScreen == MXScreen.FULL && orientation.isHorizontal()) {
+                if (provider.getScreen() == MXScreen.FULL && orientation.isHorizontal()) {
                     // 全屏时，方向切换，变更一下
                     MXUtils.setScreenOrientation(context, orientation)
                 }
@@ -715,7 +715,7 @@ abstract class MXVideo @JvmOverloads constructor(
             }
             if (orientation.isHorizontal()) {
                 // 竖屏切换到横屏
-                if (provider.mScreen == MXScreen.FULL) {
+                if (provider.getScreen() == MXScreen.FULL) {
                     MXUtils.setScreenOrientation(context, orientation)
                 } else {
                     switchToScreen(MXScreen.FULL)
@@ -724,7 +724,7 @@ abstract class MXVideo @JvmOverloads constructor(
             }
             if (orientation.isVertical()) {
                 // 横屏切换到竖屏
-                if (provider.mScreen == MXScreen.NORMAL) {
+                if (provider.getScreen() == MXScreen.NORMAL) {
                     MXUtils.setScreenOrientation(context, orientation)
                 } else {
                     switchToScreen(MXScreen.NORMAL)

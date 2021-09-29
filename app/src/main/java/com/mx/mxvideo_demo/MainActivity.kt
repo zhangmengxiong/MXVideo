@@ -9,6 +9,7 @@ import com.mx.mxvideo_demo.adapts.HomeAdapt
 import com.mx.mxvideo_demo.apps.FullScreenActivity
 import com.mx.mxvideo_demo.apps.NormalActivity
 import com.mx.mxvideo_demo.apps.RecycleViewActivity
+import com.mx.mxvideo_demo.apps.TestActivity
 import com.mx.video.utils.MXUtils
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity() {
         val adapt = HomeAdapt(
             arrayListOf(
                 HomePages("播放器(各种参数切换)", NormalActivity::class.java),
+                HomePages("播放器(测试)", TestActivity::class.java),
                 HomePages("适配RecycleView", RecycleViewActivity::class.java),
                 HomePages("全屏播放器", FullScreenActivity::class.java),
                 HomePages("清理播放记录", null) {
