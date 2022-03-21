@@ -74,6 +74,11 @@ class MXConfig : Serializable {
     var canShowSystemTime = true
 
     /**
+     * 是否显示底部进度条
+     */
+    var canShowBottomSeekBar = true
+
+    /**
      * 是否显示右上角的电量信息
      */
     var canShowBatteryImg = true
@@ -140,6 +145,7 @@ class MXConfig : Serializable {
         canSeekByUser = target.canSeekByUser
         showFullScreenBtn = target.showFullScreenBtn
         canShowSystemTime = target.canShowSystemTime
+        canShowBottomSeekBar = target.canShowBottomSeekBar
         canShowBatteryImg = target.canShowBatteryImg
         showTipIfNotWifi = target.showTipIfNotWifi
         gotoNormalScreenWhenComplete = target.gotoNormalScreenWhenComplete
@@ -159,6 +165,7 @@ class MXConfig : Serializable {
         canSeekByUser = true
         showFullScreenBtn = true
         canShowSystemTime = true
+        canShowBottomSeekBar = true
         canShowBatteryImg = true
         showTipIfNotWifi = true
         gotoNormalScreenWhenComplete = true

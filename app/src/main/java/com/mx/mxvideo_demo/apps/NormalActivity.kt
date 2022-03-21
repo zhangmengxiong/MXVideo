@@ -118,7 +118,6 @@ class NormalActivity : AppCompatActivity() {
         }
         playerRG.getChildAt(0)?.performClick()
 
-        centerCrop.performClick()
         fillTypeRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.fill) {
                 mxVideoStd.setScaleType(MXScale.FILL_PARENT)
@@ -127,6 +126,11 @@ class NormalActivity : AppCompatActivity() {
             }
         }
         centerCrop.performClick()
+
+        canShowBottomSeekBar.setOnCheckedChangeListener { group, checkedId ->
+            mxVideoStd.getConfig().canShowBottomSeekBar = (checkedId == R.id.canShowBottomSeekBarTrue)
+        }
+        canShowBottomSeekBarTrue.performClick()
 
         ratioRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.ratio_16_9) {

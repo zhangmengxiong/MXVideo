@@ -381,7 +381,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
      */
     private fun setPlayingControl(show: Boolean) {
         playingVisible.forEach { setViewShow(it, show) }
-        setViewShow(mxBottomSeekProgress, !show)
+        setViewShow(mxBottomSeekProgress, config.canShowBottomSeekBar && !show)
 
         if (config.source?.isLiveSource == true && mState == MXState.PLAYING) {
             setViewShow(mxPlayBtn, false)
