@@ -14,7 +14,6 @@ import com.mx.video.player.MXSystemPlayer
 import com.mx.video.utils.MXSensorHelp
 import com.mx.video.utils.MXUtils
 import com.mx.video.utils.MXVideoListener
-import com.mx.video.views.MXPlayerContainer
 import com.mx.video.views.MXTextureView
 import com.mx.video.views.MXViewProvider
 
@@ -607,9 +606,6 @@ abstract class MXVideo @JvmOverloads constructor(
                     return
                 }
                 val parent = (parent as ViewGroup?) ?: return
-                if (parent is MXPlayerContainer) {
-                    parent.startFill()
-                }
 
                 val item = MXParentView(
                     parent.indexOfChild(this),
@@ -641,10 +637,6 @@ abstract class MXVideo @JvmOverloads constructor(
                 windows.removeView(this)
                 parentItem.parentViewGroup.removeViewAt(parentItem.index)
                 parentItem.parentViewGroup.addView(this, parentItem.index, parentItem.layoutParams)
-
-                if (parentItem.parentViewGroup is MXPlayerContainer) {
-                    parentItem.parentViewGroup.endFill()
-                }
 
                 MXUtils.recoverScreenOrientation(context)
                 MXUtils.recoverFullScreen(context)
