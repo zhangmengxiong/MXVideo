@@ -9,6 +9,11 @@ import com.mx.video.beans.MXScale
 class MXTextureView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : TextureView(context, attrs, defStyleAttr) {
+    init {
+        isFocusable = false
+        isFocusableInTouchMode = false
+    }
+
     private var mVideoWidth = 1280
     private var mVideoHeight = 720
     private var displayType = MXScale.CENTER_CROP

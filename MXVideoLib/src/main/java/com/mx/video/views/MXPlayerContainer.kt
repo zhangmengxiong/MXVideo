@@ -16,6 +16,8 @@ class MXPlayerContainer @JvmOverloads constructor(
 
     init {
         gravity = Gravity.CENTER
+        isFocusable = false
+        isFocusableInTouchMode = false
     }
 
     /**

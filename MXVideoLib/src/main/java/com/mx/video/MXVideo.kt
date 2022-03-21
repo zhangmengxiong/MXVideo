@@ -111,6 +111,7 @@ abstract class MXVideo @JvmOverloads constructor(
         MXUtils.init(context)
         View.inflate(context, getLayoutId(), this)
         isFocusable = false
+        isFocusableInTouchMode = false
         provider.initView()
         provider.setPlayState(MXState.IDLE)
     }

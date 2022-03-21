@@ -15,6 +15,8 @@ class MXTimeTextView @JvmOverloads constructor(
 
     init {
         text = "00:00"
+        isFocusable = false
+        isFocusableInTouchMode = false
     }
 
     private val ticketRun = object : Runnable {

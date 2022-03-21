@@ -23,6 +23,8 @@ class MXBatteryImageView @JvmOverloads constructor(
     )
 
     init {
+        isFocusable = false
+        isFocusableInTouchMode = false
         setImageResource(levelImage[3])
     }
 
