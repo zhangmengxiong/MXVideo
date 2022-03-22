@@ -2,11 +2,8 @@ package com.mx.video.utils.touch
 
 import android.view.View
 import com.mx.video.R
-import com.mx.video.beans.MXState
 import com.mx.video.utils.MXBrightnessHelp
-import com.mx.video.utils.MXUtils
 import com.mx.video.views.MXViewProvider
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 class BrightnessTouchListener(private val provider: MXViewProvider) : MXTouchListener() {

@@ -1,12 +1,17 @@
 package com.mx.video.views
 
 import android.view.View
+import android.view.WindowManager
 import android.widget.*
-import com.mx.video.*
+import com.mx.video.MXVideo
+import com.mx.video.R
 import com.mx.video.beans.MXConfig
 import com.mx.video.beans.MXScreen
 import com.mx.video.beans.MXState
-import com.mx.video.utils.*
+import com.mx.video.utils.MXDelay
+import com.mx.video.utils.MXTicket
+import com.mx.video.utils.MXTouchHelp
+import com.mx.video.utils.MXUtils
 import com.mx.video.utils.touch.BrightnessTouchListener
 import com.mx.video.utils.touch.SeekTouchListener
 import com.mx.video.utils.touch.VolumeTouchListener
@@ -126,6 +131,11 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         config.canShowBatteryImg.addObserver { _, show ->
             mxBatteryImg.visibility = if (show) View.VISIBLE else View.GONE
         }
+        config.videoSize.addObserver { _, value ->
+            config.videoListeners.toList().forEach { listener ->
+                listener.onVideoSizeChange(value.first, value.second)
+            }
+        }
         config.canSeekByUser.addObserver { _, show ->
             mxSeekProgress.isEnabled = config.sourceCanSeek()
         }
@@ -162,6 +172,8 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                         timeDelay.stop()
                     }
                     MXState.PREPARED -> {
+                        MXUtils.findWindows(mxVideo.context)
+                            ?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                         if (config.isPreloading.get()) {
                             allContentView.forEach {
                                 setViewShow(it, it in arrayOf(mxPlaceImg, mxPlayBtn))
@@ -175,6 +187,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                         timeDelay.stop()
                     }
                     MXState.PLAYING -> {
+                        config.isPreloading.set(false)
                         mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_pause)
                         allContentView.forEach {
                             if (it !in playingVisible) {
@@ -208,6 +221,8 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                         timeDelay.stop()
                     }
                     MXState.ERROR -> {
+                        MXUtils.findWindows(mxVideo.context)
+                            ?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                         allContentView.forEach {
                             setViewShow(it, it in arrayOf(mxPlaceImg, mxRetryLay, mxTopLay))
                         }
@@ -215,6 +230,8 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                         timeDelay.stop()
                     }
                     MXState.COMPLETE -> {
+                        MXUtils.findWindows(mxVideo.context)
+                            ?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                         allContentView.forEach {
                             setViewShow(it, it in arrayOf(mxPlaceImg, mxReplayLay, mxTopLay))
                         }
@@ -249,6 +266,9 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
 
         config.loading.addObserver { _, loading ->
             mxLoading.visibility = if (loading) View.VISIBLE else View.GONE
+            config.videoListeners.toList().forEach { listener ->
+                listener.onBuffering(loading)
+            }
         }
 
         mxPlayBtn.setOnClickListener {

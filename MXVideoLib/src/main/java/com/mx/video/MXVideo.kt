@@ -6,7 +6,6 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.FrameLayout
 import com.mx.video.beans.*
 import com.mx.video.player.IMXPlayer
@@ -84,7 +83,7 @@ abstract class MXVideo @JvmOverloads constructor(
     /**
      * 当前TextureView
      */
-    private var textureView: MXTextureView? = null
+    private var mxTextureView: MXTextureView? = null
 
     /**
      * 共享配置
@@ -113,6 +112,55 @@ abstract class MXVideo @JvmOverloads constructor(
         isFocusableInTouchMode = false
         provider.initView()
         config.state.set(MXState.IDLE)
+        config.screen.addObserver { _, screen ->
+            val windows = MXUtils.findWindowsDecorView(context) ?: return@addObserver
+            when (screen) {
+                MXScreen.FULL -> {
+                    if (parentMap.containsKey(config.viewIndexId)) {
+                        return@addObserver
+                    }
+                    val parent = (parent as ViewGroup?) ?: return@addObserver
+
+                    val item = MXParentView(
+                        parent.indexOfChild(this),
+                        parent, layoutParams, width, height
+                    )
+                    parent.removeView(this)
+                    cloneMeToLayout(item)
+                    parentMap[config.viewIndexId] = item
+
+                    val fullLayout = LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+                    windows.addView(this, fullLayout)
+
+                    MXUtils.setFullScreen(context)
+                    if (config.willChangeOrientationWhenFullScreen()) {
+                        var orientation = sensorHelp.getOrientation()
+                        if (orientation.isVertical()) {
+                            orientation = MXOrientation.DEGREE_270
+                        }
+                        MXUtils.setScreenOrientation(context, orientation)
+                    }
+
+                    postInvalidate()
+                }
+                MXScreen.NORMAL -> {
+                    val parentItem = parentMap.remove(config.viewIndexId) ?: return@addObserver
+                    windows.removeView(this)
+                    parentItem.parentViewGroup.removeViewAt(parentItem.index)
+                    parentItem.parentViewGroup.addView(
+                        this,
+                        parentItem.index,
+                        parentItem.layoutParams
+                    )
+
+                    MXUtils.recoverScreenOrientation(context)
+                    MXUtils.recoverFullScreen(context)
+                    postInvalidate()
+                }
+            }
+        }
     }
 
     fun addOnVideoListener(listener: MXVideoListener) {
@@ -146,11 +194,6 @@ abstract class MXVideo @JvmOverloads constructor(
      * 获取状态值
      */
     fun getState() = config.state.get()
-
-    /**
-     * 获取视图Provider
-     */
-    fun getViewProvider() = provider
 
     /**
      * 获取播放器
@@ -194,7 +237,7 @@ abstract class MXVideo @JvmOverloads constructor(
     open fun setTextureOrientation(orientation: MXOrientation) {
         MXUtils.log("func: setTextureOrientation()")
         config.orientation.set(orientation)
-        textureView?.setOrientation(orientation)
+        mxTextureView?.setOrientation(orientation)
     }
 
     /**
@@ -218,7 +261,7 @@ abstract class MXVideo @JvmOverloads constructor(
     open fun setScaleType(type: MXScale) {
         MXUtils.log("func: setScaleType() ${type.name}")
         config.scale.set(type)
-        textureView?.setDisplayType(type)
+        mxTextureView?.setDisplayType(type)
     }
 
     /**
@@ -332,7 +375,6 @@ abstract class MXVideo @JvmOverloads constructor(
             player.setMXVideo(this, textureView)
             mxPlayer = player
             playingVideo = this
-            MXUtils.findWindows(context)?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             config.state.set(MXState.PREPARING)
             sensorHelp.addListener(sensorListener)
         }
@@ -364,7 +406,7 @@ abstract class MXVideo @JvmOverloads constructor(
 
         provider.mxSurfaceContainer.addView(textureView, layoutParams)
         textureView.surfaceTextureListener = player
-        this.textureView = textureView
+        this.mxTextureView = textureView
         return textureView
     }
 
@@ -376,7 +418,6 @@ abstract class MXVideo @JvmOverloads constructor(
 
         config.state.set(MXState.PREPARED)
         if (config.isPreloading.get()) {
-            config.isPreloading.set(false)
             MXUtils.log("func: onPlayerPrepared -> need click start button to play")
         } else {
             MXUtils.log("func: onPlayerPrepared -> start play")
@@ -430,7 +471,6 @@ abstract class MXVideo @JvmOverloads constructor(
         MXUtils.log("func: onPlayerCompletion()")
         config.source.get()?.playUri?.let { MXUtils.saveProgress(it, 0) }
         mxPlayer?.release()
-        MXUtils.findWindows(context)?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         config.state.set(MXState.COMPLETE)
 
         if (config.gotoNormalScreenWhenComplete.get() && config.screen.get() == MXScreen.FULL) {
@@ -459,7 +499,7 @@ abstract class MXVideo @JvmOverloads constructor(
         MXUtils.log("func: onPlayerError() $error")
         if (config.source.get()?.isLiveSource == true
             && config.replayLiveSourceWhenError.get()
-            && config.state.get() in arrayOf(MXState.PLAYING, MXState.PAUSE, MXState.PREPARING)
+            && (config.state.get() in arrayOf(MXState.PLAYING, MXState.PAUSE, MXState.PREPARING))
         ) {
             // 直播重试
             startPlay()
@@ -487,12 +527,6 @@ abstract class MXVideo @JvmOverloads constructor(
     open fun onPlayerBuffering(start: Boolean) {
         MXUtils.log("func: onPlayerBuffering() $start")
         config.loading.set(start)
-
-        post {
-            config.videoListeners.toList().forEach { listener ->
-                listener.onBuffering(start)
-            }
-        }
     }
 
     /**
@@ -505,14 +539,8 @@ abstract class MXVideo @JvmOverloads constructor(
 
         MXUtils.log("func: onPlayerVideoSizeChanged() $width x $height")
         config.videoSize.set(Pair(width, height))
-        textureView?.setVideoSize(width, height)
+        mxTextureView?.setVideoSize(width, height)
         postInvalidate()
-
-        post {
-            config.videoListeners.toList().forEach { listener ->
-                listener.onVideoSizeChange(width, height)
-            }
-        }
     }
 
     /**
@@ -521,7 +549,7 @@ abstract class MXVideo @JvmOverloads constructor(
     open fun stopPlay() {
         MXUtils.log("func: stopPlay()")
         val player = mxPlayer
-        textureView = null
+        mxTextureView = null
         mxPlayer = null
         player?.release()
         if (playingVideo == this) {
@@ -601,52 +629,8 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     private fun switchToScreen(screen: MXScreen) {
         MXUtils.log("func: switchToScreen()  ${config.screen.get().name} -> ${screen.name}")
-        val windows = MXUtils.findWindowsDecorView(context) ?: return
-        if (config.screen.get() == screen) return
-        when (screen) {
-            MXScreen.FULL -> {
-                if (parentMap.containsKey(config.viewIndexId)) {
-                    return
-                }
-                val parent = (parent as ViewGroup?) ?: return
-
-                val item = MXParentView(
-                    parent.indexOfChild(this),
-                    parent, layoutParams, width, height
-                )
-                parent.removeView(this)
-                cloneMeToLayout(item)
-                parentMap[config.viewIndexId] = item
-
-                val fullLayout = LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
-                )
-                windows.addView(this, fullLayout)
-
-                MXUtils.setFullScreen(context)
-                if (config.willChangeOrientationWhenFullScreen()) {
-                    var orientation = sensorHelp.getOrientation()
-                    if (orientation.isVertical()) {
-                        orientation = MXOrientation.DEGREE_270
-                    }
-                    MXUtils.setScreenOrientation(context, orientation)
-                }
-                config.screen.set(MXScreen.FULL)
-
-                postInvalidate()
-            }
-            MXScreen.NORMAL -> {
-                val parentItem = parentMap.remove(config.viewIndexId) ?: return
-                windows.removeView(this)
-                parentItem.parentViewGroup.removeViewAt(parentItem.index)
-                parentItem.parentViewGroup.addView(this, parentItem.index, parentItem.layoutParams)
-
-                MXUtils.recoverScreenOrientation(context)
-                MXUtils.recoverFullScreen(context)
-                config.screen.set(MXScreen.NORMAL)
-                postInvalidate()
-            }
-        }
+        MXUtils.findWindowsDecorView(context) ?: return
+        config.screen.set(screen)
     }
 
     private fun cloneMeToLayout(target: MXParentView) {

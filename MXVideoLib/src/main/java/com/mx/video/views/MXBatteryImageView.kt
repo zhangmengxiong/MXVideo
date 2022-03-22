@@ -8,7 +8,6 @@ import android.os.BatteryManager
 import android.util.AttributeSet
 import android.widget.ImageView
 import com.mx.video.R
-import com.mx.video.utils.MXUtils
 
 class MXBatteryImageView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
