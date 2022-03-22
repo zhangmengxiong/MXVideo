@@ -53,7 +53,7 @@ class MXConfig : Serializable {
      */
     internal val videoSize = MXValueObservable(MXSize(16, 9))
 
-    internal val playerViewSize = MXValueObservable(MXSize(0, 0))
+    internal val playerViewSize = MXValueObservable(MXSize(0, 0), true)
 
     /**
      * 视频缩放

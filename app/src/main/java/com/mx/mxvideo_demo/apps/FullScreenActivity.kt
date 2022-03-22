@@ -37,8 +37,11 @@ class FullScreenActivity : AppCompatActivity() {
                 }
             }
         })
+
         // 屏蔽全屏按钮
         mxVideoStd.getConfig().showFullScreenBtn.set(false)
+        mxVideoStd.getConfig().gotoNormalScreenWhenComplete.set(false)
+        mxVideoStd.getConfig().gotoNormalScreenWhenError.set(false)
         mxVideoStd.gotoFullScreen()
         mxVideoStd.setSource(
             MXPlaySource(Uri.parse(ldjVideos.first()), titles.random()),
