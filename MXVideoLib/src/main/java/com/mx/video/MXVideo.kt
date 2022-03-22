@@ -766,6 +766,7 @@ abstract class MXVideo @JvmOverloads constructor(
         config.release()
         provider.release()
         sensorHelp.deleteListener(sensorListener)
+        parentMap.remove(config.viewIndexId)
         stopPlay()
     }
 }
