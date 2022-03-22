@@ -294,6 +294,7 @@
         android:visibility="gone">
 
         <ImageView
+            android:id="@+id/mxReplayImg"
             android:layout_width="@dimen/mx_player_size_icon_width"
             android:layout_height="@dimen/mx_player_size_icon_width"
             android:background="@drawable/mx_bg_icon_circle"

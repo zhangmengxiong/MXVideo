@@ -86,6 +86,9 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
     val mxReplayLay: LinearLayout by lazy {
         mxVideo.findViewById(R.id.mxReplayLay) ?: LinearLayout(mxVideo.context)
     }
+    val mxReplayImg: ImageView by lazy {
+        mxVideo.findViewById(R.id.mxReplayImg) ?: ImageView(mxVideo.context)
+    }
     val mxQuickSeekLay: LinearLayout by lazy {
         mxVideo.findViewById(R.id.mxQuickSeekLay) ?: LinearLayout(mxVideo.context)
     }
@@ -137,18 +140,20 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         }
         config.playerViewSize.addObserver { size ->
             val fullScreen = config.screen.get() == MXScreen.FULL
-            val lp =
-                (mxPlayPauseImg.layoutParams as? LinearLayout.LayoutParams) ?: return@addObserver
-            val width = if (fullScreen) {
+            val playWidth = if (fullScreen) {
                 min(size.width, size.height) / 5
             } else {
                 mxVideo.resources.getDimensionPixelOffset(R.dimen.mx_player_size_icon_width)
             }
-            lp.width = width
-            lp.height = width
-            val padding = width / 5
-            mxPlayPauseImg.setPadding(padding, padding, padding, padding)
-            mxPlayPauseImg.layoutParams = lp
+            setViewSize(mxPlayPauseImg, playWidth, playWidth / 5)
+            setViewSize(mxReplayImg, playWidth, playWidth / 5)
+
+            val loadingWidth = if (fullScreen) {
+                (min(size.width, size.height) * 48) / (5 * 50)
+            } else {
+                mxVideo.resources.getDimensionPixelOffset(R.dimen.mx_player_size_loading_width)
+            }
+            setViewSize(mxLoading, loadingWidth, 0)
         }
         config.canSeekByUser.addObserver {
             mxSeekProgress.isEnabled = config.sourceCanSeek()
@@ -467,6 +472,14 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
     fun setViewShow(view: View, show: Boolean?) {
         show ?: return
         view.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
+    private fun setViewSize(view: View, size: Int, padding: Int) {
+        val lp = view.layoutParams ?: return
+        lp.width = size
+        lp.height = size
+        view.setPadding(padding, padding, padding, padding)
+        view.layoutParams = lp
     }
 
     /**
