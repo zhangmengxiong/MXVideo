@@ -128,7 +128,7 @@ class NormalActivity : AppCompatActivity() {
         centerCrop.performClick()
 
         canShowBottomSeekBar.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().canShowBottomSeekBar = (checkedId == R.id.canShowBottomSeekBarTrue)
+            mxVideoStd.getConfig().canShowBottomSeekBar.set(checkedId == R.id.canShowBottomSeekBarTrue)
         }
         canShowBottomSeekBarTrue.performClick()
 
@@ -179,51 +179,47 @@ class NormalActivity : AppCompatActivity() {
         rotation0.performClick()
 
         canSeekRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().canSeekByUser = (checkedId == R.id.canSeekTrue)
+            mxVideoStd.getConfig().canSeekByUser.set(checkedId == R.id.canSeekTrue)
         }
         canSeekTrue.performClick()
 
         canFullRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().showFullScreenBtn = (checkedId == R.id.canFullTrue)
+            mxVideoStd.getConfig().showFullScreenBtn.set(checkedId == R.id.canFullTrue)
         }
         canFullTrue.performClick()
 
         canShowSystemTimeRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().canShowSystemTime = (checkedId == R.id.canShowSystemTimeTrue)
+            mxVideoStd.getConfig().canShowSystemTime.set(checkedId == R.id.canShowSystemTimeTrue)
         }
         canShowSystemTimeTrue.performClick()
 
         canShowBatteryImgRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().canShowBatteryImg = (checkedId == R.id.canShowBatteryImgTrue)
+            mxVideoStd.getConfig().canShowBatteryImg.set(checkedId == R.id.canShowBatteryImgTrue)
         }
         canShowBatteryImgTrue.performClick()
 
         showTipIfNotWifiRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().showTipIfNotWifi = (checkedId == R.id.showTipIfNotWifiTrue)
+            mxVideoStd.getConfig().showTipIfNotWifi.set(checkedId == R.id.showTipIfNotWifiTrue)
         }
         showTipIfNotWifiTrue.performClick()
 
         gotoNormalScreenWhenCompleteRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().gotoNormalScreenWhenComplete =
-                (checkedId == R.id.gotoNormalScreenWhenCompleteTrue)
+            mxVideoStd.getConfig().gotoNormalScreenWhenComplete.set(checkedId == R.id.gotoNormalScreenWhenCompleteTrue)
         }
         gotoNormalScreenWhenCompleteTrue.performClick()
 
         gotoNormalScreenWhenErrorRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().gotoNormalScreenWhenError =
-                (checkedId == R.id.gotoNormalScreenWhenErrorTrue)
+            mxVideoStd.getConfig().gotoNormalScreenWhenError.set(checkedId == R.id.gotoNormalScreenWhenErrorTrue)
         }
         gotoNormalScreenWhenErrorTrue.performClick()
 
         sensorRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().autoRotateBySensor =
-                (checkedId == R.id.sensorTrue)
+            mxVideoStd.getConfig().autoRotateBySensor.set(checkedId == R.id.sensorTrue)
         }
         sensorFalse.performClick()
 
         liveRetryRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().replayLiveSourceWhenError =
-                (checkedId == R.id.liveRetryTrue)
+            mxVideoStd.getConfig().replayLiveSourceWhenError.set(checkedId == R.id.liveRetryTrue)
         }
         liveRetryFalse.performClick()
     }

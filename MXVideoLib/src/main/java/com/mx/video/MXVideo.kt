@@ -112,7 +112,7 @@ abstract class MXVideo @JvmOverloads constructor(
         isFocusable = false
         isFocusableInTouchMode = false
         provider.initView()
-        provider.setPlayState(MXState.IDLE)
+        config.state.set(MXState.IDLE)
     }
 
     fun addOnVideoListener(listener: MXVideoListener) {
@@ -145,7 +145,7 @@ abstract class MXVideo @JvmOverloads constructor(
     /**
      * 获取状态值
      */
-    fun getState() = provider.getState()
+    fun getState() = config.state.get()
 
     /**
      * 获取视图Provider
@@ -169,21 +169,21 @@ abstract class MXVideo @JvmOverloads constructor(
         player: Class<out IMXPlayer>? = null,
         seekTo: Int = -1
     ) {
-        if (source == config.source) {
+        if (source == config.source.get()) {
             return
         }
         MXUtils.log("func: setSource()")
         isStopState = false
         stopPlay()
-        config.source = source
+        config.source.set(source)
         mxPlayerClass = player
 
-        config.seekWhenPlay = seekTo
+        config.seekWhenPlay.set(seekTo)
         provider.mxTitleTxv.text = source?.title
         if (source != null) {
-            provider.setPlayState(MXState.NORMAL)
+            config.state.set(MXState.NORMAL)
         } else {
-            provider.setPlayState(MXState.IDLE)
+            config.state.set(MXState.IDLE)
         }
     }
 
@@ -193,7 +193,7 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun setTextureOrientation(orientation: MXOrientation) {
         MXUtils.log("func: setTextureOrientation()")
-        config.orientation = orientation
+        config.orientation.set(orientation)
         textureView?.setOrientation(orientation)
     }
 
@@ -203,10 +203,10 @@ abstract class MXVideo @JvmOverloads constructor(
     open fun seekTo(seek: Int) {
         MXUtils.log("func: seekTo() ${MXUtils.stringForTime(seek)}")
         val player = mxPlayer
-        if (player != null && provider.getState() in arrayOf(MXState.PLAYING, MXState.PAUSE)) {
+        if (player != null && config.state.get() in arrayOf(MXState.PLAYING, MXState.PAUSE)) {
             player.seekTo(seek)
         } else {
-            config.seekWhenPlay = seek
+            config.seekWhenPlay.set(seek)
         }
     }
 
@@ -217,7 +217,7 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun setScaleType(type: MXScale) {
         MXUtils.log("func: setScaleType() ${type.name}")
-        config.scale = type
+        config.scale.set(type)
         textureView?.setDisplayType(type)
     }
 
@@ -227,7 +227,7 @@ abstract class MXVideo @JvmOverloads constructor(
     open fun startPlay() {
         MXUtils.log("func: startPlay()")
         stopPlay()
-        config.isPreloading = false
+        config.isPreloading.set(false)
         startVideo()
     }
 
@@ -236,13 +236,13 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun pausePlay() {
         MXUtils.log("func: pausePlay()")
-        if (provider.getState() != MXState.PLAYING) return
-        if (!config.canPauseByUser) return
-        val source = config.source ?: return
+        if (config.state.get() != MXState.PLAYING) return
+        if (!config.canPauseByUser.get()) return
+        val source = config.source.get() ?: return
         if (source.isLiveSource) return
 
         mxPlayer?.pause()
-        provider.setPlayState(MXState.PAUSE)
+        config.state.set(MXState.PAUSE)
     }
 
     /**
@@ -250,9 +250,9 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun continuePlay() {
         MXUtils.log("func: continuePlay()")
-        if (provider.getState() != MXState.PAUSE) return
+        if (config.state.get() != MXState.PAUSE) return
         mxPlayer?.start()
-        provider.setPlayState(MXState.PLAYING)
+        config.state.set(MXState.PLAYING)
     }
 
     /**
@@ -261,11 +261,11 @@ abstract class MXVideo @JvmOverloads constructor(
     open fun onStart() {
         MXUtils.log("func: onStart()")
         if (!isStopState) return
-        val source = config.source ?: return
+        val source = config.source.get() ?: return
         if (source.isLiveSource) {
             startPlay()
         } else {
-            if (provider.getState() == MXState.PAUSE) {
+            if (config.state.get() == MXState.PAUSE) {
                 continuePlay()
             }
         }
@@ -277,8 +277,8 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun onStop() {
         MXUtils.log("func: onStop()")
-        if (provider.getState() != MXState.PLAYING) return
-        val source = config.source ?: return
+        if (config.state.get() != MXState.PLAYING) return
+        val source = config.source.get() ?: return
         if (source.isLiveSource) {// 直播无法暂停，这里直接停止播放
             stopPlay()
         } else {
@@ -293,8 +293,8 @@ abstract class MXVideo @JvmOverloads constructor(
     open fun startPreload() {
         MXUtils.log("func: startPreload()")
         stopPlay()
-        config.isPreloading = false
-        val source = config.source ?: return
+        config.isPreloading.set(false)
+        val source = config.source.get() ?: return
         val isLiveSource = source.isLiveSource
         if (isLiveSource) {
             // 直播源不支持预加载
@@ -306,7 +306,7 @@ abstract class MXVideo @JvmOverloads constructor(
             return
         }
 
-        config.isPreloading = true
+        config.isPreloading.set(true)
         startVideo()
     }
 
@@ -321,7 +321,7 @@ abstract class MXVideo @JvmOverloads constructor(
         MXUtils.log("func: startVideo()")
         playingVideo?.stopPlay()
         val clazz = mxPlayerClass ?: MXSystemPlayer::class.java
-        val source = config.source ?: return
+        val source = config.source.get() ?: return
         MXUtils.log("startVideo ${source.playUri} player=${clazz.name}")
 
         val startRun = {
@@ -333,10 +333,10 @@ abstract class MXVideo @JvmOverloads constructor(
             mxPlayer = player
             playingVideo = this
             MXUtils.findWindows(context)?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            provider.setPlayState(MXState.PREPARING)
+            config.state.set(MXState.PREPARING)
             sensorHelp.addListener(sensorListener)
         }
-        if (!MXUtils.isWifiConnected(context) && config.showTipIfNotWifi && !hasWifiDialogShow) {
+        if (!MXUtils.isWifiConnected(context) && config.showTipIfNotWifi.get() && !hasWifiDialogShow) {
             AlertDialog.Builder(context).apply {
                 setMessage(R.string.mx_play_wifi_notify)
                 setPositiveButton(context.getString(R.string.mx_play_wifi_dialog_continue)) { _, _ ->
@@ -354,9 +354,10 @@ abstract class MXVideo @JvmOverloads constructor(
     private fun addTextureView(player: IMXPlayer): MXTextureView {
         provider.mxSurfaceContainer.removeAllViews()
         val textureView = MXTextureView(context.applicationContext)
-        textureView.setVideoSize(config.videoWidth, config.videoHeight)
-        textureView.setDisplayType(config.scale)
-        textureView.setOrientation(config.orientation)
+        val size = config.videoSize.get()
+        textureView.setVideoSize(size.first, size.second)
+        textureView.setDisplayType(config.scale.get())
+        textureView.setOrientation(config.orientation.get())
 
         val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         layoutParams.gravity = Gravity.CENTER
@@ -371,13 +372,14 @@ abstract class MXVideo @JvmOverloads constructor(
      * 视频已经准备好,但不是已经开始播放!
      */
     open fun onPlayerPrepared() {
-        MXUtils.log("func: onPlayerPrepared()")
         val player = mxPlayer ?: return
 
-        provider.setPlayState(MXState.PREPARED)
-        if (config.isPreloading) {
-            config.isPreloading = false
+        config.state.set(MXState.PREPARED)
+        if (config.isPreloading.get()) {
+            config.isPreloading.set(false)
+            MXUtils.log("func: onPlayerPrepared -> need click start button to play")
         } else {
+            MXUtils.log("func: onPlayerPrepared -> start play")
             player.start()
             seekToWhenPlay()
         }
@@ -388,22 +390,22 @@ abstract class MXVideo @JvmOverloads constructor(
      * 必须在player.start()调用之后再使用
      */
     open fun seekToWhenPlay() {
-        MXUtils.log("func: seekToWhenPlay()")
         val player = mxPlayer ?: return
         val seekTo = getSeekPosition()
         if (seekTo > 0) {
+            MXUtils.log("func: seekToWhenPlay(${seekTo})")
             player.seekTo(seekTo)
         }
-        config.seekWhenPlay = -1
+        config.seekWhenPlay.set(-1)
     }
 
     /**
      * 获取需要跳转的位置
      */
     private fun getSeekPosition(): Int {
-        val source = config.source ?: return -1
-        if (config.seekWhenPlay >= 0) { // 注意：这里seekWhenPlay=0时需要默认从0开始播放
-            return config.seekWhenPlay
+        val source = config.source.get() ?: return -1
+        if (config.seekWhenPlay.get() >= 0) { // 注意：这里seekWhenPlay=0时需要默认从0开始播放
+            return config.seekWhenPlay.get()
         }
         if (source.enableSaveProgress) {
             // 默认seek提前5秒
@@ -418,7 +420,7 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun onPlayerStartPlay() {
         MXUtils.log("func: onPlayerStartPlay()")
-        provider.setPlayState(MXState.PLAYING)
+        config.state.set(MXState.PLAYING)
     }
 
     /**
@@ -426,12 +428,12 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun onPlayerCompletion() {
         MXUtils.log("func: onPlayerCompletion()")
-        config.source?.playUri?.let { MXUtils.saveProgress(it, 0) }
+        config.source.get()?.playUri?.let { MXUtils.saveProgress(it, 0) }
         mxPlayer?.release()
         MXUtils.findWindows(context)?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        provider.setPlayState(MXState.COMPLETE)
+        config.state.set(MXState.COMPLETE)
 
-        if (config.gotoNormalScreenWhenComplete && provider.getScreen() == MXScreen.FULL) {
+        if (config.gotoNormalScreenWhenComplete.get() && config.screen.get() == MXScreen.FULL) {
             switchToScreen(MXScreen.NORMAL)
         }
     }
@@ -455,23 +457,23 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun onPlayerError(error: String?) {
         MXUtils.log("func: onPlayerError() $error")
-        if (config.source?.isLiveSource == true
-            && config.replayLiveSourceWhenError
-            && provider.getState() in arrayOf(MXState.PLAYING, MXState.PAUSE, MXState.PREPARING)
+        if (config.source.get()?.isLiveSource == true
+            && config.replayLiveSourceWhenError.get()
+            && config.state.get() in arrayOf(MXState.PLAYING, MXState.PAUSE, MXState.PREPARING)
         ) {
             // 直播重试
             startPlay()
             return
         }
 
-        if (config.isPreloading && provider.getState() == MXState.PREPARING) {
+        if (config.isPreloading.get() && config.state.get() == MXState.PREPARING) {
             // 预加载失败，状态重置成NORMAL
-            config.isPreloading = false
+            config.isPreloading.set(false)
             stopPlay()
             return
         }
-        provider.setPlayState(MXState.ERROR)
-        if (config.gotoNormalScreenWhenError && provider.getScreen() == MXScreen.FULL) {
+        config.state.set(MXState.ERROR)
+        if (config.gotoNormalScreenWhenError.get() && config.screen.get() == MXScreen.FULL) {
             switchToScreen(MXScreen.NORMAL)
         }
     }
@@ -484,7 +486,7 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun onPlayerBuffering(start: Boolean) {
         MXUtils.log("func: onPlayerBuffering() $start")
-        provider.setOnBuffering(start)
+        config.loading.set(start)
 
         post {
             config.videoListeners.toList().forEach { listener ->
@@ -498,11 +500,11 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun onPlayerVideoSizeChanged(width: Int, height: Int) {
         if (width <= 0 || height <= 0) return
-        if (width == config.videoWidth && height == config.videoHeight) return
+        val size = config.videoSize.get()
+        if (width == size.first && height == size.second) return
 
         MXUtils.log("func: onPlayerVideoSizeChanged() $width x $height")
-        config.videoWidth = width
-        config.videoHeight = height
+        config.videoSize.set(Pair(width, height))
         textureView?.setVideoSize(width, height)
         postInvalidate()
 
@@ -528,10 +530,10 @@ abstract class MXVideo @JvmOverloads constructor(
 
         sensorHelp.deleteListener(sensorListener)
 
-        if (config.source == null) {
-            provider.setPlayState(MXState.IDLE)
+        if (config.source.get() == null) {
+            config.state.set(MXState.IDLE)
         } else {
-            provider.setPlayState(MXState.NORMAL)
+            config.state.set(MXState.NORMAL)
         }
     }
 
@@ -555,7 +557,7 @@ abstract class MXVideo @JvmOverloads constructor(
         val heightSize = MeasureSpec.getSize(heightMeasureSpec)
 
         if (dimensionRatio > 0.0
-            && provider.getScreen() == MXScreen.NORMAL
+            && config.screen.get() == MXScreen.NORMAL
             && widthMode == MeasureSpec.EXACTLY
         ) {
             var height = (widthSize / dimensionRatio).toInt()
@@ -569,12 +571,13 @@ abstract class MXVideo @JvmOverloads constructor(
             return
         }
 
-        if (config.videoWidth > 0 && config.videoHeight > 0
-            && provider.getScreen() == MXScreen.NORMAL
+        val size = config.videoSize.get()
+        if (size.first > 0 && size.second > 0
+            && config.screen.get() == MXScreen.NORMAL
             && widthMode == MeasureSpec.EXACTLY
             && heightMode != MeasureSpec.EXACTLY
         ) {
-            var height = (widthSize * config.videoHeight.toFloat() / config.videoWidth).toInt()
+            var height = (widthSize * size.second.toFloat() / size.first).toInt()
             if (height > heightSize && heightMode == MeasureSpec.AT_MOST) {
                 height = heightSize
             }
@@ -590,16 +593,16 @@ abstract class MXVideo @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        provider.setViewSize(w, h)
+        config.playerViewSize.set(w to h)
     }
 
     /**
      * 切换全屏、小屏显示
      */
     private fun switchToScreen(screen: MXScreen) {
-        MXUtils.log("func: switchToScreen()  ${provider.getScreen().name} -> ${screen.name}")
+        MXUtils.log("func: switchToScreen()  ${config.screen.get().name} -> ${screen.name}")
         val windows = MXUtils.findWindowsDecorView(context) ?: return
-        if (provider.getScreen() == screen) return
+        if (config.screen.get() == screen) return
         when (screen) {
             MXScreen.FULL -> {
                 if (parentMap.containsKey(config.viewIndexId)) {
@@ -628,7 +631,7 @@ abstract class MXVideo @JvmOverloads constructor(
                     }
                     MXUtils.setScreenOrientation(context, orientation)
                 }
-                provider.setScreenState(MXScreen.FULL)
+                config.screen.set(MXScreen.FULL)
 
                 postInvalidate()
             }
@@ -640,7 +643,7 @@ abstract class MXVideo @JvmOverloads constructor(
 
                 MXUtils.recoverScreenOrientation(context)
                 MXUtils.recoverFullScreen(context)
-                provider.setScreenState(MXScreen.NORMAL)
+                config.screen.set(MXScreen.NORMAL)
                 postInvalidate()
             }
         }
@@ -668,7 +671,7 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun isPlaying(): Boolean {
         val player = mxPlayer ?: return false
-        return (provider.getState() in arrayOf(
+        return (config.state.get() in arrayOf(
             MXState.PLAYING,
             MXState.PAUSE,
             MXState.PREPARING,
@@ -680,7 +683,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 判断是否全屏
      */
     open fun isFullScreen(): Boolean {
-        return provider.getScreen() == MXScreen.FULL
+        return config.screen.get() == MXScreen.FULL
     }
 
     /**
@@ -722,7 +725,7 @@ abstract class MXVideo @JvmOverloads constructor(
         mxPlayerClass = null
         mxPlayer = null
         config.reset()
-        provider.setPlayState(MXState.IDLE)
+        config.state.set(MXState.IDLE)
         postInvalidate()
     }
 
@@ -732,8 +735,8 @@ abstract class MXVideo @JvmOverloads constructor(
                 // 当不在播放，或者不需要变更方向时，不处理
                 return
             }
-            if (!config.autoRotateBySensor) {
-                if (provider.getScreen() == MXScreen.FULL && orientation.isHorizontal()) {
+            if (!config.autoRotateBySensor.get()) {
+                if (config.screen.get() == MXScreen.FULL && orientation.isHorizontal()) {
                     // 全屏时，方向切换，变更一下
                     MXUtils.setScreenOrientation(context, orientation)
                 }
@@ -741,7 +744,7 @@ abstract class MXVideo @JvmOverloads constructor(
             }
             if (orientation.isHorizontal()) {
                 // 竖屏切换到横屏
-                if (provider.getScreen() == MXScreen.FULL) {
+                if (config.screen.get() == MXScreen.FULL) {
                     MXUtils.setScreenOrientation(context, orientation)
                 } else {
                     switchToScreen(MXScreen.FULL)
@@ -750,7 +753,7 @@ abstract class MXVideo @JvmOverloads constructor(
             }
             if (orientation.isVertical()) {
                 // 横屏切换到竖屏
-                if (provider.getScreen() == MXScreen.NORMAL) {
+                if (config.screen.get() == MXScreen.NORMAL) {
                     MXUtils.setScreenOrientation(context, orientation)
                 } else {
                     switchToScreen(MXScreen.NORMAL)
