@@ -6,7 +6,7 @@ import com.mx.video.utils.MXBrightnessHelp
 import com.mx.video.views.MXViewProvider
 import kotlin.math.roundToInt
 
-class BrightnessTouchListener(private val provider: MXViewProvider) : MXTouchListener() {
+internal class MXBrightnessTouchListener(private val provider: MXViewProvider) : MXTouchListener {
     private val brightnessHelp by lazy { MXBrightnessHelp(provider.mxVideo.context) }
     private var maxBrightness = 0
     private var startBrightness = 0

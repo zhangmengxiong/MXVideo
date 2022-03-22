@@ -10,7 +10,7 @@ import com.mx.mxvideo_demo.apps.FullScreenActivity
 import com.mx.mxvideo_demo.apps.NormalActivity
 import com.mx.mxvideo_demo.apps.RecycleViewActivity
 import com.mx.mxvideo_demo.apps.TestActivity
-import com.mx.video.utils.MXUtils
+import com.mx.video.MXVideo
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
                 HomePages("适配RecycleView", RecycleViewActivity::class.java),
                 HomePages("全屏播放器", FullScreenActivity::class.java),
                 HomePages("清理播放记录", null) {
-                    MXUtils.clearProgress()
+                    MXVideo.clearProgress()
                     Toast.makeText(this, "清理成功！", Toast.LENGTH_SHORT).show()
                 },
             )

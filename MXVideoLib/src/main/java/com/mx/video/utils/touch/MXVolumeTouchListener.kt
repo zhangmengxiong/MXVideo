@@ -6,7 +6,7 @@ import com.mx.video.utils.MXVolumeHelp
 import com.mx.video.views.MXViewProvider
 import kotlin.math.roundToInt
 
-class VolumeTouchListener(private val provider: MXViewProvider) : MXTouchListener() {
+internal class MXVolumeTouchListener(private val provider: MXViewProvider) : MXTouchListener {
     private val volumeHelp by lazy { MXVolumeHelp(provider.mxVideo.context) }
     private var maxVolume = 0
     private var startVolume = 0

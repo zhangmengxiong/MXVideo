@@ -4,7 +4,7 @@ import android.content.Context
 import android.provider.Settings
 import kotlin.math.roundToInt
 
-class MXBrightnessHelp(val context: Context) {
+internal class MXBrightnessHelp(val context: Context) {
     init {
         getBrightness()
     }

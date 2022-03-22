@@ -7,7 +7,7 @@ import android.widget.TextView
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MXTimeTextView @JvmOverloads constructor(
+internal class MXTimeTextView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : TextView(context, attrs, defStyleAttr) {
     private val mHandler = Handler()

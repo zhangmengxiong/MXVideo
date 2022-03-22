@@ -2,7 +2,7 @@ package com.mx.video.utils
 
 import android.os.Handler
 
-class MXDelay {
+internal class MXDelay {
     private val mHandler = Handler()
     private var isTicketStart = false
     private var timeDelay = 2000L

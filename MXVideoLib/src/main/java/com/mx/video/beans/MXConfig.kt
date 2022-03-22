@@ -16,55 +16,60 @@ class MXConfig : Serializable {
     /**
      * 当前View的ID，全局ID
      */
-    val viewIndexId = videoViewIndex.incrementAndGet()
+    internal val viewIndexId = videoViewIndex.incrementAndGet()
+
+    /**
+     * 监听器列表
+     */
+    internal val videoListeners = ArrayList<MXVideoListener>()
 
     /**
      * 播放状态
      */
-    val state = MXValueObservable(MXState.IDLE)
+    internal val state = MXValueObservable(MXState.IDLE)
 
     /**
      * 全屏状态
      */
-    val screen = MXValueObservable(MXScreen.NORMAL)
+    internal val screen = MXValueObservable(MXScreen.NORMAL)
 
     /**
      * 预加载状态
      */
-    val isPreloading = MXValueObservable(false)
+    internal val isPreloading = MXValueObservable(false)
 
     /**
      * 视频加载中状态
      */
-    val loading = MXValueObservable(false)
+    internal val loading = MXValueObservable(false)
 
     /**
      * 旋转角度
      */
-    val orientation = MXValueObservable(MXOrientation.DEGREE_0)
+    internal val orientation = MXValueObservable(MXOrientation.DEGREE_0)
 
     /**
      * 视频宽高
      */
-    val videoSize = MXValueObservable(MXSize(16, 9))
+    internal val videoSize = MXValueObservable(MXSize(16, 9))
 
-    val playerViewSize = MXValueObservable(MXSize(0, 0))
+    internal val playerViewSize = MXValueObservable(MXSize(0, 0))
 
     /**
      * 视频缩放
      */
-    val scale = MXValueObservable(MXScale.CENTER_CROP)
+    internal val scale = MXValueObservable(MXScale.CENTER_CROP)
 
     /**
      * 跳转位置，当>=0时播放前会跳转到对应位置
      * 单位：秒
      */
-    val seekWhenPlay = MXValueObservable(-1)
+    internal val seekWhenPlay = MXValueObservable(-1)
 
     /**
      * 播放源
      */
-    val source = MXValueObservable<MXPlaySource?>(null)
+    internal val source = MXValueObservable<MXPlaySource?>(null)
 
     /**
      * 是否可以通过滑动或者进度条调整进度
@@ -138,11 +143,6 @@ class MXConfig : Serializable {
         val size = videoSize.get()
         return size.width > size.height
     }
-
-    /**
-     * 监听器列表
-     */
-    val videoListeners = ArrayList<MXVideoListener>()
 
     fun cloneBy(target: MXConfig) {
         orientation.set(target.orientation.get())

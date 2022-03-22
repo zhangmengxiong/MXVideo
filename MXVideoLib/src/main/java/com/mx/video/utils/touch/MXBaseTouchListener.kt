@@ -8,11 +8,11 @@ import com.mx.video.utils.MXUtils
 import com.mx.video.views.MXViewProvider
 import kotlin.math.min
 
-class SeekTouchListener(
+internal class MXBaseTouchListener(
     private val provider: MXViewProvider,
     private val config: MXConfig,
     private val timeDelay: MXDelay
-) : MXTouchListener() {
+) : MXTouchListener {
     override fun touchStart() {
         if (!config.sourceCanSeek() || config.state.get() != MXState.PLAYING) return
         provider.allContentView.forEach {

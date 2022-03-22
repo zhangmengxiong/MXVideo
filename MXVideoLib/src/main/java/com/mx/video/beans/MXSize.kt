@@ -1,6 +1,6 @@
 package com.mx.video.beans
 
-data class MXSize(val width: Int, val height: Int) {
+internal data class MXSize(val width: Int, val height: Int) {
     fun clone(): MXSize {
         return MXSize(width, height)
     }

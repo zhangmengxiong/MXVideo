@@ -3,7 +3,7 @@ package com.mx.video.utils
 import android.content.Context
 import android.media.AudioManager
 
-class MXVolumeHelp(context: Context) {
+internal class MXVolumeHelp(context: Context) {
     private val mAudioManager =
         context.applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 

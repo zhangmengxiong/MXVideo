@@ -9,9 +9,9 @@ import com.mx.video.beans.MXConfig
 import com.mx.video.beans.MXScreen
 import com.mx.video.beans.MXState
 import com.mx.video.utils.*
-import com.mx.video.utils.touch.BrightnessTouchListener
-import com.mx.video.utils.touch.SeekTouchListener
-import com.mx.video.utils.touch.VolumeTouchListener
+import com.mx.video.utils.touch.MXBrightnessTouchListener
+import com.mx.video.utils.touch.MXBaseTouchListener
+import com.mx.video.utils.touch.MXVolumeTouchListener
 
 class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
     init {
@@ -110,7 +110,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
     /**
      * 根节点View列表
      */
-    val allContentView = arrayOf(
+    internal val allContentView = arrayOf(
         mxPlaceImg, mxLoading, mxPlayBtn, mxTopLay, mxBottomLay,
         mxRetryLay, mxReplayLay, mxQuickSeekLay, mxVolumeLightLay
     )
@@ -353,9 +353,9 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             return@setOnTouchListener false
         }
 
-        touchHelp.horizontalTouch = SeekTouchListener(this, config, timeDelay)
-        touchHelp.verticalRightTouch = VolumeTouchListener(this)
-        touchHelp.verticalLeftTouch = BrightnessTouchListener(this)
+        touchHelp.horizontalTouch = MXBaseTouchListener(this, config, timeDelay)
+        touchHelp.verticalRightTouch = MXVolumeTouchListener(this)
+        touchHelp.verticalLeftTouch = MXBrightnessTouchListener(this)
 
         mxRetryLay.setOnClickListener {
             // 播放错误重试，需要还原播放时间

@@ -3,15 +3,12 @@ package com.mx.video.utils
 import android.os.Handler
 import android.os.Looper
 
-open class MXValueObservable<T>(defaultValue: T, private val debug: Boolean = false) {
-    protected var _value: T = defaultValue
-
-    /**
-     * 主线程Handler
-     */
-    protected val mHandler = Handler(Looper.getMainLooper())
-    protected val lock = Object()
+class MXValueObservable<T>(defaultValue: T, private val debug: Boolean = false) {
+    private val mHandler = Handler(Looper.getMainLooper())
+    private val lock = Object()
     private val observerList = ArrayList<((value: T) -> Unit)>()
+
+    private var _value: T = defaultValue
 
     fun set(value: T) {
         if (value == _value) {

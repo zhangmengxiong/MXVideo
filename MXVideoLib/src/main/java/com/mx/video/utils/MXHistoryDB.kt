@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper
 /**
  * 播放记录，使用sqlite存储
  */
-class MXHistoryDB(val context: Context) {
+internal class MXHistoryDB(val context: Context) {
     private val dbHelp by lazy { DBHelp(context.applicationContext).writableDatabase }
 
     fun addPlayTime(videoPath: String, playTime: Int) {

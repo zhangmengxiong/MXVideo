@@ -16,7 +16,7 @@ import com.mx.video.BuildConfig
 import com.mx.video.beans.MXOrientation
 import java.util.*
 
-object MXUtils {
+internal object MXUtils {
     private val activityFlagMap = HashMap<String, Int?>()
     private val activityOrientationMap = HashMap<String, Int?>()
 

@@ -52,6 +52,17 @@ abstract class MXVideo @JvmOverloads constructor(
         fun releaseAll() {
             playingVideo?.release()
         }
+
+        /**
+         * 清理进度条
+         */
+        fun clearProgress() {
+            MXUtils.clearProgress()
+        }
+
+        fun setDebug(debug: Boolean) {
+            MXUtils.setDebug(debug)
+        }
     }
 
     /**
@@ -164,19 +175,19 @@ abstract class MXVideo @JvmOverloads constructor(
     }
 
     fun addOnVideoListener(listener: MXVideoListener) {
-        MXUtils.log("func: addOnVideoListener()")
+        MXUtils.log("MXVideo: addOnVideoListener()")
         if (!config.videoListeners.contains(listener)) {
             config.videoListeners.add(listener)
         }
     }
 
     fun clearListener() {
-        MXUtils.log("func: clearListener()")
+        MXUtils.log("MXVideo: clearListener()")
         config.videoListeners.clear()
     }
 
     fun removeOnVideoListener(listener: MXVideoListener) {
-        MXUtils.log("func: removeOnVideoListener()")
+        MXUtils.log("MXVideo: removeOnVideoListener()")
         config.videoListeners.remove(listener)
     }
 
@@ -215,7 +226,7 @@ abstract class MXVideo @JvmOverloads constructor(
         if (source == config.source.get()) {
             return
         }
-        MXUtils.log("func: setSource()")
+        MXUtils.log("MXVideo: setSource()")
         isStopState = false
         stopPlay()
         config.source.set(source)
@@ -235,7 +246,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 设置方向
      */
     open fun setTextureOrientation(orientation: MXOrientation) {
-        MXUtils.log("func: setTextureOrientation()")
+        MXUtils.log("MXVideo: setTextureOrientation()")
         config.orientation.set(orientation)
         mxTextureView?.setOrientation(orientation)
     }
@@ -244,7 +255,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 跳转
      */
     open fun seekTo(seek: Int) {
-        MXUtils.log("func: seekTo() ${MXUtils.stringForTime(seek)}")
+        MXUtils.log("MXVideo: seekTo() ${MXUtils.stringForTime(seek)}")
         val player = mxPlayer
         if (player != null && config.state.get() in arrayOf(MXState.PLAYING, MXState.PAUSE)) {
             player.seekTo(seek)
@@ -259,7 +270,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * MXScale.CENTER_CROP  根据视频宽高自适应
      */
     open fun setScaleType(type: MXScale) {
-        MXUtils.log("func: setScaleType() ${type.name}")
+        MXUtils.log("MXVideo: setScaleType() ${type.name}")
         config.scale.set(type)
         mxTextureView?.setDisplayType(type)
     }
@@ -268,7 +279,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 开始构建播放流程，预加载完成后立即播放
      */
     open fun startPlay() {
-        MXUtils.log("func: startPlay()")
+        MXUtils.log("MXVideo: startPlay()")
         stopPlay()
         config.isPreloading.set(false)
         startVideo()
@@ -278,7 +289,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 暂停播放
      */
     open fun pausePlay() {
-        MXUtils.log("func: pausePlay()")
+        MXUtils.log("MXVideo: pausePlay()")
         if (config.state.get() != MXState.PLAYING) return
         if (!config.canPauseByUser.get()) return
         val source = config.source.get() ?: return
@@ -292,7 +303,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 暂停播放后，继续播放
      */
     open fun continuePlay() {
-        MXUtils.log("func: continuePlay()")
+        MXUtils.log("MXVideo: continuePlay()")
         if (config.state.get() != MXState.PAUSE) return
         mxPlayer?.start()
         config.state.set(MXState.PLAYING)
@@ -302,7 +313,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * Activity/Fragment 生命周期onStart() 需要调用暂停
      */
     open fun onStart() {
-        MXUtils.log("func: onStart()")
+        MXUtils.log("MXVideo: onStart()")
         if (!isStopState) return
         val source = config.source.get() ?: return
         if (source.isLiveSource) {
@@ -319,7 +330,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * Activity/Fragment 生命周期onStop() 需要调用暂停
      */
     open fun onStop() {
-        MXUtils.log("func: onStop()")
+        MXUtils.log("MXVideo: onStop()")
         if (config.state.get() != MXState.PLAYING) return
         val source = config.source.get() ?: return
         if (source.isLiveSource) {// 直播无法暂停，这里直接停止播放
@@ -334,7 +345,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 开始构建播放流程，在预加载完成后不立即播放
      */
     open fun startPreload() {
-        MXUtils.log("func: startPreload()")
+        MXUtils.log("MXVideo: startPreload()")
         stopPlay()
         config.isPreloading.set(false)
         val source = config.source.get() ?: return
@@ -361,7 +372,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 4：创建播放器，开始播放
      */
     private fun startVideo() {
-        MXUtils.log("func: startVideo()")
+        MXUtils.log("MXVideo: startVideo()")
         playingVideo?.stopPlay()
         val clazz = mxPlayerClass ?: MXSystemPlayer::class.java
         val source = config.source.get() ?: return
@@ -418,9 +429,9 @@ abstract class MXVideo @JvmOverloads constructor(
 
         config.state.set(MXState.PREPARED)
         if (config.isPreloading.get()) {
-            MXUtils.log("func: onPlayerPrepared -> need click start button to play")
+            MXUtils.log("MXVideo: onPlayerPrepared -> need click start button to play")
         } else {
-            MXUtils.log("func: onPlayerPrepared -> start play")
+            MXUtils.log("MXVideo: onPlayerPrepared -> start play")
             player.start()
             seekToWhenPlay()
         }
@@ -434,7 +445,7 @@ abstract class MXVideo @JvmOverloads constructor(
         val player = mxPlayer ?: return
         val seekTo = getSeekPosition()
         if (seekTo > 0) {
-            MXUtils.log("func: seekToWhenPlay(${seekTo})")
+            MXUtils.log("MXVideo: seekToWhenPlay(${seekTo})")
             player.seekTo(seekTo)
         }
         config.seekWhenPlay.set(-1)
@@ -460,7 +471,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 视频正式开始播放
      */
     open fun onPlayerStartPlay() {
-        MXUtils.log("func: onPlayerStartPlay()")
+        MXUtils.log("MXVideo: onPlayerStartPlay()")
         config.state.set(MXState.PLAYING)
     }
 
@@ -468,7 +479,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 视频播放完成
      */
     open fun onPlayerCompletion() {
-        MXUtils.log("func: onPlayerCompletion()")
+        MXUtils.log("MXVideo: onPlayerCompletion()")
         config.source.get()?.playUri?.let { MXUtils.saveProgress(it, 0) }
         mxPlayer?.release()
         config.state.set(MXState.COMPLETE)
@@ -496,7 +507,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 视频播放错误信息
      */
     open fun onPlayerError(error: String?) {
-        MXUtils.log("func: onPlayerError() $error")
+        MXUtils.log("MXVideo: onPlayerError() $error")
         if (config.source.get()?.isLiveSource == true
             && config.replayLiveSourceWhenError.get()
             && (config.state.get() in arrayOf(MXState.PLAYING, MXState.PAUSE, MXState.PREPARING))
@@ -525,7 +536,7 @@ abstract class MXVideo @JvmOverloads constructor(
      *  false = 结束缓冲
      */
     open fun onPlayerBuffering(start: Boolean) {
-        MXUtils.log("func: onPlayerBuffering() $start")
+        MXUtils.log("MXVideo: onPlayerBuffering() $start")
         config.loading.set(start)
     }
 
@@ -537,7 +548,7 @@ abstract class MXVideo @JvmOverloads constructor(
         val size = config.videoSize.get()
         if (width == size.width && height == size.height) return
 
-        MXUtils.log("func: onPlayerVideoSizeChanged() $width x $height")
+        MXUtils.log("MXVideo: onPlayerVideoSizeChanged() $width x $height")
         config.videoSize.set(MXSize(width, height))
         mxTextureView?.setVideoSize(width, height)
         postInvalidate()
@@ -547,7 +558,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 结束播放
      */
     open fun stopPlay() {
-        MXUtils.log("func: stopPlay()")
+        MXUtils.log("MXVideo: stopPlay()")
         val player = mxPlayer
         mxTextureView = null
         mxPlayer = null
@@ -571,7 +582,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 设置MXVideo  ViewGroup的宽高比，设置之后会自动计算播放器的高度
      */
     open fun setDimensionRatio(ratio: Double) {
-        MXUtils.log("func: setDimensionRatio()")
+        MXUtils.log("MXVideo: setDimensionRatio()")
         if (ratio != dimensionRatio) {
             this.dimensionRatio = ratio
             requestLayout()
@@ -628,7 +639,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 切换全屏、小屏显示
      */
     private fun switchToScreen(screen: MXScreen) {
-        MXUtils.log("func: switchToScreen()  ${config.screen.get().name} -> ${screen.name}")
+        MXUtils.log("MXVideo: switchToScreen()  ${config.screen.get().name} -> ${screen.name}")
         MXUtils.findWindowsDecorView(context) ?: return
         config.screen.set(screen)
     }
@@ -674,7 +685,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 切换小屏播放
      */
     open fun gotoNormalScreen() {
-        MXUtils.log("func: gotoNormalScreen()")
+        MXUtils.log("MXVideo: gotoNormalScreen()")
         switchToScreen(MXScreen.NORMAL)
     }
 
@@ -682,7 +693,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 切换全屏播放
      */
     open fun gotoFullScreen() {
-        MXUtils.log("func: gotoFullScreen()")
+        MXUtils.log("MXVideo: gotoFullScreen()")
         switchToScreen(MXScreen.FULL)
     }
 
@@ -704,7 +715,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 重置播放器为 @link{MXState.IDLE} 状态
      */
     open fun reset() {
-        MXUtils.log("func: reset()")
+        MXUtils.log("MXVideo: reset()")
         stopPlay()
         mxPlayerClass = null
         mxPlayer = null
@@ -751,7 +762,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 销毁后，不能再次进行播放操作
      */
     open fun release() {
-        MXUtils.log("func: release()")
+        MXUtils.log("MXVideo: release()")
         config.release()
         provider.release()
         sensorHelp.deleteListener(sensorListener)

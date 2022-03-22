@@ -15,10 +15,10 @@ import com.mx.video.beans.MXScale
 import com.mx.video.beans.MXState
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
-import com.mx.video.utils.MXUtils
 import com.mx.video.utils.MXVideoListener
 import com.mx.video.views.MXViewProvider
 import kotlinx.android.synthetic.main.activity_normal.*
+import java.util.*
 
 class NormalActivity : AppCompatActivity() {
     private var playerClass: Class<out IMXPlayer>? = null
@@ -73,6 +73,21 @@ class NormalActivity : AppCompatActivity() {
             )
             mxVideoStd.startPlay()
         }
+        fun stringForTime(time: Int): String {
+            if (time <= 0 || time >= 24 * 60 * 60 * 1000) {
+                return "00:00"
+            }
+            val seconds = (time % 60)
+            val minutes = (time / 60 % 60)
+            val hours = (time / 3600)
+            val stringBuilder = StringBuilder()
+            val mFormatter = Formatter(stringBuilder, Locale.getDefault())
+            return if (hours > 0) {
+                mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString()
+            } else {
+                mFormatter.format("%02d:%02d", minutes, seconds).toString()
+            }
+        }
         mxVideoStd.addOnVideoListener(object : MXVideoListener() {
             override fun onStateChange(state: MXState, provider: MXViewProvider) {
                 statusTxv.text = state.name
@@ -80,12 +95,10 @@ class NormalActivity : AppCompatActivity() {
             }
 
             override fun onPlayTicket(position: Int, duration: Int) {
-                timeTxv.text =
-                    "${MXUtils.stringForTime(position)} / ${MXUtils.stringForTime(duration)}"
+                timeTxv.text = "${stringForTime(position)} / ${stringForTime(duration)}"
                 // println("MXUtils $position / $duration")
             }
         })
-
         videoSourceRG.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.source16x9 -> {
