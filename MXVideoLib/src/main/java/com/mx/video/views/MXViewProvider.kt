@@ -121,32 +121,32 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
     private val playingVisible = arrayOf(mxPlayBtn, mxTopLay, mxBottomLay)
 
     fun initView() {
-        config.screen.addObserver { _, screen ->
+        config.screen.addObserver { screen ->
             mxReturnBtn.visibility = if (screen == MXScreen.FULL) View.VISIBLE else View.GONE
             mxFullscreenBtn.setImageResource(if (screen == MXScreen.FULL) R.drawable.mx_icon_small_screen else R.drawable.mx_icon_full_screen)
         }
-        config.showFullScreenBtn.addObserver { _, show ->
+        config.showFullScreenBtn.addObserver { show ->
             mxFullscreenBtn.visibility = if (show) View.VISIBLE else View.GONE
         }
-        config.canShowSystemTime.addObserver { _, show ->
+        config.canShowSystemTime.addObserver { show ->
             mxSystemTimeTxv.visibility = if (show) View.VISIBLE else View.GONE
         }
-        config.canShowBatteryImg.addObserver { _, show ->
+        config.canShowBatteryImg.addObserver { show ->
             mxBatteryImg.visibility = if (show) View.VISIBLE else View.GONE
         }
-        config.videoSize.addObserver { _, value ->
+        config.videoSize.addObserver { value ->
             config.videoListeners.toList().forEach { listener ->
-                listener.onVideoSizeChange(value.first, value.second)
+                listener.onVideoSizeChange(value.width, value.height)
             }
         }
-        config.canSeekByUser.addObserver { _, show ->
+        config.canSeekByUser.addObserver { show ->
             mxSeekProgress.isEnabled = config.sourceCanSeek()
         }
-        config.source.addObserver { _, show ->
+        config.source.addObserver { show ->
             mxSeekProgress.isEnabled = config.sourceCanSeek()
         }
 
-        config.state.addObserver { _, state ->
+        config.state.addObserver { state ->
             val isLiveSource = (config.source.get()?.isLiveSource == true)
             if (config.isPreloading.get() && state == MXState.PREPARING) {
                 // 正在预加载中
@@ -249,7 +249,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             }
         }
 
-        position.addObserver { _, pair ->
+        position.addObserver { pair ->
             val position = pair.first
             val duration = pair.second
             mxSeekProgress.max = duration
@@ -263,11 +263,11 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                 listener.onPlayTicket(position, duration)
             }
         }
-        config.playerViewSize.addObserver { _, pair ->
-            touchHelp.setSize(pair.first, pair.second)
+        config.playerViewSize.addObserver { pair ->
+            touchHelp.setSize(pair.width, pair.height)
         }
 
-        config.loading.addObserver { _, loading ->
+        config.loading.addObserver { loading ->
             mxLoading.visibility = if (loading) View.VISIBLE else View.GONE
             config.videoListeners.toList().forEach { listener ->
                 listener.onBuffering(loading)
@@ -353,7 +353,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             return@setOnTouchListener false
         }
 
-        touchHelp.horizontalTouch = SeekTouchListener(this, timeDelay)
+        touchHelp.horizontalTouch = SeekTouchListener(this, config, timeDelay)
         touchHelp.verticalRightTouch = VolumeTouchListener(this)
         touchHelp.verticalLeftTouch = BrightnessTouchListener(this)
 

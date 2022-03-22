@@ -112,7 +112,7 @@ abstract class MXVideo @JvmOverloads constructor(
         isFocusableInTouchMode = false
         provider.initView()
         config.state.set(MXState.IDLE)
-        config.screen.addObserver { _, screen ->
+        config.screen.addObserver { screen ->
             val windows = MXUtils.findWindowsDecorView(context) ?: return@addObserver
             when (screen) {
                 MXScreen.FULL -> {
@@ -397,7 +397,7 @@ abstract class MXVideo @JvmOverloads constructor(
         provider.mxSurfaceContainer.removeAllViews()
         val textureView = MXTextureView(context.applicationContext)
         val size = config.videoSize.get()
-        textureView.setVideoSize(size.first, size.second)
+        textureView.setVideoSize(size.width, size.height)
         textureView.setDisplayType(config.scale.get())
         textureView.setOrientation(config.orientation.get())
 
@@ -535,10 +535,10 @@ abstract class MXVideo @JvmOverloads constructor(
     open fun onPlayerVideoSizeChanged(width: Int, height: Int) {
         if (width <= 0 || height <= 0) return
         val size = config.videoSize.get()
-        if (width == size.first && height == size.second) return
+        if (width == size.width && height == size.height) return
 
         MXUtils.log("func: onPlayerVideoSizeChanged() $width x $height")
-        config.videoSize.set(Pair(width, height))
+        config.videoSize.set(MXSize(width, height))
         mxTextureView?.setVideoSize(width, height)
         postInvalidate()
     }
@@ -600,12 +600,12 @@ abstract class MXVideo @JvmOverloads constructor(
         }
 
         val size = config.videoSize.get()
-        if (size.first > 0 && size.second > 0
+        if (size.width > 0 && size.height > 0
             && config.screen.get() == MXScreen.NORMAL
             && widthMode == MeasureSpec.EXACTLY
             && heightMode != MeasureSpec.EXACTLY
         ) {
-            var height = (widthSize * size.second.toFloat() / size.first).toInt()
+            var height = (widthSize * size.height.toFloat() / size.width).toInt()
             if (height > heightSize && heightMode == MeasureSpec.AT_MOST) {
                 height = heightSize
             }
@@ -621,7 +621,7 @@ abstract class MXVideo @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        config.playerViewSize.set(w to h)
+        config.playerViewSize.set(MXSize(w, h))
     }
 
     /**

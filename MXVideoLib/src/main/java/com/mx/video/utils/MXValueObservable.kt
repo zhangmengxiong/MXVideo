@@ -11,7 +11,7 @@ open class MXValueObservable<T>(defaultValue: T, private val debug: Boolean = fa
      */
     protected val mHandler = Handler(Looper.getMainLooper())
     protected val lock = Object()
-    private val observerList = ArrayList<((old: T, value: T) -> Unit)>()
+    private val observerList = ArrayList<((value: T) -> Unit)>()
 
     fun set(value: T) {
         if (value == _value) {
@@ -27,7 +27,7 @@ open class MXValueObservable<T>(defaultValue: T, private val debug: Boolean = fa
         }
         if (list.isEmpty()) return
         mHandler.post {
-            list.forEach { it.invoke(old, value) }
+            list.forEach { it.invoke(value) }
         }
     }
 
@@ -37,21 +37,21 @@ open class MXValueObservable<T>(defaultValue: T, private val debug: Boolean = fa
         }
         if (list.isEmpty()) return
         mHandler.post {
-            list.forEach { it.invoke(_value, _value) }
+            list.forEach { it.invoke(_value) }
         }
     }
 
     fun get() = _value
 
-    fun addObserver(o: ((old: T, value: T) -> Unit)?) {
+    fun addObserver(o: ((value: T) -> Unit)?) {
         o ?: return
         synchronized(lock) {
             observerList.add(o)
         }
-        mHandler.post { o.invoke(_value, _value) }
+        mHandler.post { o.invoke(_value) }
     }
 
-    fun deleteObserver(o: ((old: T, value: T) -> Unit)?) {
+    fun deleteObserver(o: ((value: T) -> Unit)?) {
         o ?: return
         synchronized(lock) {
             observerList.remove(o)

@@ -58,6 +58,7 @@ data class MXPlaySource(
         )
     }
 
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -86,4 +87,7 @@ data class MXPlaySource(
         return result
     }
 
+    override fun toString(): String {
+        return "MXPlaySource(playUri=$playUri, title=$title, headerMap=$headerMap, changeOrientationWhenFullScreen=$changeOrientationWhenFullScreen, isLooping=$isLooping, enableSaveProgress=$enableSaveProgress, isLiveSource=$isLiveSource)"
+    }
 }

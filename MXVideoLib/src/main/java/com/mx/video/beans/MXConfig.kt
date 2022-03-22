@@ -21,7 +21,7 @@ class MXConfig : Serializable {
     /**
      * 播放状态
      */
-    val state = MXValueObservable(MXState.IDLE, true)
+    val state = MXValueObservable(MXState.IDLE)
 
     /**
      * 全屏状态
@@ -46,9 +46,9 @@ class MXConfig : Serializable {
     /**
      * 视频宽高
      */
-    val videoSize = MXValueObservable(Pair(16, 9))
+    val videoSize = MXValueObservable(MXSize(16, 9))
 
-    val playerViewSize = MXValueObservable(Pair(0, 0))
+    val playerViewSize = MXValueObservable(MXSize(0, 0))
 
     /**
      * 视频缩放
@@ -136,7 +136,7 @@ class MXConfig : Serializable {
             return true
         }
         val size = videoSize.get()
-        return size.first > size.second
+        return size.width > size.height
     }
 
     /**
@@ -146,9 +146,7 @@ class MXConfig : Serializable {
 
     fun cloneBy(target: MXConfig) {
         orientation.set(target.orientation.get())
-        videoSize.set(
-            Pair(target.videoSize.get().first, target.videoSize.get().second)
-        )
+        videoSize.set(target.videoSize.get().clone())
         scale.set(target.scale.get())
         seekWhenPlay.set(target.seekWhenPlay.get())
         source.set(target.source.get()?.clone())
@@ -163,18 +161,13 @@ class MXConfig : Serializable {
         canPauseByUser.set(target.canPauseByUser.get())
         autoRotateBySensor.set(target.autoRotateBySensor.get())
         replayLiveSourceWhenError.set(target.replayLiveSourceWhenError.get())
-        playerViewSize.set(
-            Pair(
-                target.playerViewSize.get().first,
-                target.playerViewSize.get().second
-            )
-        )
+        playerViewSize.set(target.playerViewSize.get().clone())
     }
 
     fun reset() {
         state.set(MXState.IDLE)
         orientation.set(MXOrientation.DEGREE_0)
-        videoSize.set(Pair(16, 9))
+        videoSize.set(MXSize(16, 9))
         scale.set(MXScale.CENTER_CROP)
         seekWhenPlay.set(-1)
         source.set(null)
@@ -189,7 +182,7 @@ class MXConfig : Serializable {
         canPauseByUser.set(true)
         autoRotateBySensor.set(false)
         replayLiveSourceWhenError.set(false)
-        playerViewSize.set(0 to 0)
+        playerViewSize.set(MXSize(0, 0))
     }
 
     fun release() {
