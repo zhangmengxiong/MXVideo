@@ -2,11 +2,13 @@ package com.mx.video.utils.touch
 
 import android.view.View
 import com.mx.video.beans.MXState
+import com.mx.video.utils.MXDelay
 import com.mx.video.utils.MXUtils
 import com.mx.video.views.MXViewProvider
 import kotlin.math.min
 
-class SeekTouchListener(private val provider: MXViewProvider) : MXTouchListener() {
+class SeekTouchListener(private val provider: MXViewProvider, private val timeDelay: MXDelay) :
+    MXTouchListener() {
     override fun touchStart() {
         if (!provider.config.sourceCanSeek() || provider.config.state.get() != MXState.PLAYING) return
         provider.allContentView.forEach {
@@ -39,7 +41,7 @@ class SeekTouchListener(private val provider: MXViewProvider) : MXTouchListener(
         if (position > duration) position = duration
 
         provider.mxVideo.seekTo(position)
-        provider.timeDelay.start()
+        timeDelay.start()
     }
 
     override fun release() {

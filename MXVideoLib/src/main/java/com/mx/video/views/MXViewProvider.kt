@@ -8,10 +8,7 @@ import com.mx.video.R
 import com.mx.video.beans.MXConfig
 import com.mx.video.beans.MXScreen
 import com.mx.video.beans.MXState
-import com.mx.video.utils.MXDelay
-import com.mx.video.utils.MXTicket
-import com.mx.video.utils.MXTouchHelp
-import com.mx.video.utils.MXUtils
+import com.mx.video.utils.*
 import com.mx.video.utils.touch.BrightnessTouchListener
 import com.mx.video.utils.touch.SeekTouchListener
 import com.mx.video.utils.touch.VolumeTouchListener
@@ -21,9 +18,15 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         MXUtils.log("MXViewProvider init")
     }
 
-    val timeTicket = MXTicket()
-    val touchHelp by lazy { MXTouchHelp(mxVideo.context) }
-    val timeDelay = MXDelay()
+    /**
+     * 播放进度
+     * first = 当前播放进度 秒
+     * second = 视频总长度 秒
+     */
+    private val position = MXValueObservable(Pair(-1, -1), true)
+    private val timeTicket = MXTicket()
+    private val touchHelp by lazy { MXTouchHelp(mxVideo.context) }
+    private val timeDelay = MXDelay()
 
     val mxPlayerRootLay: FrameLayout by lazy {
         mxVideo.findViewById(R.id.mxPlayerRootLay) ?: FrameLayout(mxVideo.context)
@@ -162,7 +165,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                         mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
                         timeTicket.stop()
                         timeDelay.stop()
-                        config.position.set(0 to 0)
+                        position.set(0 to 0)
                     }
                     MXState.PREPARING -> {
                         allContentView.forEach {
@@ -246,7 +249,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             }
         }
 
-        config.position.addObserver { _, pair ->
+        position.addObserver { _, pair ->
             val position = pair.first
             val duration = pair.second
             mxSeekProgress.max = duration
@@ -273,7 +276,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
 
         mxPlayBtn.setOnClickListener {
             val source = config.source.get()
-            val mState = config.state.get()
+            val state = config.state.get()
             if (source == null) {
                 config.videoListeners.toList().forEach { listener ->
                     listener.onEmptyPlay()
@@ -281,20 +284,20 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                 return@setOnClickListener
             }
             val player = mxVideo.getPlayer()
-            if (mState == MXState.PLAYING && config.canPauseByUser.get() && !source.isLiveSource) {
+            if (state == MXState.PLAYING && config.canPauseByUser.get() && !source.isLiveSource) {
                 mxVideo.pausePlay()
-            } else if (mState == MXState.PAUSE) {
+            } else if (state == MXState.PAUSE) {
                 mxVideo.continuePlay()
-            } else if (mState == MXState.PREPARED) { // 预加载完成
+            } else if (state == MXState.PREPARED) { // 预加载完成
                 if (player != null) {
                     player.start()
                     mxVideo.seekToWhenPlay()
                     config.state.set(MXState.PLAYING)
                 }
-            } else if (config.isPreloading.get() && mState == MXState.PREPARING) { // 预加载完成
+            } else if (config.isPreloading.get() && state == MXState.PREPARING) { // 预加载完成
                 config.isPreloading.set(false)
-                config.state.set(mState)
-            } else if (mState == MXState.NORMAL) {
+                config.state.notifyChange()
+            } else if (state == MXState.NORMAL) {
                 mxVideo.startPlay()
             }
         }
@@ -325,7 +328,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         timeTicket.setTicketRun(330) {
             if (!mxVideo.isShown) return@setTicketRun
             val source = config.source.get() ?: return@setTicketRun
-            val curPosition = config.position.get().first
+            val curPosition = position.get().first
 
             if (mxVideo.isPlaying()) {
                 val duration = mxVideo.getDuration()
@@ -335,7 +338,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                         MXUtils.saveProgress(source.playUri, position)
                     }
                 }
-                config.position.set(position to duration)
+                this.position.set(position to duration)
             }
         }
 
@@ -350,15 +353,15 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             return@setOnTouchListener false
         }
 
-        touchHelp.horizontalTouch = SeekTouchListener(this)
+        touchHelp.horizontalTouch = SeekTouchListener(this, timeDelay)
         touchHelp.verticalRightTouch = VolumeTouchListener(this)
         touchHelp.verticalLeftTouch = BrightnessTouchListener(this)
 
         mxRetryLay.setOnClickListener {
             // 播放错误重试，需要还原播放时间
             val source = config.source.get() ?: return@setOnClickListener
-            val curPosition = config.position.get().first
-            val curDuration = config.position.get().second
+            val curPosition = position.get().first
+            val curDuration = position.get().second
             if (curPosition > 0 && curDuration > 0 // 有旧的观看进度
                 && config.seekWhenPlay.get() < 0  // 没有跳转值
                 && !source.isLiveSource // 非直播源

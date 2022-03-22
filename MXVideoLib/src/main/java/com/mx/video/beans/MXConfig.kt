@@ -29,13 +29,6 @@ class MXConfig : Serializable {
     val screen = MXValueObservable(MXScreen.NORMAL)
 
     /**
-     * 播放进度
-     * first = 当前播放进度 秒
-     * second = 视频总长度 秒
-     */
-    val position = MXValueObservable(Pair(-1, -1), true)
-
-    /**
      * 预加载状态
      */
     val isPreloading = MXValueObservable(false)

@@ -31,6 +31,16 @@ open class MXValueObservable<T>(defaultValue: T, private val debug: Boolean = fa
         }
     }
 
+    fun notifyChange() {
+        val list = synchronized(lock) {
+            observerList.toMutableList()
+        }
+        if (list.isEmpty()) return
+        mHandler.post {
+            list.forEach { it.invoke(_value, _value) }
+        }
+    }
+
     fun get() = _value
 
     fun addObserver(o: ((old: T, value: T) -> Unit)?) {
