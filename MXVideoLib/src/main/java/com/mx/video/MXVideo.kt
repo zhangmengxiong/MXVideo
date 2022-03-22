@@ -709,7 +709,6 @@ abstract class MXVideo @JvmOverloads constructor(
         mxPlayerClass = null
         mxPlayer = null
         config.reset()
-        config.state.set(MXState.IDLE)
         postInvalidate()
     }
 
