@@ -10,7 +10,7 @@ class MXValueObservable<T>(defaultValue: T, private val debug: Boolean = false) 
 
     private var _value: T = defaultValue
 
-    fun reset(value: T) {
+    internal fun reset(value: T) {
         _value = value
     }
 
@@ -32,7 +32,7 @@ class MXValueObservable<T>(defaultValue: T, private val debug: Boolean = false) 
         }
     }
 
-    fun notifyChange() {
+    internal fun notifyChange() {
         val list = synchronized(lock) {
             observerList.toMutableList()
         }
@@ -44,7 +44,7 @@ class MXValueObservable<T>(defaultValue: T, private val debug: Boolean = false) 
 
     fun get() = _value
 
-    fun addObserver(o: ((value: T) -> Unit)?) {
+    internal fun addObserver(o: ((value: T) -> Unit)?) {
         o ?: return
         synchronized(lock) {
             observerList.add(o)
@@ -52,14 +52,14 @@ class MXValueObservable<T>(defaultValue: T, private val debug: Boolean = false) 
         mHandler.post { o.invoke(_value) }
     }
 
-    fun deleteObserver(o: ((value: T) -> Unit)?) {
+    internal fun deleteObserver(o: ((value: T) -> Unit)?) {
         o ?: return
         synchronized(lock) {
             observerList.remove(o)
         }
     }
 
-    fun deleteObservers() {
+    internal fun deleteObservers() {
         synchronized(lock) {
             observerList.clear()
         }

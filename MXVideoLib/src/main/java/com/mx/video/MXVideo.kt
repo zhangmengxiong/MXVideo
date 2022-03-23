@@ -234,6 +234,8 @@ abstract class MXVideo @JvmOverloads constructor(
         MXUtils.log("MXVideo: setSource()")
         isStopState = false
         stopPlay()
+
+        config.reset()
         config.source.set(source)
         mxPlayerClass = player
 

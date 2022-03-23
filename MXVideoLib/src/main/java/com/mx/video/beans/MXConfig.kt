@@ -51,7 +51,7 @@ class MXConfig : Serializable {
     /**
      * 视频宽高
      */
-    internal val videoSize = MXValueObservable(MXSize(16, 9))
+    internal val videoSize = MXValueObservable(MXSize(1280, 720))
 
     internal val playerViewSize = MXValueObservable(MXSize(0, 0))
 
@@ -172,8 +172,9 @@ class MXConfig : Serializable {
 
     fun reset() {
         state.reset(MXState.IDLE)
+        isPreloading.reset(false)
         orientation.reset(MXOrientation.DEGREE_0)
-        videoSize.reset(MXSize(16, 9))
+        videoSize.reset(MXSize(1280, 720))
         scale.reset(MXScale.CENTER_CROP)
         seekWhenPlay.reset(-1)
         source.reset(null)

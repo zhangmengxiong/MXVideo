@@ -139,6 +139,8 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             }
         }
         config.playerViewSize.addObserver { size ->
+            touchHelp.setSize(size.width, size.height)
+
             val fullScreen = config.screen.get() == MXScreen.FULL
             val playWidth = if (fullScreen) {
                 min(size.width, size.height) / 5
@@ -179,9 +181,6 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             config.videoListeners.toList().forEach { listener ->
                 listener.onPlayTicket(position, duration)
             }
-        }
-        config.playerViewSize.addObserver { pair ->
-            touchHelp.setSize(pair.width, pair.height)
         }
 
         config.loading.addObserver { loading ->
