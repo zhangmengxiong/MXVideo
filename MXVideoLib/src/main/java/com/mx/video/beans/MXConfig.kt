@@ -44,7 +44,7 @@ class MXConfig : Serializable {
     internal val loading = MXValueObservable(false)
 
     /**
-     * 旋转角度
+     * 视频SurfaceView的旋转角度
      */
     internal val orientation = MXValueObservable(MXOrientation.DEGREE_0)
 
@@ -77,9 +77,9 @@ class MXConfig : Serializable {
     val canSeekByUser = MXValueObservable(true)
 
     /**
-     * 是否显示全屏按钮
+     * 是否能进入全屏
      */
-    val showFullScreenBtn = MXValueObservable(true)
+    val canFullScreen = MXValueObservable(true)
 
     /**
      * 是否显示右上角的时间
@@ -156,7 +156,7 @@ class MXConfig : Serializable {
         seekWhenPlay.reset(target.seekWhenPlay.get())
         source.reset(target.source.get()?.clone())
         canSeekByUser.reset(target.canSeekByUser.get())
-        showFullScreenBtn.reset(target.showFullScreenBtn.get())
+        canFullScreen.reset(target.canFullScreen.get())
         canShowSystemTime.reset(target.canShowSystemTime.get())
         canShowBottomSeekBar.reset(target.canShowBottomSeekBar.get())
         canShowBatteryImg.reset(target.canShowBatteryImg.get())
@@ -178,7 +178,7 @@ class MXConfig : Serializable {
         seekWhenPlay.reset(-1)
         source.reset(null)
         canSeekByUser.reset(true)
-        showFullScreenBtn.reset(true)
+        canFullScreen.reset(true)
         canShowSystemTime.reset(true)
         canShowBottomSeekBar.reset(true)
         canShowBatteryImg.reset(true)

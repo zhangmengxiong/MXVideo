@@ -123,6 +123,11 @@ abstract class MXVideo @JvmOverloads constructor(
         isFocusableInTouchMode = false
         provider.initView()
         config.state.set(MXState.IDLE)
+        config.canFullScreen.addObserver { can ->
+            if (!can && config.screen.get() == MXScreen.FULL) {
+                gotoNormalScreen()
+            }
+        }
         config.screen.addObserver { screen ->
             val windows = MXUtils.findWindowsDecorView(context) ?: return@addObserver
             when (screen) {
@@ -510,7 +515,12 @@ abstract class MXVideo @JvmOverloads constructor(
         MXUtils.log("MXVideo: onPlayerError() $error")
         if (config.source.get()?.isLiveSource == true
             && config.replayLiveSourceWhenError.get()
-            && (config.state.get() in arrayOf(MXState.PLAYING, MXState.PAUSE, MXState.PREPARING))
+            && (config.state.get() in arrayOf(
+                MXState.PLAYING,
+                MXState.PAUSE,
+                MXState.PREPARING,
+                MXState.PREPARED
+            ))
         ) {
             // 直播重试
             startPlay()
@@ -641,6 +651,9 @@ abstract class MXVideo @JvmOverloads constructor(
     private fun switchToScreen(screen: MXScreen) {
         MXUtils.log("MXVideo: switchToScreen()  ${config.screen.get().name} -> ${screen.name}")
         MXUtils.findWindowsDecorView(context) ?: return
+        if (!config.canFullScreen.get() && screen == MXScreen.FULL) {
+            return
+        }
         config.screen.set(screen)
     }
 

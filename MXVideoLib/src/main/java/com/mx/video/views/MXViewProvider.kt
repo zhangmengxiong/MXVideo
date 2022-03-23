@@ -124,7 +124,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             mxReturnBtn.visibility = if (screen == MXScreen.FULL) View.VISIBLE else View.GONE
             mxFullscreenBtn.setImageResource(if (screen == MXScreen.FULL) R.drawable.mx_icon_small_screen else R.drawable.mx_icon_full_screen)
         }
-        config.showFullScreenBtn.addObserver { show ->
+        config.canFullScreen.addObserver { show ->
             mxFullscreenBtn.visibility = if (show) View.VISIBLE else View.GONE
         }
         config.canShowSystemTime.addObserver { show ->
@@ -203,19 +203,30 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             val player = mxVideo.getPlayer()
             if (state == MXState.PLAYING && config.canPauseByUser.get() && !source.isLiveSource) {
                 mxVideo.pausePlay()
-            } else if (state == MXState.PAUSE) {
+                return@setOnClickListener
+            }
+
+            if (state == MXState.PAUSE) {
                 mxVideo.continuePlay()
-            } else if (state == MXState.PREPARED) { // 预加载完成
+                return@setOnClickListener
+            }
+
+            if (state == MXState.PREPARED) { // 预加载完成
                 if (player != null) {
                     player.start()
                     mxVideo.seekToWhenPlay()
                     config.state.set(MXState.PLAYING)
                 }
-            } else if (config.isPreloading.get() && state == MXState.PREPARING) { // 预加载完成
+                return@setOnClickListener
+            }
+            if (config.isPreloading.get() && state == MXState.PREPARING) { // 预加载完成
                 config.isPreloading.set(false)
                 config.state.notifyChange()
-            } else if (state == MXState.NORMAL) {
+                return@setOnClickListener
+            }
+            if (state == MXState.NORMAL) {
                 mxVideo.startPlay()
+                return@setOnClickListener
             }
         }
         mxPlayerRootLay.setOnClickListener {

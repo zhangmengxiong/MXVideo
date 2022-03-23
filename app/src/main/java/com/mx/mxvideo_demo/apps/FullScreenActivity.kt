@@ -11,7 +11,6 @@ import com.mx.mxvideo_demo.*
 import com.mx.mxvideo_demo.player.MXIJKPlayer
 import com.mx.video.MXVideo
 import com.mx.video.beans.MXPlaySource
-import com.mx.video.beans.MXScreen
 import com.mx.video.beans.MXState
 import com.mx.video.utils.MXVideoListener
 import com.mx.video.views.MXViewProvider
@@ -39,7 +38,7 @@ class FullScreenActivity : AppCompatActivity() {
         })
 
         // 屏蔽全屏按钮
-        mxVideoStd.getConfig().showFullScreenBtn.set(false)
+        mxVideoStd.getConfig().canFullScreen.set(false)
         mxVideoStd.getConfig().gotoNormalScreenWhenComplete.set(false)
         mxVideoStd.getConfig().gotoNormalScreenWhenError.set(false)
         mxVideoStd.gotoFullScreen()

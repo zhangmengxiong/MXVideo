@@ -197,7 +197,7 @@ class NormalActivity : AppCompatActivity() {
         canSeekTrue.performClick()
 
         canFullRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().showFullScreenBtn.set(checkedId == R.id.canFullTrue)
+            mxVideoStd.getConfig().canFullScreen.set(checkedId == R.id.canFullTrue)
         }
         canFullTrue.performClick()
 
