@@ -357,7 +357,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
 
                 MXUtils.findWindows(mxVideo.context)
                     ?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                timeTicket.stop()
+                timeTicket.start()
                 timeDelay.stop()
             }
             MXState.PLAYING -> {

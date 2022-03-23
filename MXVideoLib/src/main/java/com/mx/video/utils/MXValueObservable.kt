@@ -10,6 +10,10 @@ class MXValueObservable<T>(defaultValue: T, private val debug: Boolean = false) 
 
     private var _value: T = defaultValue
 
+    fun reset(value: T) {
+        _value = value
+    }
+
     fun set(value: T) {
         if (value == _value) {
             return

@@ -665,13 +665,11 @@ abstract class MXVideo @JvmOverloads constructor(
      * 是否正在播放
      */
     open fun isPlaying(): Boolean {
-        val player = mxPlayer ?: return false
+        mxPlayer ?: return false
         return (config.state.get() in arrayOf(
-            MXState.PLAYING,
-            MXState.PAUSE,
-            MXState.PREPARING,
-            MXState.PREPARED
-        )) && player.isPlaying()
+            MXState.PLAYING, MXState.PAUSE,
+            MXState.PREPARING, MXState.PREPARED
+        ))
     }
 
     /**
