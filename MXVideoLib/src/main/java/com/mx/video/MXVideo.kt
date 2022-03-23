@@ -228,12 +228,13 @@ abstract class MXVideo @JvmOverloads constructor(
         player: Class<out IMXPlayer>? = null,
         seekTo: Int = -1
     ) {
+        stopPlay()
+
         if (source == config.source.get()) {
             return
         }
         MXUtils.log("MXVideo: setSource()")
         isStopState = false
-        stopPlay()
 
         config.reset()
         config.source.set(source)
@@ -479,7 +480,9 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun onPlayerStartPlay() {
         MXUtils.log("MXVideo: onPlayerStartPlay()")
-        config.state.set(MXState.PLAYING)
+        if (config.state.get() in arrayOf(MXState.PREPARED, MXState.PREPARING)) {
+            config.state.set(MXState.PLAYING)
+        }
     }
 
     /**
@@ -570,11 +573,13 @@ abstract class MXVideo @JvmOverloads constructor(
      * 结束播放
      */
     open fun stopPlay() {
+        val player = mxPlayer ?: return
         MXUtils.log("MXVideo: stopPlay()")
-        val player = mxPlayer
         mxTextureView = null
         mxPlayer = null
-        player?.release()
+        player.release()
+        provider.mxSurfaceContainer.removeAllViews()
+
         if (playingVideo == this) {
             playingVideo = null
         }
