@@ -331,7 +331,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
                 timeTicket.stop()
                 timeDelay.stop()
-                position.set(0 to 0)
+                position.reset(0 to 0)
             }
             MXState.PREPARING -> {
                 mxPlaceImgShow = true
