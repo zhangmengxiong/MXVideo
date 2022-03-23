@@ -24,7 +24,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
      * first = 当前播放进度 秒
      * second = 视频总长度 秒
      */
-    private val position = MXValueObservable(Pair(-1, -1), true)
+    private val position = MXValueObservable(Pair(-1, -1))
     private val timeTicket = MXTicket()
     private val touchHelp by lazy { MXTouchHelp(mxVideo.context) }
     private val timeDelay = MXDelay()
