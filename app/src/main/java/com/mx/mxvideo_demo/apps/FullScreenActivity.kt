@@ -38,7 +38,7 @@ class FullScreenActivity : AppCompatActivity() {
         })
 
         // 屏蔽全屏按钮
-        mxVideoStd.getConfig().canFullScreen.set(false)
+        mxVideoStd.getConfig().canFullScreen.set(true)
         mxVideoStd.getConfig().gotoNormalScreenWhenComplete.set(false)
         mxVideoStd.getConfig().gotoNormalScreenWhenError.set(false)
         mxVideoStd.gotoFullScreen()
