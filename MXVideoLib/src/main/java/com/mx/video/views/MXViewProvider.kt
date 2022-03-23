@@ -120,25 +120,41 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
     )
 
     fun initView() {
+        // 全屏切换时，显示设置
         config.screen.addObserver { screen ->
             mxReturnBtn.visibility = if (screen == MXScreen.FULL) View.VISIBLE else View.GONE
             mxFullscreenBtn.setImageResource(if (screen == MXScreen.FULL) R.drawable.mx_icon_small_screen else R.drawable.mx_icon_full_screen)
         }
-        config.canFullScreen.addObserver { show ->
-            mxFullscreenBtn.visibility = if (show) View.VISIBLE else View.GONE
+
+
+        // 全屏按钮显示控制
+        val fullScreenObserver = { _: Boolean ->
+            mxFullscreenBtn.visibility = if (config.canFullScreen.get()
+                && config.showFullScreenButton.get()
+            ) View.VISIBLE else View.GONE
         }
+        config.canFullScreen.addObserver(fullScreenObserver)
+        config.showFullScreenButton.addObserver(fullScreenObserver)
+
+        // 时间控件显示设置
         config.canShowSystemTime.addObserver { show ->
             mxSystemTimeTxv.visibility = if (show) View.VISIBLE else View.GONE
         }
+        // 电池控件显示设置
         config.canShowBatteryImg.addObserver { show ->
             mxBatteryImg.visibility = if (show) View.VISIBLE else View.GONE
         }
+
+        // 视频宽高变化时分发事件
         config.videoSize.addObserver { size ->
             config.videoListeners.toList().forEach { listener ->
                 listener.onVideoSizeChange(size.width, size.height)
             }
         }
+
+        // 播放控件宽高变化时，控制相应按钮的大小、滑动距离标尺等
         config.playerViewSize.addObserver { size ->
+            if (size.width <= 0 || size.height <= 0) return@addObserver
             touchHelp.setSize(size.width, size.height)
 
             val fullScreen = config.screen.get() == MXScreen.FULL
@@ -157,17 +173,22 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             }
             setViewSize(mxLoading, loadingWidth, 0)
         }
+
+        // 控制是否可以被用户快进快退
         config.canSeekByUser.addObserver {
             mxSeekProgress.isEnabled = config.sourceCanSeek()
         }
+        // 播放源变化时，控制视频是否可以被用户快进快退
         config.source.addObserver {
             mxSeekProgress.isEnabled = config.sourceCanSeek()
         }
 
+        // 状态更新
         config.state.addObserver { state ->
             processState(state)
         }
 
+        // 播放进度更新时，设置页面状态+事件分发
         position.addObserver { pair ->
             val position = pair.first
             val duration = pair.second
@@ -183,6 +204,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             }
         }
 
+        // 加载状态变化时，设置页面状态+事件分发
         config.loading.addObserver { loading ->
             mxLoading.visibility = if (loading) View.VISIBLE else View.GONE
             config.videoListeners.toList().forEach { listener ->
@@ -190,27 +212,31 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             }
         }
 
+        // 播放按钮点击事件处理
         mxPlayBtn.setOnClickListener {
             val source = config.source.get()
             val state = config.state.get()
-            if (source == null) {
+            if (source == null) { // 播放源=null时，处理回调事件
                 config.videoListeners.toList().forEach { listener ->
                     listener.onEmptyPlay()
                 }
                 return@setOnClickListener
             }
             val player = mxVideo.getPlayer()
+            // 符合条件 1：播放中  2：可以被用户暂停  3：非直播源时，暂停播放
             if (state == MXState.PLAYING && config.canPauseByUser.get() && !source.isLiveSource) {
                 mxVideo.pausePlay()
                 return@setOnClickListener
             }
 
+            // 暂停状态时点击，恢复播放
             if (state == MXState.PAUSE) {
                 mxVideo.continuePlay()
                 return@setOnClickListener
             }
 
-            if (state == MXState.PREPARED) { // 预加载完成
+            // 预加载完成时点击，启动播放
+            if (state == MXState.PREPARED) {
                 if (player != null) {
                     player.start()
                     mxVideo.seekToWhenPlay()
@@ -218,18 +244,24 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                 }
                 return@setOnClickListener
             }
+
+            // 预加载时点击，去除预加载状态并刷新当前页面的显示状态
             if (config.isPreloading.get() && state == MXState.PREPARING) { // 预加载完成
                 config.isPreloading.set(false)
                 config.state.notifyChange()
                 return@setOnClickListener
             }
+
+            // 还未开播时点击，开始播放
             if (state == MXState.NORMAL) {
                 mxVideo.startPlay()
                 return@setOnClickListener
             }
         }
+
         mxPlayerRootLay.setOnClickListener {
             val mState = config.state.get()
+            // 根视图点击切换播放控件的显示与隐藏
             if (mState == MXState.PAUSE) {
                 setPlayingControl(true)
                 timeDelay.stop()
@@ -243,6 +275,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             }
         }
 
+        // 播放时，控件显示3秒后隐藏回调
         timeDelay.setDelayRun(3000) {
             val mState = config.state.get()
             if (!mxVideo.isShown || mState != MXState.PLAYING) {
@@ -252,6 +285,8 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             mxBottomLay.visibility = View.GONE
             mxTopLay.visibility = View.GONE
         }
+
+        // 进度条循环刷新
         timeTicket.setTicketRun(330) {
             if (!mxVideo.isShown) return@setTicketRun
             val source = config.source.get() ?: return@setTicketRun
@@ -269,6 +304,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             }
         }
 
+        // 左右、左边上下、右边上下滑动事件处理
         mxPlayerRootLay.setOnTouchListener { _, motionEvent ->
             val mScreen = config.screen.get()
             val mState = config.state.get()
@@ -279,11 +315,14 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             }
             return@setOnTouchListener false
         }
-
+        // 左右滑动 快进快退事件
         touchHelp.horizontalTouch = MXBaseTouchListener(this, config, timeDelay)
+        // 右侧上下滑动 声音大小调节
         touchHelp.verticalRightTouch = MXVolumeTouchListener(this)
+        // 左侧上下滑动 亮度大小调节
         touchHelp.verticalLeftTouch = MXBrightnessTouchListener(this)
 
+        // 重试播放
         mxRetryLay.setOnClickListener {
             // 播放错误重试，需要还原播放时间
             val source = config.source.get() ?: return@setOnClickListener
@@ -298,16 +337,23 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
 
             mxVideo.startPlay()
         }
+
+        // 重新播放
         mxReplayLay.setOnClickListener {
             mxVideo.startPlay()
         }
+
+        // 全屏按钮响应
         mxFullscreenBtn.setOnClickListener {
+            if (!config.canFullScreen.get()) return@setOnClickListener
             if (config.screen.get() == MXScreen.NORMAL) {
                 mxVideo.gotoFullScreen()
             } else {
                 mxVideo.gotoNormalScreen()
             }
         }
+
+        // 全屏返回按钮响应
         mxReturnBtn.setOnClickListener {
             if (config.screen.get() == MXScreen.FULL) {
                 mxVideo.gotoNormalScreen()
@@ -315,6 +361,9 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         }
     }
 
+    /**
+     * 状态处理
+     */
     private fun processState(state: MXState) {
         val isLiveSource = (config.source.get()?.isLiveSource == true)
         val isFullScreen = (config.screen.get() == MXScreen.FULL)
@@ -341,7 +390,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
                 timeTicket.stop()
                 timeDelay.stop()
-                position.reset(0 to 0)
+                position.set(0 to 0)
             }
             MXState.PREPARING -> {
                 mxPlaceImgShow = true

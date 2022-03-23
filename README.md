@@ -178,6 +178,13 @@ mxVideoStd.getConfig().canSeekByUser.set(false)
 mxVideoStd.getConfig().canFullScreen.set(false)
 ```
 
+- 设置全屏按钮是否显示
+```kotlin
+// 播放前设置 默认=true
+// 全屏按钮只有在  canFullScreen=true && showFullScreenButton=true 时显示
+mxVideoStd.getConfig().showFullScreenButton.set(false)
+```
+
 - 设置不显示控件右上角时间
 ```kotlin
 // 播放前设置 默认=true

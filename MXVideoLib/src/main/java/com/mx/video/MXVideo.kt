@@ -236,7 +236,6 @@ abstract class MXVideo @JvmOverloads constructor(
         MXUtils.log("MXVideo: setSource()")
         isStopState = false
 
-        config.reset()
         config.source.set(source)
         mxPlayerClass = player
 
@@ -573,11 +572,15 @@ abstract class MXVideo @JvmOverloads constructor(
      * 结束播放
      */
     open fun stopPlay() {
-        val player = mxPlayer ?: return
-        MXUtils.log("MXVideo: stopPlay()")
+        val player = mxPlayer
         mxTextureView = null
         mxPlayer = null
-        player.release()
+
+        if (player != null) {
+            MXUtils.log("MXVideo: stopPlay()")
+            player.release()
+        }
+        
         provider.mxSurfaceContainer.removeAllViews()
 
         if (playingVideo == this) {
