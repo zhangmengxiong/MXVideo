@@ -31,13 +31,13 @@ internal object MXUtils {
         }
     }
 
-    private var isDebug = false
+    private var isDebug = BuildConfig.DEBUG
     fun setDebug(debug: Boolean) {
         isDebug = debug
     }
 
     fun log(any: Any) {
-        if (isDebug || BuildConfig.DEBUG) {
+        if (isDebug) {
             Log.v(MXUtils::class.java.simpleName, any.toString())
         }
     }
