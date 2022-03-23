@@ -725,34 +725,22 @@ abstract class MXVideo @JvmOverloads constructor(
 
     private val sensorListener = object : MXSensorListener {
         override fun onChange(orientation: MXOrientation) {
+            MXUtils.log("设备方向变更：$orientation")
             if (!isPlaying() || !config.willChangeOrientationWhenFullScreen()) {
                 // 当不在播放，或者不需要变更方向时，不处理
                 return
             }
-            if (!config.autoRotateBySensor.get()) {
-                if (config.screen.get() == MXScreen.FULL && orientation.isHorizontal()) {
-                    // 全屏时，方向切换，变更一下
-                    MXUtils.setScreenOrientation(context, orientation)
-                }
-                return
+            val screen = config.screen.get()
+
+            if (config.autoRotateBySensorWhenFullScreen.get() && screen == MXScreen.FULL) {
+                // 全屏时，方向切换，变更一下
+                MXUtils.setScreenOrientation(context, orientation)
             }
-            if (orientation.isHorizontal()) {
-                // 竖屏切换到横屏
-                if (config.screen.get() == MXScreen.FULL) {
-                    MXUtils.setScreenOrientation(context, orientation)
-                } else {
+
+            if (config.autoFullScreenBySensor.get()) {
+                if (orientation.isHorizontal() && screen == MXScreen.NORMAL) {
                     switchToScreen(MXScreen.FULL)
                 }
-                return
-            }
-            if (orientation.isVertical()) {
-                // 横屏切换到竖屏
-                if (config.screen.get() == MXScreen.NORMAL) {
-                    MXUtils.setScreenOrientation(context, orientation)
-                } else {
-                    switchToScreen(MXScreen.NORMAL)
-                }
-                return
             }
         }
     }

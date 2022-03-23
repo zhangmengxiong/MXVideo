@@ -117,9 +117,14 @@ class MXConfig : Serializable {
     val canPauseByUser = MXValueObservable(true)
 
     /**
+     * 播放时随着感应器旋转自动切换成全屏
+     */
+    val autoFullScreenBySensor = MXValueObservable(false)
+
+    /**
      * 播放时随着感应器旋转而全屏/小屏
      */
-    val autoRotateBySensor = MXValueObservable(true)
+    val autoRotateBySensorWhenFullScreen = MXValueObservable(true)
 
     /**
      * 直播流，播放失败时自动重新播放
@@ -159,7 +164,8 @@ class MXConfig : Serializable {
         gotoNormalScreenWhenComplete.set(target.gotoNormalScreenWhenComplete.get())
         gotoNormalScreenWhenError.set(target.gotoNormalScreenWhenError.get())
         canPauseByUser.set(target.canPauseByUser.get())
-        autoRotateBySensor.set(target.autoRotateBySensor.get())
+        autoFullScreenBySensor.set(target.autoFullScreenBySensor.get())
+        autoRotateBySensorWhenFullScreen.set(target.autoRotateBySensorWhenFullScreen.get())
         replayLiveSourceWhenError.set(target.replayLiveSourceWhenError.get())
         playerViewSize.set(target.playerViewSize.get().clone())
     }
@@ -180,7 +186,8 @@ class MXConfig : Serializable {
         gotoNormalScreenWhenComplete.set(true)
         gotoNormalScreenWhenError.set(true)
         canPauseByUser.set(true)
-        autoRotateBySensor.set(false)
+        autoFullScreenBySensor.set(false)
+        autoRotateBySensorWhenFullScreen.set(true)
         replayLiveSourceWhenError.set(false)
         playerViewSize.set(MXSize(0, 0))
     }

@@ -227,7 +227,7 @@ class NormalActivity : AppCompatActivity() {
         gotoNormalScreenWhenErrorTrue.performClick()
 
         sensorRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().autoRotateBySensor.set(checkedId == R.id.sensorTrue)
+            mxVideoStd.getConfig().autoFullScreenBySensor.set(checkedId == R.id.sensorTrue)
         }
         sensorFalse.performClick()
 
