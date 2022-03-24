@@ -25,6 +25,10 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
      * second = 视频总长度 秒
      */
     private val position = MXValueObservable(Pair(-1, -1))
+
+    // 播放状态，相关View是否显示
+    private val playingControlShow = MXValueObservable(false)
+
     private val timeTicket = MXTicket()
     private val touchHelp by lazy { MXTouchHelp(mxVideo.context) }
     private val timeDelay = MXDelay()
@@ -126,6 +130,23 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             mxFullscreenBtn.setImageResource(if (screen == MXScreen.FULL) R.drawable.mx_icon_small_screen else R.drawable.mx_icon_full_screen)
         }
 
+        playingControlShow.addObserver { show ->
+            timeDelay.stop()
+            if (config.state.get() != MXState.PLAYING) {
+                return@addObserver
+            }
+
+            val playBtnShow = if (config.source.get()?.isLiveSource == true) {
+                false
+            } else show
+            setViewShow(mxPlayBtn, playBtnShow)
+            setViewShow(mxTopLay, show)
+            setViewShow(mxBottomLay, show)
+            setViewShow(mxBottomSeekProgress, config.canShowBottomSeekBar.get() && !show)
+            if (show) {
+                timeDelay.start()
+            }
+        }
 
         // 全屏按钮显示控制
         val fullScreenObserver = { _: Boolean ->
@@ -260,30 +281,17 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         }
 
         mxPlayerRootLay.setOnClickListener {
-            val mState = config.state.get()
-            // 根视图点击切换播放控件的显示与隐藏
-            if (mState == MXState.PAUSE) {
-                setPlayingControl(true)
-                timeDelay.stop()
-                return@setOnClickListener
-            }
-            if (mState == MXState.PLAYING) {
-                setPlayingControl(!mxPlayBtn.isShown)
-                timeDelay.start()
-                timeTicket.start()
+            if (config.state.get() == MXState.PLAYING) {
+                playingControlShow.set(!playingControlShow.get())
                 return@setOnClickListener
             }
         }
 
         // 播放时，控件显示3秒后隐藏回调
-        timeDelay.setDelayRun(3000) {
-            val mState = config.state.get()
-            if (!mxVideo.isShown || mState != MXState.PLAYING) {
-                return@setDelayRun
+        timeDelay.setDelayRun(4000) {
+            if (config.state.get() == MXState.PLAYING) {
+                playingControlShow.set(false)
             }
-            mxPlayBtn.visibility = View.GONE
-            mxBottomLay.visibility = View.GONE
-            mxTopLay.visibility = View.GONE
         }
 
         // 进度条循环刷新
@@ -376,6 +384,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         var mxBottomLayShow: Boolean? = false // 底部进度条、文字进度层容器
         var mxRetryLayShow: Boolean? = false // 错误后重新播放按钮
         var mxReplayLayShow: Boolean? = false // 播放完后重新播放按钮
+        timeTicket.stop()
 
         when (state) {
             MXState.IDLE, MXState.NORMAL -> {
@@ -388,8 +397,6 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                     mxLoadingShow = false
                 }
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
-                timeTicket.stop()
-                timeDelay.stop()
                 position.set(0 to 0)
             }
             MXState.PREPARING -> {
@@ -403,8 +410,6 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                     mxLoadingShow = true
                 }
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
-                timeTicket.stop()
-                timeDelay.stop()
             }
             MXState.PREPARED -> {
                 mxPlaceImgShow = true
@@ -417,16 +422,25 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                 MXUtils.findWindows(mxVideo.context)
                     ?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                 timeTicket.start()
-                timeDelay.stop()
             }
             MXState.PLAYING -> {
                 mxBottomSeekProgressShow = null
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_pause)
                 mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
+                if (isLiveSource) { // 直播流，需要隐藏一些按钮
+                    mxSeekProgress.visibility = View.INVISIBLE
+                    mxCurrentTimeTxv.visibility = View.GONE
+                    mxTotalTimeTxv.visibility = View.GONE
+                    mxPlayBtnShow = false
+                } else {
+                    mxSeekProgress.visibility = View.VISIBLE
+                    mxCurrentTimeTxv.visibility = View.VISIBLE
+                    mxTotalTimeTxv.visibility = View.VISIBLE
+                }
 
+                playingControlShow.set(false)
                 config.isPreloading.set(false)
                 timeTicket.start()
-                timeDelay.start()
             }
             MXState.PAUSE -> {
                 mxTopLayShow = true
@@ -434,7 +448,6 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                 mxBottomLayShow = true
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_play)
                 timeTicket.start()
-                timeDelay.stop()
             }
             MXState.ERROR -> {
                 mxPlaceImgShow = true
@@ -442,9 +455,6 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                 if (isFullScreen) {
                     mxTopLayShow = true
                 }
-
-                timeTicket.stop()
-                timeDelay.stop()
 
                 MXUtils.findWindows(mxVideo.context)
                     ?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -456,21 +466,10 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                     mxTopLayShow = true
                 }
 
-                timeTicket.stop()
-                timeDelay.stop()
+
                 MXUtils.findWindows(mxVideo.context)
                     ?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             }
-        }
-        if (isLiveSource) { // 直播流，需要隐藏一些按钮
-            mxSeekProgress.visibility = View.INVISIBLE
-            mxCurrentTimeTxv.visibility = View.GONE
-            mxTotalTimeTxv.visibility = View.GONE
-            mxPlayBtnShow = false
-        } else {
-            mxSeekProgress.visibility = View.VISIBLE
-            mxCurrentTimeTxv.visibility = View.VISIBLE
-            mxTotalTimeTxv.visibility = View.VISIBLE
         }
 
         setViewShow(mxBottomSeekProgress, mxBottomSeekProgressShow)
@@ -511,20 +510,6 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             mxVideo.seekTo(touchProgress)
             timeDelay.start()
             timeTicket.start()
-        }
-    }
-
-    /**
-     * 播放中状态时，控制View的显示
-     */
-    private fun setPlayingControl(show: Boolean) {
-        arrayOf(mxPlayBtn, mxTopLay, mxBottomLay).forEach {
-            setViewShow(it, show)
-        }
-        setViewShow(mxBottomSeekProgress, config.canShowBottomSeekBar.get() && !show)
-
-        if (config.source.get()?.isLiveSource == true && config.state.get() == MXState.PLAYING) {
-            setViewShow(mxPlayBtn, false)
         }
     }
 
