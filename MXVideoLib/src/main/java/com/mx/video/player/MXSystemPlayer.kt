@@ -203,6 +203,9 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
             MediaPlayer.MEDIA_INFO_BUFFERING_END -> {
                 postInMainThread { getMXVideo()?.onPlayerBuffering(false) }
             }
+            else -> {
+                postInMainThread { getMXVideo()?.onPlayerInfo(what, extra) }
+            }
         }
         return true
     }

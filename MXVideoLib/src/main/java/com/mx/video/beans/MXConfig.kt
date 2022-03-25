@@ -174,6 +174,7 @@ class MXConfig : Serializable {
 
     fun reset() {
         state.set(MXState.IDLE)
+        screen.set(MXScreen.NORMAL)
         isPreloading.set(false)
         orientation.set(MXOrientation.DEGREE_0)
         videoSize.set(MXSize(1280, 720))

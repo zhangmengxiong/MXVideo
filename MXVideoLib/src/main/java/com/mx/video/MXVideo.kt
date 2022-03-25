@@ -580,7 +580,7 @@ abstract class MXVideo @JvmOverloads constructor(
             MXUtils.log("MXVideo: stopPlay()")
             player.release()
         }
-        
+
         provider.mxSurfaceContainer.removeAllViews()
 
         if (playingVideo == this) {
@@ -764,6 +764,13 @@ abstract class MXVideo @JvmOverloads constructor(
                 }
             }
         }
+    }
+
+    /**
+     * 播放器未知信息回调
+     */
+    fun onPlayerInfo(what: Int, extra: Int) {
+        MXUtils.log("MXVideo: onPlayerInfo $what -> $extra")
     }
 
     /**
