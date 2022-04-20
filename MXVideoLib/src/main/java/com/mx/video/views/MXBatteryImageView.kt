@@ -43,7 +43,10 @@ internal class MXBatteryImageView @JvmOverloads constructor(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        context.registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        try {
+            context.registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        } catch (e: Exception) {
+        }
     }
 
     override fun onDetachedFromWindow() {

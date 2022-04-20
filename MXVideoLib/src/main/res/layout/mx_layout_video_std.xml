@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="1.5dp"
         android:layout_gravity="bottom"
-        android:alpha="0.7"
+        android:alpha="0.55"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:max="100"

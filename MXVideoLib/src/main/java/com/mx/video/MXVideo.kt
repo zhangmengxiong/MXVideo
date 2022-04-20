@@ -740,7 +740,6 @@ abstract class MXVideo @JvmOverloads constructor(
         stopPlay()
         mxPlayerClass = null
         mxPlayer = null
-        config.reset()
         postInvalidate()
     }
 

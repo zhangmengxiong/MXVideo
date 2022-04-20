@@ -15,10 +15,6 @@ import com.mx.video.utils.touch.MXVolumeTouchListener
 import kotlin.math.min
 
 class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
-    init {
-        MXUtils.log("MXViewProvider init")
-    }
-
     /**
      * 播放进度
      * first = 当前播放进度 秒
@@ -128,6 +124,10 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         config.screen.addObserver { screen ->
             mxReturnBtn.visibility = if (screen == MXScreen.FULL) View.VISIBLE else View.GONE
             mxFullscreenBtn.setImageResource(if (screen == MXScreen.FULL) R.drawable.mx_icon_small_screen else R.drawable.mx_icon_full_screen)
+
+            config.videoListeners.toList().forEach { listener ->
+                listener.onScreenChange(screen, this)
+            }
         }
 
         playingControlShow.addObserver { show ->
@@ -424,7 +424,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                 timeTicket.start()
             }
             MXState.PLAYING -> {
-                mxBottomSeekProgressShow = null
+                mxBottomSeekProgressShow = config.canShowBottomSeekBar.get()
                 mxPlayPauseImg.setImageResource(R.drawable.mx_icon_player_pause)
                 mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
                 if (isLiveSource) { // 直播流，需要隐藏一些按钮
@@ -538,6 +538,14 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         val timeTxv = mxSystemTimeTxv
         if (timeTxv is MXTimeTextView) {
             timeTxv.release()
+        }
+
+        for (field in this::class.java.declaredFields) {
+            val any = field.get(this)
+            if (any is MXValueObservable<*>) {
+//                MXUtils.log("${field.name} -> deleteObservers")
+                any.deleteObservers()
+            }
         }
 
         mxSeekProgress.setOnSeekBarChangeListener(null)

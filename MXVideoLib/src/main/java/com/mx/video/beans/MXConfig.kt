@@ -13,6 +13,7 @@ class MXConfig : Serializable {
         private val videoViewIndex = AtomicInteger(1)
     }
 
+
     /**
      * 当前View的ID，全局ID
      */
@@ -70,6 +71,7 @@ class MXConfig : Serializable {
      * 播放源
      */
     internal val source = MXValueObservable<MXPlaySource?>(null)
+
 
     /**
      * 是否可以通过滑动或者进度条调整进度
@@ -130,19 +132,19 @@ class MXConfig : Serializable {
     /**
      * 直播流，播放失败时自动重新播放
      */
-    val replayLiveSourceWhenError = MXValueObservable(true)
+    val replayLiveSourceWhenError = MXValueObservable(false)
 
     /**
      * 是否可以快进快退
      */
-    fun sourceCanSeek(): Boolean {
+    internal fun sourceCanSeek(): Boolean {
         return canSeekByUser.get() && (source.get()?.isLiveSource != true)
     }
 
     /**
      * 全屏时是否变更屏幕方向
      */
-    fun willChangeOrientationWhenFullScreen(): Boolean {
+    internal fun willChangeOrientationWhenFullScreen(): Boolean {
         if (source.get()?.changeOrientationWhenFullScreen == true) {
             return true
         }
@@ -150,7 +152,7 @@ class MXConfig : Serializable {
         return size.width > size.height
     }
 
-    fun cloneBy(target: MXConfig) {
+    internal fun cloneBy(target: MXConfig) {
         orientation.set(target.orientation.get())
         videoSize.set(target.videoSize.get().clone())
         scale.set(target.scale.get())
@@ -172,32 +174,14 @@ class MXConfig : Serializable {
         playerViewSize.set(target.playerViewSize.get().clone())
     }
 
-    fun reset() {
-        state.set(MXState.IDLE)
-        screen.set(MXScreen.NORMAL)
-        isPreloading.set(false)
-        orientation.set(MXOrientation.DEGREE_0)
-        videoSize.set(MXSize(1280, 720))
-        scale.set(MXScale.CENTER_CROP)
-        seekWhenPlay.set(-1)
-        source.set(null)
-        canSeekByUser.set(true)
-        canFullScreen.set(true)
-        showFullScreenButton.set(true)
-        canShowSystemTime.set(true)
-        canShowBottomSeekBar.set(true)
-        canShowBatteryImg.set(true)
-        showTipIfNotWifi.set(true)
-        gotoNormalScreenWhenComplete.set(true)
-        gotoNormalScreenWhenError.set(true)
-        canPauseByUser.set(true)
-        autoFullScreenBySensor.set(false)
-        autoRotateBySensorWhenFullScreen.set(true)
-        replayLiveSourceWhenError.set(false)
-        playerViewSize.set(MXSize(0, 0))
-    }
-
-    fun release() {
+    internal fun release() {
         videoListeners.clear()
+        for (field in this::class.java.declaredFields) {
+            val any = field.get(this)
+            if (any is MXValueObservable<*>) {
+//                MXUtils.log("${field.name} -> deleteObservers")
+                any.deleteObservers()
+            }
+        }
     }
 }
