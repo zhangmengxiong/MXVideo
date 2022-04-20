@@ -1,16 +1,20 @@
 package com.mx.video.utils.touch
 
 import android.view.View
-import com.mx.video.R
+import com.mx.video.beans.MXConfig
 import com.mx.video.beans.MXState
+import com.mx.video.utils.MXDelay
 import com.mx.video.utils.MXUtils
 import com.mx.video.views.MXViewProvider
 import kotlin.math.min
-import kotlin.math.roundToInt
 
-class SeekTouchListener(private val provider: MXViewProvider) : MXTouchListener() {
+internal class MXBaseTouchListener(
+    private val provider: MXViewProvider,
+    private val config: MXConfig,
+    private val timeDelay: MXDelay
+) : MXTouchListener {
     override fun touchStart() {
-        if (!provider.config.sourceCanSeek() || provider.mState != MXState.PLAYING) return
+        if (!config.sourceCanSeek() || config.state.get() != MXState.PLAYING) return
         provider.allContentView.forEach {
             val show = (it == provider.mxQuickSeekLay)
             provider.setViewShow(it, show)
@@ -18,7 +22,7 @@ class SeekTouchListener(private val provider: MXViewProvider) : MXTouchListener(
     }
 
     override fun touchMove(percent: Float) {
-        if (!provider.config.sourceCanSeek() || provider.mState != MXState.PLAYING) return
+        if (!config.sourceCanSeek() || config.state.get() != MXState.PLAYING) return
         val duration = provider.mxVideo.getDuration()
         var position =
             provider.mxVideo.getCurrentPosition() + (min(120, duration) * percent).toInt()
@@ -32,7 +36,7 @@ class SeekTouchListener(private val provider: MXViewProvider) : MXTouchListener(
 
     override fun touchEnd(percent: Float) {
         provider.mxQuickSeekLay.visibility = View.GONE
-        if (!provider.config.sourceCanSeek() || provider.mState != MXState.PLAYING) return
+        if (!config.sourceCanSeek() || config.state.get() != MXState.PLAYING) return
 
         val duration = provider.mxVideo.getDuration()
         var position =
@@ -41,7 +45,7 @@ class SeekTouchListener(private val provider: MXViewProvider) : MXTouchListener(
         if (position > duration) position = duration
 
         provider.mxVideo.seekTo(position)
-        provider.timeDelay.start()
+        timeDelay.start()
     }
 
     override fun release() {

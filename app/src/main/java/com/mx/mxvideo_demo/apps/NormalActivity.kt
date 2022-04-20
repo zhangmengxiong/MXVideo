@@ -15,10 +15,10 @@ import com.mx.video.beans.MXScale
 import com.mx.video.beans.MXState
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
-import com.mx.video.utils.MXUtils
 import com.mx.video.utils.MXVideoListener
 import com.mx.video.views.MXViewProvider
 import kotlinx.android.synthetic.main.activity_normal.*
+import java.util.*
 
 class NormalActivity : AppCompatActivity() {
     private var playerClass: Class<out IMXPlayer>? = null
@@ -73,6 +73,21 @@ class NormalActivity : AppCompatActivity() {
             )
             mxVideoStd.startPlay()
         }
+        fun stringForTime(time: Int): String {
+            if (time <= 0 || time >= 24 * 60 * 60 * 1000) {
+                return "00:00"
+            }
+            val seconds = (time % 60)
+            val minutes = (time / 60 % 60)
+            val hours = (time / 3600)
+            val stringBuilder = StringBuilder()
+            val mFormatter = Formatter(stringBuilder, Locale.getDefault())
+            return if (hours > 0) {
+                mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString()
+            } else {
+                mFormatter.format("%02d:%02d", minutes, seconds).toString()
+            }
+        }
         mxVideoStd.addOnVideoListener(object : MXVideoListener() {
             override fun onStateChange(state: MXState, provider: MXViewProvider) {
                 statusTxv.text = state.name
@@ -80,12 +95,10 @@ class NormalActivity : AppCompatActivity() {
             }
 
             override fun onPlayTicket(position: Int, duration: Int) {
-                timeTxv.text =
-                    "${MXUtils.stringForTime(position)} / ${MXUtils.stringForTime(duration)}"
+                timeTxv.text = "${stringForTime(position)} / ${stringForTime(duration)}"
                 // println("MXUtils $position / $duration")
             }
         })
-
         videoSourceRG.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.source16x9 -> {
@@ -118,7 +131,6 @@ class NormalActivity : AppCompatActivity() {
         }
         playerRG.getChildAt(0)?.performClick()
 
-        centerCrop.performClick()
         fillTypeRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.fill) {
                 mxVideoStd.setScaleType(MXScale.FILL_PARENT)
@@ -127,6 +139,11 @@ class NormalActivity : AppCompatActivity() {
             }
         }
         centerCrop.performClick()
+
+        canShowBottomSeekBar.setOnCheckedChangeListener { group, checkedId ->
+            mxVideoStd.getConfig().canShowBottomSeekBar.set(checkedId == R.id.canShowBottomSeekBarTrue)
+        }
+        canShowBottomSeekBarTrue.performClick()
 
         ratioRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.ratio_16_9) {
@@ -175,51 +192,47 @@ class NormalActivity : AppCompatActivity() {
         rotation0.performClick()
 
         canSeekRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().canSeekByUser = (checkedId == R.id.canSeekTrue)
+            mxVideoStd.getConfig().canSeekByUser.set(checkedId == R.id.canSeekTrue)
         }
         canSeekTrue.performClick()
 
         canFullRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().showFullScreenBtn = (checkedId == R.id.canFullTrue)
+            mxVideoStd.getConfig().canFullScreen.set(checkedId == R.id.canFullTrue)
         }
         canFullTrue.performClick()
 
         canShowSystemTimeRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().canShowSystemTime = (checkedId == R.id.canShowSystemTimeTrue)
+            mxVideoStd.getConfig().canShowSystemTime.set(checkedId == R.id.canShowSystemTimeTrue)
         }
         canShowSystemTimeTrue.performClick()
 
         canShowBatteryImgRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().canShowBatteryImg = (checkedId == R.id.canShowBatteryImgTrue)
+            mxVideoStd.getConfig().canShowBatteryImg.set(checkedId == R.id.canShowBatteryImgTrue)
         }
         canShowBatteryImgTrue.performClick()
 
         showTipIfNotWifiRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().showTipIfNotWifi = (checkedId == R.id.showTipIfNotWifiTrue)
+            mxVideoStd.getConfig().showTipIfNotWifi.set(checkedId == R.id.showTipIfNotWifiTrue)
         }
         showTipIfNotWifiTrue.performClick()
 
         gotoNormalScreenWhenCompleteRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().gotoNormalScreenWhenComplete =
-                (checkedId == R.id.gotoNormalScreenWhenCompleteTrue)
+            mxVideoStd.getConfig().gotoNormalScreenWhenComplete.set(checkedId == R.id.gotoNormalScreenWhenCompleteTrue)
         }
         gotoNormalScreenWhenCompleteTrue.performClick()
 
         gotoNormalScreenWhenErrorRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().gotoNormalScreenWhenError =
-                (checkedId == R.id.gotoNormalScreenWhenErrorTrue)
+            mxVideoStd.getConfig().gotoNormalScreenWhenError.set(checkedId == R.id.gotoNormalScreenWhenErrorTrue)
         }
         gotoNormalScreenWhenErrorTrue.performClick()
 
         sensorRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().autoRotateBySensor =
-                (checkedId == R.id.sensorTrue)
+            mxVideoStd.getConfig().autoFullScreenBySensor.set(checkedId == R.id.sensorTrue)
         }
         sensorFalse.performClick()
 
         liveRetryRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().replayLiveSourceWhenError =
-                (checkedId == R.id.liveRetryTrue)
+            mxVideoStd.getConfig().replayLiveSourceWhenError.set(checkedId == R.id.liveRetryTrue)
         }
         liveRetryFalse.performClick()
     }

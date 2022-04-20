@@ -5,6 +5,9 @@
 > 简书相关介绍（待完善）：https://www.jianshu.com/nb/50294642
 
 最新版本：[![](https://jitpack.io/v/com.gitee.zhangmengxiong/MXVideo.svg)](https://jitpack.io/#com.gitee.zhangmengxiong/MXVideo)
+```groovy
+    implementation 'com.gitee.zhangmengxiong:MXVideo:x.x.x'
+```
 
 ![Image text](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/1.png)
 ![Image text](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/2.png)
@@ -130,7 +133,7 @@ mxVideoStd.setSource(MXPlaySource(Uri.parse("xxx"), "xxx"), player = MXSystemPla
 - 视频渲染旋转角度
 ```kotlin
 // 默认旋转角度 = MXOrientation.DEGREE_0
-mxVideoStd.setOrientation(MXOrientation.DEGREE_90)
+mxVideoStd.setTextureOrientation(MXOrientation.DEGREE_90)
 ```
 
 - 视频填充规则
@@ -173,49 +176,80 @@ mxVideoStd.seekTo(55)
 - 设置不能快进快退
 ```kotlin
 // 播放前设置 默认=true
-mxVideoStd.getConfig().canSeekByUser = false
+mxVideoStd.getConfig().canSeekByUser.set(false)
 ```
 
 - 设置不能全屏
 ```kotlin
 // 播放前设置 默认=true
-mxVideoStd.getConfig().canFullScreen = false
+mxVideoStd.getConfig().canFullScreen.set(false)
+```
+
+- 设置全屏按钮是否显示
+```kotlin
+// 播放前设置 默认=true
+// 全屏按钮只有在  canFullScreen=true && showFullScreenButton=true 时显示
+mxVideoStd.getConfig().showFullScreenButton.set(false)
 ```
 
 - 设置不显示控件右上角时间
 ```kotlin
 // 播放前设置 默认=true
-mxVideoStd.getConfig().canShowSystemTime = false
+mxVideoStd.getConfig().canShowSystemTime.set(false)
 ```
 
+- 设置不显示底部 1dp 高度的进度条
+```kotlin
+// 播放前设置 默认=true
+mxVideoStd.getConfig().canShowBottomSeekBar.set(false)
+```
 
 - 设置不显示控件右上角电量图
 ```kotlin
 // 播放前设置 默认=true
-mxVideoStd.getConfig().canShowBatteryImg = false
+mxVideoStd.getConfig().canShowBatteryImg.set(false)
 ```
 
 - 设置关闭WiFi环境播放前提醒
 ```kotlin
 // 播放前设置 默认=true
-mxVideoStd.getConfig().showTipIfNotWifi = false
+mxVideoStd.getConfig().showTipIfNotWifi.set(false)
 ```
 
 - 设置播放完成后自动退出全屏
 ```kotlin
 // 播放前设置 默认=true
-mxVideoStd.getConfig().gotoNormalScreenWhenComplete = true
+mxVideoStd.getConfig().gotoNormalScreenWhenComplete.set(false)
 ```
 
 - 设置播放错误后自动退出全屏
 ```kotlin
 // 播放前设置 默认=true
-mxVideoStd.getConfig().gotoNormalScreenWhenError = true
+mxVideoStd.getConfig().gotoNormalScreenWhenError.set(false)
+
+- 设置播放时用户不可以暂停
+```kotlin
+// 播放前设置 默认=true
+mxVideoStd.getConfig().canPauseByUser.set(false)
 ```
 
-- 设置屏幕方向根据重力感应自动进入全屏、小屏模式
+
+- 设置播放时如果手机横屏则自动进入全屏播放
 ```kotlin
 // 播放前设置 默认=false
-mxVideoStd.getConfig().autoRotateBySensor = true
+mxVideoStd.getConfig().autoFullScreenBySensor.set(true)
+
+
+- 设置全屏播放时屏幕方向自动跟随重力方向
+```kotlin
+// 播放前设置 默认=true
+mxVideoStd.getConfig().autoRotateBySensorWhenFullScreen.set(false)
 ```
+
+- 设置直播流播放错误时自动重试
+```kotlin
+// 播放前设置 默认=false
+mxVideoStd.getConfig().replayLiveSourceWhenError.set(true)
+```
+
 

@@ -174,24 +174,25 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
         mediaPlayer?.setSpeed(speed)
     }
 
-    override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
+    override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
         if (!isActive()) return
-        if (mSurfaceTexture == null) {
+        val texture = mSurfaceTexture
+        if (texture == null) {
             mSurfaceTexture = surface
             prepare()
         } else {
-            mTextureView?.surfaceTexture = mSurfaceTexture
+            mTextureView?.setSurfaceTexture(texture)
         }
     }
 
-    override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
+    override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
     }
 
-    override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean {
+    override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
         return false
     }
 
-    override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {
+    override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
     }
 
     override fun onPrepared(mp: IMediaPlayer?) {

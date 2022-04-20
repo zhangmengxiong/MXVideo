@@ -1,15 +1,24 @@
 package com.mx.video.utils
 
 import android.os.Handler
+import android.os.Looper
 
-class MXDelay {
-    private val mHandler = Handler()
+internal class MXDelay {
+    private val mHandler = Handler(Looper.getMainLooper())
     private var isTicketStart = false
-    private var timeDelay = 2000L
+    private var timeDelay = 4000L
     private var runnable: Runnable? = null
     fun setDelayRun(timeDelay: Long, runnable: Runnable) {
         this.runnable = runnable
         this.timeDelay = timeDelay
+    }
+
+    fun delay() {
+        if (!isTicketStart) return
+        synchronized(this) {
+            mHandler.removeCallbacksAndMessages(null)
+            mHandler.postDelayed(ticketRun, timeDelay)
+        }
     }
 
     fun start() {
@@ -32,6 +41,7 @@ class MXDelay {
             synchronized(this) {
                 if (!isTicketStart || runnable == null) return
                 runnable?.run()
+                isTicketStart = false
             }
         }
     }

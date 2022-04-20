@@ -2,7 +2,7 @@ package com.mx.video.utils
 
 import android.os.Handler
 
-class MXTicket {
+internal class MXTicket {
     private val mHandler = Handler()
     private var isTicketStart = false
     private var timeDiff = 0L

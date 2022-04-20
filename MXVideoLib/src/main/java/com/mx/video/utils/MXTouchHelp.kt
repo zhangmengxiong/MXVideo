@@ -6,7 +6,7 @@ import android.view.ViewConfiguration
 import com.mx.video.utils.touch.MXTouchListener
 import kotlin.math.abs
 
-class MXTouchHelp(context: Context) {
+internal class MXTouchHelp(context: Context) {
     // 最低滑动距离
     private val minMoveDistance = ViewConfiguration.get(context).scaledTouchSlop * 2
     private var downX = 0f

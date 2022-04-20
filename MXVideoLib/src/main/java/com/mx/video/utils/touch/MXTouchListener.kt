@@ -1,8 +1,8 @@
 package com.mx.video.utils.touch
 
-open class MXTouchListener {
-    open fun touchStart() {}
-    open fun touchMove(percent: Float) {}
-    open fun touchEnd(percent: Float) {}
-    open fun release() {}
+internal interface MXTouchListener {
+    fun touchStart() {}
+    fun touchMove(percent: Float) {}
+    fun touchEnd(percent: Float) {}
+    fun release() {}
 }

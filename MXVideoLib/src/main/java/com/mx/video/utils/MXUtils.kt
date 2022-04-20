@@ -16,7 +16,7 @@ import com.mx.video.BuildConfig
 import com.mx.video.beans.MXOrientation
 import java.util.*
 
-object MXUtils {
+internal object MXUtils {
     private val activityFlagMap = HashMap<String, Int?>()
     private val activityOrientationMap = HashMap<String, Int?>()
 
@@ -31,13 +31,13 @@ object MXUtils {
         }
     }
 
-    private var isDebug = false
+    private var isDebug = BuildConfig.DEBUG
     fun setDebug(debug: Boolean) {
         isDebug = debug
     }
 
     fun log(any: Any) {
-        if (isDebug || BuildConfig.DEBUG) {
+        if (isDebug) {
             Log.v(MXUtils::class.java.simpleName, any.toString())
         }
     }
