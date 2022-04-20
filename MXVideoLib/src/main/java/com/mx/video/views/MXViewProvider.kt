@@ -9,8 +9,8 @@ import com.mx.video.beans.MXConfig
 import com.mx.video.beans.MXScreen
 import com.mx.video.beans.MXState
 import com.mx.video.utils.*
-import com.mx.video.utils.touch.MXBrightnessTouchListener
 import com.mx.video.utils.touch.MXBaseTouchListener
+import com.mx.video.utils.touch.MXBrightnessTouchListener
 import com.mx.video.utils.touch.MXVolumeTouchListener
 import kotlin.math.min
 
