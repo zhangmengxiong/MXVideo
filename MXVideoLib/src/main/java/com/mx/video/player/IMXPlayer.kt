@@ -160,6 +160,7 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
 
     /**
      * 设置播放器音量
+     * 取值范围：0.0 -> 1.0
      */
     abstract fun setVolume(leftVolume: Float, rightVolume: Float)
 

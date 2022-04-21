@@ -122,13 +122,12 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
 
     override fun setVolume(leftVolume: Float, rightVolume: Float) {
         if (!isActive()) return
-        mediaPlayer?.volume = max(leftVolume, rightVolume)
+        mediaPlayer?.volume = (leftVolume + rightVolume) / 2f
     }
 
     override fun setSpeed(speed: Float) {
         if (!isActive()) return
-        val playbackParameters = PlaybackParameters(speed, 1.0f)
-        mediaPlayer?.setPlaybackParameters(playbackParameters)
+        mediaPlayer?.playbackParameters = PlaybackParameters(speed, 1.0f)
     }
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
