@@ -104,6 +104,10 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
         }
     }
 
+    override fun enablePreload(): Boolean {
+        return true
+    }
+
     override fun pause() {
         if (!isActive()) return
         postInThread { mediaPlayer?.pause() }

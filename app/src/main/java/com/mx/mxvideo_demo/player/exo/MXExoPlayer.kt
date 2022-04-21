@@ -13,10 +13,6 @@ import com.mx.video.player.IMXPlayer
 class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, AnalyticsListener {
     private var mediaPlayer: ExoPlayer? = null
     private var mPlaySource: MXPlaySource? = null
-    override fun start() {
-        if (!isActive()) return
-        postInMainThread { mediaPlayer?.play() }
-    }
 
     override fun setSource(source: MXPlaySource) {
         mPlaySource = source
@@ -56,6 +52,11 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
             player.setVideoSurface(Surface(surface))
             player.prepare()
         }
+    }
+
+    override fun start() {
+        if (!isActive()) return
+        postInMainThread { mediaPlayer?.play() }
     }
 
     override fun pause() {

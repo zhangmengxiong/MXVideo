@@ -109,11 +109,6 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     }
 
     /**
-     * 当播放器prepare后调用，开始播放
-     */
-    abstract fun start()
-
-    /**
      * 设置播放源
      */
     abstract fun setSource(source: MXPlaySource)
@@ -122,6 +117,11 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      * 开始加载视频
      */
     abstract fun prepare()
+
+    /**
+     * 当播放器prepare后调用，开始播放
+     */
+    abstract fun start()
 
     /**
      * 暂停
@@ -168,4 +168,9 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      * 设置播放速度
      */
     abstract fun setSpeed(speed: Float)
+
+    /**
+     * 是否支持预加载
+     */
+    open fun enablePreload() = false
 }
