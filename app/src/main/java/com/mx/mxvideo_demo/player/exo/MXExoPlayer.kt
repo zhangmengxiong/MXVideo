@@ -9,11 +9,10 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.video.VideoSize
 import com.mx.video.beans.MXPlaySource
 import com.mx.video.player.IMXPlayer
-import kotlin.math.max
 
 class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, AnalyticsListener {
-    var mediaPlayer: ExoPlayer? = null
-    var mPlaySource: MXPlaySource? = null
+    private var mediaPlayer: ExoPlayer? = null
+    private var mPlaySource: MXPlaySource? = null
     override fun start() {
         if (!isActive()) return
         postInMainThread { mediaPlayer?.play() }
@@ -51,7 +50,7 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
                 player.repeatMode = Player.REPEAT_MODE_OFF
             }
             player.setMediaSource(
-                ExoSource(context, source.headerMap).getMediaSource(currUrl, false, null)
+                ExoSourceBuild.build(context, source.headerMap, currUrl, false)
             )
             player.playWhenReady = false
             player.setVideoSurface(Surface(surface))
@@ -165,7 +164,6 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
     override fun onPlayWhenReadyChanged(playWhenReady: Boolean, playbackState: Int) {
         //重新播放状态顺序为：STATE_IDLE -》STATE_BUFFERING -》STATE_READY
         //缓冲时顺序为：STATE_BUFFERING -》STATE_READY
-        //Log.e(TAG, "onPlayerStateChanged: playWhenReady = " + playWhenReady + ", playbackState = " + playbackState);
         if (isLastReportedPlayWhenReady != playWhenReady || lastReportedPlaybackState != playbackState) {
             when (playbackState) {
                 Player.STATE_BUFFERING -> {
