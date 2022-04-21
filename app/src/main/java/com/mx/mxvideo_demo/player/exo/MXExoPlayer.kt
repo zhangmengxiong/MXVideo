@@ -77,7 +77,6 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
             val duration = getDuration()
             if (duration != 0 && time >= duration) {
                 // 如果直接跳转到结束位置，则直接complete
-                releaseNow()
                 notifyPlayerCompletion()
             } else {
                 mediaPlayer?.seekTo(time * 1000L)

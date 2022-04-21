@@ -83,7 +83,6 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
         val duration = getDuration()
         if (duration != 0 && time >= duration) {
             // 如果直接跳转到结束位置，则直接complete
-            releaseNow()
             notifyPlayerCompletion()
             return
         }

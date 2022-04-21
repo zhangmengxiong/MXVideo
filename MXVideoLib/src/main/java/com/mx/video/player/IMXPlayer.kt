@@ -11,6 +11,32 @@ import com.mx.video.beans.MXPlaySource
 import com.mx.video.views.MXTextureView
 import java.util.concurrent.atomic.AtomicBoolean
 
+/**
+ * API调用流程：
+ * 1：setSource()
+ *      设置播放源信息
+ *
+ * 2：setMXVideo()
+ *      设置播放器相关
+ *
+ * 3：prepare()
+ *      在TextureView准备好了的时候，回调prepare
+ *
+ * 4：notifyPrepared()
+ *      播放器回调状态 -> 预备完成
+ *
+ * 5：notifyStartPlay()
+ *      播放器回调状态 -> 开始播放
+ *
+ * 6：notifyBuffering()
+ *      播放器回调状态 -> 缓冲开始/结束
+ *
+ * 7：notifyPlayerCompletion() / notifyError()
+ *      播放器回调状态 -> 播放完成/播放错误
+ *
+ * 8：release()
+ *      释放资源
+ */
 abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     protected var mSurfaceTexture: SurfaceTexture? = null
     protected var mTextureView: MXTextureView? = null
@@ -186,8 +212,8 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         val video = mMxVideo ?: return
         postInMainThread {
             video.onPlayerError(message)
-            release()
         }
+        release()
     }
 
     /**
@@ -216,12 +242,12 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      * 播放完成
      */
     protected fun notifyPlayerCompletion() {
-        release()
         if (!isActive.get()) return
         val video = mMxVideo ?: return
         postInMainThread {
             video.onPlayerCompletion()
         }
+        release()
     }
 
     /**
@@ -271,11 +297,12 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      */
     protected fun notifyStartPlay() {
         if (!isActive.get()) return
+        if (!isPrepared) return
         if (isStartPlay) return
         val video = mMxVideo ?: return
         postInMainThread {
             video.onPlayerStartPlay()
-            if (isBuffering){
+            if (isBuffering) {
                 video.onPlayerBuffering(true)
             }
         }
