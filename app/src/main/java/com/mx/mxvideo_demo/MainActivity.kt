@@ -1,9 +1,9 @@
 package com.mx.mxvideo_demo
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mx.mxvideo_demo.adapts.HomeAdapt
 import com.mx.mxvideo_demo.apps.FullScreenActivity

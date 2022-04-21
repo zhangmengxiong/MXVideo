@@ -230,9 +230,6 @@ abstract class MXVideo @JvmOverloads constructor(
     ) {
         stopPlay()
 
-        if (source == config.source.get()) {
-            return
-        }
         MXUtils.log("MXVideo: setSource()")
         isStopState = false
 

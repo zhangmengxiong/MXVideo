@@ -7,8 +7,11 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.mx.mxvideo_demo.*
+import com.mx.mxvideo_demo.R
+import com.mx.mxvideo_demo.ldjVideos
 import com.mx.mxvideo_demo.player.MXIJKPlayer
+import com.mx.mxvideo_demo.thumbnails
+import com.mx.mxvideo_demo.titles
 import com.mx.video.MXVideo
 import com.mx.video.beans.MXPlaySource
 import com.mx.video.beans.MXState

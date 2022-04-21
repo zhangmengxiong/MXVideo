@@ -6,8 +6,8 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.mx.mxvideo_demo.*
-import com.mx.mxvideo_demo.player.MXExoPlayer
 import com.mx.mxvideo_demo.player.MXIJKPlayer
+import com.mx.mxvideo_demo.player.exo.MXExoPlayer
 import com.mx.video.MXVideo
 import com.mx.video.beans.MXOrientation
 import com.mx.video.beans.MXPlaySource
