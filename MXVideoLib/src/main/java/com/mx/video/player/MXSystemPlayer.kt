@@ -210,9 +210,6 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
             else -> {
                 onPlayerInfo("what = $what    extra = $extra")
             }
-            else -> {
-                postInMainThread { getMXVideo()?.onPlayerInfo(what, extra) }
-            }
         }
         return true
     }
