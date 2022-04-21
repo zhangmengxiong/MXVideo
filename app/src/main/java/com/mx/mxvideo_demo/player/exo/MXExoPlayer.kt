@@ -172,17 +172,19 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
                     isBuffering = true
                 }
                 Player.STATE_READY -> {
-                    if (!isPreparedCall) {
-                        postInMainThread { getMXVideo()?.onPlayerPrepared() }
-                        isPreparedCall = true
-                    }
-                    if (!isStartPlayCall) {
-                        postInMainThread { getMXVideo()?.onPlayerStartPlay() }
-                        isStartPlayCall = true
-                    }
-                    if (isBuffering) {
-                        postInMainThread { getMXVideo()?.onPlayerBuffering(false) }
-                        isBuffering = false
+                    postInMainThread {
+                        if (!isPreparedCall) {
+                            getMXVideo()?.onPlayerPrepared()
+                            isPreparedCall = true
+                        }
+                        if (!isStartPlayCall) {
+                            getMXVideo()?.onPlayerStartPlay()
+                            isStartPlayCall = true
+                        }
+                        if (isBuffering) {
+                            getMXVideo()?.onPlayerBuffering(false)
+                            isBuffering = false
+                        }
                     }
                 }
                 Player.STATE_ENDED -> {
