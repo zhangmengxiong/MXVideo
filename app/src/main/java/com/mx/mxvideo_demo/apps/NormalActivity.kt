@@ -6,8 +6,8 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.mx.mxvideo_demo.*
-import com.mx.mxvideo_demo.player.MXExoPlayer
 import com.mx.mxvideo_demo.player.MXIJKPlayer
+import com.mx.mxvideo_demo.player.exo.MXExoPlayer
 import com.mx.video.MXVideo
 import com.mx.video.beans.MXOrientation
 import com.mx.video.beans.MXPlaySource
@@ -67,7 +67,7 @@ class NormalActivity : AppCompatActivity() {
             Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
             mxVideoStd.setSource(
                 MXPlaySource(
-                    Uri.parse("http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8"),
+                    Uri.parse("http://video1.dgtle.com/backend%2F2020%2F3%2F0%2F%E6%88%91%E6%B2%A1%E6%9C%89%E7%BB%99%E4%B8%80%E5%8A%A08Pro%E5%81%9A%E8%AF%84%E6%B5%8B_%E5%8D%B4%E5%B8%A6%E7%9D%80%E5%AE%83%E6%BC%82%E6%B5%81.mp4_1080.mp4"),
                     titles.random(), isLiveSource = true
                 ), player = playerClass, seekTo = 0
             )
@@ -176,7 +176,7 @@ class NormalActivity : AppCompatActivity() {
                 mxVideoStd.setDimensionRatio(0.0)
             }
         }
-        ratioEmpty.performClick()
+        ratio_16_9.performClick()
 
         rotationRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.rotation0) {

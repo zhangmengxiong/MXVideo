@@ -23,10 +23,6 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
 
     var mediaPlayer: IjkMediaPlayer? = null
     var mPlaySource: MXPlaySource? = null
-    override fun start() {
-        if (!isActive()) return
-        postInThread { mediaPlayer?.start() }
-    }
 
     override fun setSource(source: MXPlaySource) {
         mPlaySource = source
@@ -36,7 +32,7 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
         if (!isActive()) return
         val source = mPlaySource ?: return
         val surface = mSurfaceTexture ?: return
-        val context = getMXVideo()?.context ?: return
+        val context = context ?: return
 
         releaseNow()
         initHandler()
@@ -104,6 +100,16 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
         }
     }
 
+    override fun enablePreload(): Boolean {
+        return true
+    }
+
+    override fun start() {
+        if (!isActive()) return
+        notifyStartPlay()
+        postInThread { mediaPlayer?.start() }
+    }
+
     override fun pause() {
         if (!isActive()) return
         postInThread { mediaPlayer?.pause() }
@@ -120,8 +126,7 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
         val duration = getDuration()
         if (duration != 0 && time >= duration) {
             // 如果直接跳转到结束位置，则直接complete
-            releaseNow()
-            getMXVideo()?.onPlayerCompletion()
+            notifyPlayerCompletion()
             return
         }
 
@@ -197,30 +202,27 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
 
     override fun onPrepared(mp: IMediaPlayer?) {
         if (!isActive()) return
-        postInMainThread { getMXVideo()?.onPlayerPrepared() }
+        notifyPrepared()
     }
 
     override fun onCompletion(mp: IMediaPlayer?) {
         if (!isActive()) return
-        postInMainThread { getMXVideo()?.onPlayerCompletion() }
+        notifyPlayerCompletion()
     }
 
     override fun onBufferingUpdate(mp: IMediaPlayer?, percent: Int) {
         if (!isActive()) return
-        postInMainThread { getMXVideo()?.onPlayerBufferProgress(percent) }
+        notifyBufferingUpdate(percent)
     }
 
     override fun onSeekComplete(mp: IMediaPlayer?) {
         if (!isActive()) return
-        postInMainThread { getMXVideo()?.onPlayerSeekComplete() }
+        notifySeekComplete()
     }
 
     override fun onError(mp: IMediaPlayer?, what: Int, extra: Int): Boolean {
         if (!isActive()) return true
-        postInMainThread {
-            getMXVideo()?.onPlayerError("what = $what    extra = $extra")
-            release()
-        }
+        notifyError("what = $what    extra = $extra")
         return true
     }
 
@@ -228,13 +230,13 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
         if (!isActive()) return true
         when (what) {
             IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> {
-                postInMainThread { getMXVideo()?.onPlayerStartPlay() }
+                notifyStartPlay()
             }
             IMediaPlayer.MEDIA_INFO_BUFFERING_START -> {
-                postInMainThread { getMXVideo()?.onPlayerBuffering(true) }
+                notifyBuffering(true)
             }
             IMediaPlayer.MEDIA_INFO_BUFFERING_END -> {
-                postInMainThread { getMXVideo()?.onPlayerBuffering(false) }
+                notifyBuffering(false)
             }
         }
         return true
@@ -242,6 +244,6 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
 
     override fun onVideoSizeChanged(p0: IMediaPlayer?, p1: Int, p2: Int, p3: Int, p4: Int) {
         if (!isActive()) return
-        postInMainThread { getMXVideo()?.onPlayerVideoSizeChanged(p1, p2) }
+        notifyVideoSize(p1, p2)
     }
 }

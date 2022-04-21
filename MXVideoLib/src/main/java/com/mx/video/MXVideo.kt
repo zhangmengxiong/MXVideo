@@ -84,7 +84,7 @@ abstract class MXVideo @JvmOverloads constructor(
     /**
      * 播放器
      */
-    private var mxPlayerClass: Class<*>? = null
+    private var mxPlayerClass: Class<*> = MXSystemPlayer::class.java
 
     /**
      * 播放器实例
@@ -230,14 +230,11 @@ abstract class MXVideo @JvmOverloads constructor(
     ) {
         stopPlay()
 
-        if (source == config.source.get()) {
-            return
-        }
         MXUtils.log("MXVideo: setSource()")
         isStopState = false
 
         config.source.set(source)
-        mxPlayerClass = player
+        mxPlayerClass = player ?: MXSystemPlayer::class.java
 
         config.seekWhenPlay.set(seekTo)
         provider.mxTitleTxv.text = source?.title
@@ -367,8 +364,19 @@ abstract class MXVideo @JvmOverloads constructor(
             return
         }
 
+        val player = createPlayer()
+        if (!player.enablePreload()) {
+            // 不支持预加载
+            return
+        }
+
         config.isPreloading.set(true)
         startVideo()
+    }
+
+    private fun createPlayer(): IMXPlayer {
+        val constructor = mxPlayerClass.getConstructor()
+        return (constructor.newInstance() as IMXPlayer)
     }
 
     /**
@@ -381,13 +389,11 @@ abstract class MXVideo @JvmOverloads constructor(
     private fun startVideo() {
         MXUtils.log("MXVideo: startVideo()")
         playingVideo?.stopPlay()
-        val clazz = mxPlayerClass ?: MXSystemPlayer::class.java
         val source = config.source.get() ?: return
-        MXUtils.log("startVideo ${source.playUri} player=${clazz.name}")
+        MXUtils.log("startVideo ${source.playUri} player=${mxPlayerClass.name}")
 
         val startRun = {
-            val constructor = clazz.getConstructor()
-            val player = (constructor.newInstance() as IMXPlayer)
+            val player = createPlayer()
             player.setSource(source)
             val textureView = addTextureView(player)
             player.setMXVideo(this, textureView)
@@ -510,6 +516,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 视频快进完成
      */
     open fun onPlayerSeekComplete() {
+        MXUtils.log("onPlayerSeekComplete")
     }
 
     /**
@@ -738,7 +745,7 @@ abstract class MXVideo @JvmOverloads constructor(
     open fun reset() {
         MXUtils.log("MXVideo: reset()")
         stopPlay()
-        mxPlayerClass = null
+        mxPlayerClass = MXSystemPlayer::class.java
         mxPlayer = null
         postInvalidate()
     }
@@ -768,8 +775,8 @@ abstract class MXVideo @JvmOverloads constructor(
     /**
      * 播放器未知信息回调
      */
-    fun onPlayerInfo(what: Int, extra: Int) {
-        MXUtils.log("MXVideo: onPlayerInfo $what -> $extra")
+    fun onPlayerInfo(message: String?) {
+        MXUtils.log("MXVideo: onPlayerInfo  $message")
     }
 
     /**
