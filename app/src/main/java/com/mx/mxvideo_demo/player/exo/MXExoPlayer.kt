@@ -22,12 +22,10 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
         if (!isActive()) return
         val source = mPlaySource ?: return
         val surface = mSurfaceTexture ?: return
-        val context = getMXVideo()?.context ?: return
+        val context = context ?: return
         releaseNow()
         initHandler()
         postInMainThread {
-            if (!isActive()) return@postInMainThread
-
             isBuffering = false
             isPreparedCall = false
             isStartPlayCall = false
@@ -54,8 +52,12 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
         }
     }
 
+    override fun enablePreload(): Boolean {
+        return true
+    }
+
     override fun start() {
-        if (!isActive()) return
+        notifyStartPlay()
         postInMainThread { mediaPlayer?.play() }
     }
 
@@ -71,16 +73,15 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
 
     // 这里不需要处理未播放状态的快进快退，MXVideo会判断。
     override fun seekTo(time: Int) {
-        if (!isActive()) return
         postInMainThread {
             val duration = getDuration()
             if (duration != 0 && time >= duration) {
                 // 如果直接跳转到结束位置，则直接complete
                 releaseNow()
-                getMXVideo()?.onPlayerCompletion()
-                return@postInMainThread
+                notifyPlayerCompletion()
+            } else {
+                mediaPlayer?.seekTo(time * 1000L)
             }
-            mediaPlayer?.seekTo(time * 1000L)
         }
     }
 
@@ -168,30 +169,15 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
         if (isLastReportedPlayWhenReady != playWhenReady || lastReportedPlaybackState != playbackState) {
             when (playbackState) {
                 Player.STATE_BUFFERING -> {
-                    postInMainThread { getMXVideo()?.onPlayerBuffering(true) }
+                    notifyBuffering(true)
                     isBuffering = true
                 }
                 Player.STATE_READY -> {
-                    postInMainThread {
-                        if (!isPreparedCall) {
-                            getMXVideo()?.onPlayerPrepared()
-                            isPreparedCall = true
-                        }
-                        if (!isStartPlayCall) {
-                            getMXVideo()?.onPlayerStartPlay()
-                            isStartPlayCall = true
-                        }
-                        if (isBuffering) {
-                            getMXVideo()?.onPlayerBuffering(false)
-                            isBuffering = false
-                        }
-                    }
+                    notifyPrepared()
+                    notifyBuffering(false)
                 }
                 Player.STATE_ENDED -> {
-                    postInMainThread {
-                        getMXVideo()?.onPlayerCompletion()
-                        release()
-                    }
+                    notifyPlayerCompletion()
                 }
                 else -> {}
             }
@@ -207,25 +193,17 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
     ) {
         if (!isActive()) return
         if (reason == Player.DISCONTINUITY_REASON_SEEK) {
-            postInMainThread { getMXVideo()?.onPlayerSeekComplete() }
+            notifySeekComplete()
         }
     }
 
     override fun onPlayerError(error: PlaybackException) {
         if (!isActive()) return
-        postInMainThread {
-            getMXVideo()?.onPlayerError(error.message)
-            release()
-        }
+        notifyError(error.message)
     }
 
     override fun onVideoSizeChanged(videoSize: VideoSize) {
         if (!isActive()) return
-        postInMainThread {
-            getMXVideo()?.onPlayerVideoSizeChanged(
-                videoSize.width,
-                videoSize.height
-            )
-        }
+        notifyVideoSize(videoSize.width, videoSize.height)
     }
 }

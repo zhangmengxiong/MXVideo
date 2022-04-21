@@ -1,5 +1,6 @@
 package com.mx.video.player
 
+import android.content.Context
 import android.graphics.SurfaceTexture
 import android.os.Handler
 import android.os.HandlerThread
@@ -21,9 +22,15 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      * 播放器是否可用
      */
     fun isActive() = isActive.get()
+    private var isBuffering = false
+    private var isPrepared = false
+    private var isStartPlay = false
 
-    var mHandler: Handler? = null
-    var mThreadHandler: Handler? = null
+    protected val context: Context?
+        get() = mMxVideo?.context
+
+    private var mHandler: Handler? = null // 主线程Handler
+    private var mThreadHandler: Handler? = null // 异步线程Handler
     private var threadHandler: HandlerThread? = null
 
     /**
@@ -31,11 +38,11 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      */
     protected fun initHandler() {
         quitHandler()
-        mHandler = Handler()
-        val threadHandler = HandlerThread("IMXPlayer")
-        threadHandler.start()
-        mThreadHandler = Handler(threadHandler.looper)
-        this.threadHandler = threadHandler
+        mHandler = Handler(Looper.getMainLooper())
+        val thread = HandlerThread("IMXPlayer")
+        thread.start()
+        mThreadHandler = Handler(thread.looper)
+        threadHandler = thread
     }
 
     /**
@@ -95,17 +102,14 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         }
     }
 
-    /**
-     * 获取MXVideo主体
-     */
-    fun getMXVideo(): MXVideo? {
-        return if (isActive.get()) mMxVideo else null
-    }
-
     fun setMXVideo(video: MXVideo, textureView: MXTextureView) {
         mMxVideo = video
         mTextureView = textureView
         isActive.set(true)
+
+        isBuffering = false
+        isPrepared = false
+        isStartPlay = false
     }
 
     /**
@@ -173,4 +177,119 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      * 是否支持预加载
      */
     open fun enablePreload() = false
+
+    /**
+     * 播放错误
+     */
+    protected fun notifyError(message: String?) {
+        if (!isActive.get()) return
+        val video = mMxVideo ?: return
+        postInMainThread {
+            video.onPlayerError(message)
+            release()
+        }
+    }
+
+    /**
+     * 视频宽高
+     */
+    protected fun notifyVideoSize(width: Int, height: Int) {
+        if (!isActive.get()) return
+        val video = mMxVideo ?: return
+        postInMainThread {
+            video.onPlayerVideoSizeChanged(width, height)
+        }
+    }
+
+    /**
+     * seek完成回调
+     */
+    protected fun notifySeekComplete() {
+        if (!isActive.get()) return
+        val video = mMxVideo ?: return
+        postInMainThread {
+            video.onPlayerSeekComplete()
+        }
+    }
+
+    /**
+     * 播放完成
+     */
+    protected fun notifyPlayerCompletion() {
+        release()
+        if (!isActive.get()) return
+        val video = mMxVideo ?: return
+        postInMainThread {
+            video.onPlayerCompletion()
+        }
+    }
+
+    /**
+     * 缓冲进度更新
+     */
+    protected fun notifyBufferingUpdate(percent: Int) {
+        if (!isActive.get()) return
+        val video = mMxVideo ?: return
+        postInMainThread {
+            video.onPlayerBufferProgress(percent)
+        }
+    }
+
+    /**
+     * 缓冲状态更新
+     * @param start true=正在缓冲，false=缓冲完成
+     */
+    protected fun notifyBuffering(start: Boolean) {
+        if (!isActive.get()) return
+        val oldBuffering = isBuffering
+        isBuffering = start
+
+        if (!isPrepared || !isStartPlay) return
+        if (oldBuffering == start) return
+        val video = mMxVideo ?: return
+        postInMainThread {
+            video.onPlayerBuffering(start)
+        }
+        isBuffering = start
+    }
+
+    /**
+     * 播放器准备完成，可以调用#start()方法播放
+     */
+    protected fun notifyPrepared() {
+        if (!isActive.get()) return
+        if (isPrepared) return
+        val video = mMxVideo ?: return
+        postInMainThread {
+            video.onPlayerPrepared()
+        }
+        isPrepared = true
+    }
+
+    /**
+     * 播放正式开始！
+     */
+    protected fun notifyStartPlay() {
+        if (!isActive.get()) return
+        if (isStartPlay) return
+        val video = mMxVideo ?: return
+        postInMainThread {
+            video.onPlayerStartPlay()
+            if (isBuffering){
+                video.onPlayerBuffering(true)
+            }
+        }
+        isStartPlay = true
+    }
+
+    /**
+     * 播放信息输出
+     */
+    protected fun onPlayerInfo(message: String?) {
+        if (!isActive.get()) return
+        val video = mMxVideo ?: return
+        postInMainThread {
+            video.onPlayerInfo(message)
+        }
+    }
 }

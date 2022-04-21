@@ -28,7 +28,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
         if (!isActive()) return
         val source = mPlaySource ?: return
         val surface = mSurfaceTexture ?: return
-        val context = getMXVideo()?.context ?: return
+        val context = context ?: return
         releaseNow()
         initHandler()
         postInThread {
@@ -84,7 +84,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
         if (duration != 0 && time >= duration) {
             // 如果直接跳转到结束位置，则直接complete
             releaseNow()
-            getMXVideo()?.onPlayerCompletion()
+            notifyPlayerCompletion()
             return
         }
 
@@ -168,30 +168,27 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
     override fun onPrepared(mp: MediaPlayer?) {
         if (!isActive()) return
-        postInMainThread { getMXVideo()?.onPlayerPrepared() }
+        notifyPrepared()
     }
 
     override fun onCompletion(mp: MediaPlayer?) {
         if (!isActive()) return
-        postInMainThread { getMXVideo()?.onPlayerCompletion() }
+        notifyPlayerCompletion()
     }
 
     override fun onBufferingUpdate(mp: MediaPlayer?, percent: Int) {
         if (!isActive()) return
-        postInMainThread { getMXVideo()?.onPlayerBufferProgress(percent) }
+        notifyBufferingUpdate(percent)
     }
 
     override fun onSeekComplete(mp: MediaPlayer?) {
         if (!isActive()) return
-        postInMainThread { getMXVideo()?.onPlayerSeekComplete() }
+        notifySeekComplete()
     }
 
     override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
         if (!isActive()) return true
-        postInMainThread {
-            getMXVideo()?.onPlayerError("what = $what    extra = $extra")
-            release()
-        }
+        notifyError("what = $what    extra = $extra")
         return true
     }
 
@@ -199,16 +196,16 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
         if (!isActive()) return true
         when (what) {
             MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> {
-                postInMainThread { getMXVideo()?.onPlayerStartPlay() }
+                notifyStartPlay()
             }
             MediaPlayer.MEDIA_INFO_BUFFERING_START -> {
-                postInMainThread { getMXVideo()?.onPlayerBuffering(true) }
+                notifyBuffering(true)
             }
             MediaPlayer.MEDIA_INFO_BUFFERING_END -> {
-                postInMainThread { getMXVideo()?.onPlayerBuffering(false) }
+                notifyBuffering(false)
             }
             else -> {
-                postInMainThread { getMXVideo()?.onPlayerInfo(what, extra) }
+                onPlayerInfo("what = $what    extra = $extra")
             }
         }
         return true
@@ -216,6 +213,6 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
     override fun onVideoSizeChanged(mp: MediaPlayer?, width: Int, height: Int) {
         if (!isActive()) return
-        postInMainThread { getMXVideo()?.onPlayerVideoSizeChanged(width, height) }
+        notifyVideoSize(width, height)
     }
 }
