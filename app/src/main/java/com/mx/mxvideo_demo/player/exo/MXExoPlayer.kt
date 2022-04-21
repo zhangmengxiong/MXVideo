@@ -199,7 +199,11 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
         lastReportedPlaybackState = playbackState
     }
 
-    override fun onPositionDiscontinuity(reason: Int) {
+    override fun onPositionDiscontinuity(
+        oldPosition: Player.PositionInfo,
+        newPosition: Player.PositionInfo,
+        reason: Int
+    ) {
         if (!isActive()) return
         if (reason == Player.DISCONTINUITY_REASON_SEEK) {
             postInMainThread { getMXVideo()?.onPlayerSeekComplete() }
