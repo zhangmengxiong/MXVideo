@@ -23,10 +23,6 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
 
     var mediaPlayer: IjkMediaPlayer? = null
     var mPlaySource: MXPlaySource? = null
-    override fun start() {
-        if (!isActive()) return
-        postInThread { mediaPlayer?.start() }
-    }
 
     override fun setSource(source: MXPlaySource) {
         mPlaySource = source
@@ -106,6 +102,12 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
 
     override fun enablePreload(): Boolean {
         return true
+    }
+
+    override fun start() {
+        if (!isActive()) return
+        notifyStartPlay()
+        postInThread { mediaPlayer?.start() }
     }
 
     override fun pause() {

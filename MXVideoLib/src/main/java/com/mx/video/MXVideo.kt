@@ -516,6 +516,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 视频快进完成
      */
     open fun onPlayerSeekComplete() {
+        MXUtils.log("onPlayerSeekComplete")
     }
 
     /**

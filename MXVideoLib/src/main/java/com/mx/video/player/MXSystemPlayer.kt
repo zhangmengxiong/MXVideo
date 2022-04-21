@@ -15,10 +15,6 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     MediaPlayer.OnVideoSizeChangedListener {
     var mediaPlayer: MediaPlayer? = null
     var mPlaySource: MXPlaySource? = null
-    override fun start() {
-        if (!isActive()) return
-        postInThread { mediaPlayer?.start() }
-    }
 
     override fun setSource(source: MXPlaySource) {
         mPlaySource = source
@@ -63,6 +59,12 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
         return true
     }
 
+    override fun start() {
+        if (!isActive()) return
+        notifyStartPlay()
+        postInThread { mediaPlayer?.start() }
+    }
+
     override fun pause() {
         if (!isActive()) return
         postInThread { mediaPlayer?.pause() }
@@ -93,6 +95,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
             } else {
                 mediaPlayer?.seekTo(time * 1000)
             }
+            notifyBuffering(true)
         }
     }
 
@@ -182,6 +185,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
     override fun onSeekComplete(mp: MediaPlayer?) {
         if (!isActive()) return
+        notifyBuffering(false)
         notifySeekComplete()
     }
 

@@ -38,26 +38,27 @@ import java.util.concurrent.atomic.AtomicBoolean
  *      释放资源
  */
 abstract class IMXPlayer : TextureView.SurfaceTextureListener {
-    protected var mSurfaceTexture: SurfaceTexture? = null
-    protected var mTextureView: MXTextureView? = null
+    private val isActive = AtomicBoolean(false)
+    private var isBuffering = false
+    private var isPrepared = false
+    private var isStartPlay = false
+
+    private var mHandler: Handler? = null // 主线程Handler
+    private var mThreadHandler: Handler? = null // 异步线程Handler
+    private var threadHandler: HandlerThread? = null
 
     private var mMxVideo: MXVideo? = null
-    private val isActive = AtomicBoolean(false)
+    protected var mTextureView: MXTextureView? = null
+        private set
+    protected var mSurfaceTexture: SurfaceTexture? = null
 
     /**
      * 播放器是否可用
      */
     fun isActive() = isActive.get()
-    private var isBuffering = false
-    private var isPrepared = false
-    private var isStartPlay = false
 
     protected val context: Context?
         get() = mMxVideo?.context
-
-    private var mHandler: Handler? = null // 主线程Handler
-    private var mThreadHandler: Handler? = null // 异步线程Handler
-    private var threadHandler: HandlerThread? = null
 
     /**
      * 初始化主线程Handler和Thread进程
@@ -173,8 +174,14 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      */
     open fun release() {
         isActive.set(false)
+
+        isBuffering = false
+        isPrepared = false
+        isStartPlay = false
+
         mMxVideo = null
         mTextureView = null
+        mSurfaceTexture = null
         Runtime.getRuntime().gc()
     }
 
