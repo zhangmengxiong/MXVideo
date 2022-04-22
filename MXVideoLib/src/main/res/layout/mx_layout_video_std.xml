@@ -59,19 +59,18 @@
         android:layout_gravity="center"
         android:focusable="false"
         android:focusableInTouchMode="false"
+        android:padding="15dp"
         android:soundEffectsEnabled="false">
 
         <ImageView
             android:id="@+id/mxPlayPauseImg"
             android:layout_width="@dimen/mx_player_size_icon_width"
             android:layout_height="@dimen/mx_player_size_icon_width"
-            android:background="@drawable/mx_bg_icon_circle"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:padding="10dp"
+            android:scaleType="centerCrop"
             android:soundEffectsEnabled="false"
-            android:src="@drawable/mx_icon_player_play"
-            android:tint="@color/mx_player_color_main" />
+            android:src="@drawable/mx_icon_player_play" />
     </LinearLayout>
 
     <ProgressBar

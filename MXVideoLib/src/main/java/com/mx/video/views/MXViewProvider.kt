@@ -184,7 +184,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             } else {
                 mxVideo.resources.getDimensionPixelOffset(R.dimen.mx_player_size_icon_width)
             }
-            setViewSize(mxPlayPauseImg, playWidth, playWidth / 5)
+            setViewSize(mxPlayPauseImg, playWidth, 0)
             setViewSize(mxReplayImg, playWidth, playWidth / 5)
 
             val loadingWidth = if (fullScreen) {
