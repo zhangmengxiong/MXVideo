@@ -106,8 +106,9 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
 
     override fun start() {
         if (!isActive()) return
-        notifyStartPlay()
         postInThread { mediaPlayer?.start() }
+        notifyStartPlay()
+        postBuffering()
     }
 
     override fun pause() {

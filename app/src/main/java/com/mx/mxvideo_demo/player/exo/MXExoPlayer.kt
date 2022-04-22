@@ -57,8 +57,9 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
     }
 
     override fun start() {
-        notifyStartPlay()
         postInMainThread { mediaPlayer?.play() }
+        notifyStartPlay()
+        postBuffering()
     }
 
     override fun pause() {

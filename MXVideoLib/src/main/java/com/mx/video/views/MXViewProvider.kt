@@ -253,6 +253,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             // 暂停状态时点击，恢复播放
             if (state == MXState.PAUSE) {
                 mxVideo.continuePlay()
+                config.loading.notifyChange()
                 return@setOnClickListener
             }
 

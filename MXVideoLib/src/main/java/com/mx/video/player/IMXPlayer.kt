@@ -274,16 +274,24 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      */
     protected fun notifyBuffering(start: Boolean) {
         if (!isActive.get()) return
-        val oldBuffering = isBuffering
-        isBuffering = start
-
         if (!isPrepared || !isStartPlay) return
-        if (oldBuffering == start) return
+        if (isBuffering == start) return
         val video = mMxVideo ?: return
         postInMainThread {
             video.onPlayerBuffering(start)
         }
         isBuffering = start
+    }
+
+    /**
+     * 重新设置加载中状态
+     */
+    protected fun postBuffering() {
+        if (!isActive.get()) return
+        val video = mMxVideo ?: return
+        postInMainThread {
+            video.onPlayerBuffering(isBuffering)
+        }
     }
 
     /**
@@ -309,9 +317,6 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         val video = mMxVideo ?: return
         postInMainThread {
             video.onPlayerStartPlay()
-            if (isBuffering) {
-                video.onPlayerBuffering(true)
-            }
         }
         isStartPlay = true
     }
