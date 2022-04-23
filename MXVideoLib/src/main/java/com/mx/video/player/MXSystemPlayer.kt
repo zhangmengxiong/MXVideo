@@ -96,7 +96,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
             } else {
                 mediaPlayer?.seekTo(time * 1000)
             }
-            notifyBuffering(true)
+//            notifyBuffering(true)
         }
     }
 
@@ -186,7 +186,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
     override fun onSeekComplete(mp: MediaPlayer?) {
         if (!isActive()) return
-        notifyBuffering(false)
+//        notifyBuffering(false)
         notifySeekComplete()
     }
 

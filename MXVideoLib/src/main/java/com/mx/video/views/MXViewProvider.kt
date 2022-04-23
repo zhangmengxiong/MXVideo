@@ -13,6 +13,7 @@ import com.mx.video.utils.touch.MXBaseTouchListener
 import com.mx.video.utils.touch.MXBrightnessTouchListener
 import com.mx.video.utils.touch.MXVolumeTouchListener
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
     /**
@@ -180,7 +181,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
 
             val fullScreen = config.screen.get() == MXScreen.FULL
             val playWidth = if (fullScreen) {
-                min(size.width, size.height) / 5
+                (min(size.width, size.height) / 4)
             } else {
                 mxVideo.resources.getDimensionPixelOffset(R.dimen.mx_player_size_icon_width)
             }
@@ -188,7 +189,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             setViewSize(mxReplayImg, playWidth, playWidth / 5)
 
             val loadingWidth = if (fullScreen) {
-                (min(size.width, size.height) * 48) / (5 * 50)
+                ((min(size.width, size.height) * 48) / (4 * 50))
             } else {
                 mxVideo.resources.getDimensionPixelOffset(R.dimen.mx_player_size_loading_width)
             }
