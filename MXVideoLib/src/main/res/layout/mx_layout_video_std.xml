@@ -3,6 +3,7 @@
     android:id="@+id/mxPlayerRootLay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/black"
     android:focusable="false"
     android:focusableInTouchMode="false"
     android:soundEffectsEnabled="false">
@@ -30,7 +31,7 @@
         android:id="@+id/mxBottomSeekProgress"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="1.5dp"
+        android:layout_height="0.6dp"
         android:layout_gravity="bottom"
         android:alpha="0.55"
         android:focusable="false"
@@ -52,6 +53,53 @@
         android:soundEffectsEnabled="false" />
 
     <LinearLayout
+        android:id="@+id/mxLoadingLay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="5dp"
+            android:soundEffectsEnabled="false"
+            android:text="哒"
+            android:textColor="@color/mx_player_color_main"
+            android:textSize="12sp"
+            android:visibility="invisible" />
+
+        <ProgressBar
+            android:id="@+id/mxLoading"
+            android:layout_width="@dimen/mx_player_size_loading_width"
+            android:layout_height="@dimen/mx_player_size_loading_width"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:indeterminateDrawable="@drawable/mx_progress_loading"
+            android:indeterminateTint="@color/mx_player_color_main"
+            android:soundEffectsEnabled="false" />
+
+        <TextView
+            android:id="@+id/mxLoadingTxv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="5dp"
+            android:shadowColor="@color/mx_player_color_background"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="14"
+            android:soundEffectsEnabled="false"
+            android:text="0 Kb/s"
+            android:textColor="@color/mx_player_color_main"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/mxPlayBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -71,18 +119,6 @@
             android:soundEffectsEnabled="false"
             android:src="@drawable/mx_icon_player_play" />
     </LinearLayout>
-
-    <ProgressBar
-        android:id="@+id/mxLoading"
-        android:layout_width="@dimen/mx_player_size_loading_width"
-        android:layout_height="@dimen/mx_player_size_loading_width"
-        android:layout_gravity="center"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:indeterminateDrawable="@drawable/mx_progress_loading"
-        android:indeterminateTint="@color/mx_player_color_main"
-        android:soundEffectsEnabled="false"
-        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/mxTopLay"
@@ -126,7 +162,7 @@
             android:shadowColor="@color/mx_player_color_background"
             android:shadowDx="0"
             android:shadowDy="0"
-            android:shadowRadius="7"
+            android:shadowRadius="14"
             android:singleLine="true"
             android:soundEffectsEnabled="false"
             android:textColor="@color/mx_player_color_main"
@@ -163,7 +199,7 @@
                 android:shadowColor="@color/mx_player_color_background"
                 android:shadowDx="0"
                 android:shadowDy="0"
-                android:shadowRadius="7"
+                android:shadowRadius="14"
                 android:singleLine="true"
                 android:soundEffectsEnabled="false"
                 android:textColor="@color/mx_player_color_main"
@@ -197,7 +233,7 @@
             android:shadowColor="@color/mx_player_color_background"
             android:shadowDx="0"
             android:shadowDy="0"
-            android:shadowRadius="7"
+            android:shadowRadius="14"
             android:soundEffectsEnabled="false"
             android:text="00:00"
             android:textColor="@color/mx_player_color_main"
@@ -236,7 +272,7 @@
             android:shadowColor="@color/mx_player_color_background"
             android:shadowDx="0"
             android:shadowDy="0"
-            android:shadowRadius="7"
+            android:shadowRadius="14"
             android:soundEffectsEnabled="false"
             android:text="00:00"
             android:textColor="@color/mx_player_color_main"
@@ -279,7 +315,7 @@
             android:shadowColor="@color/mx_player_color_background"
             android:shadowDx="0"
             android:shadowDy="0"
-            android:shadowRadius="7"
+            android:shadowRadius="14"
             android:soundEffectsEnabled="false"
             android:text="@string/mx_play_error"
             android:textColor="@color/mx_player_color_main"
@@ -297,7 +333,7 @@
             android:shadowColor="@color/mx_player_color_background"
             android:shadowDx="0"
             android:shadowDy="0"
-            android:shadowRadius="7"
+            android:shadowRadius="14"
             android:soundEffectsEnabled="false"
             android:text="@string/mx_play_retry"
             android:textColor="@color/mx_player_color_main"
@@ -340,7 +376,7 @@
             android:shadowColor="@color/mx_player_color_background"
             android:shadowDx="0"
             android:shadowDy="0"
-            android:shadowRadius="7"
+            android:shadowRadius="14"
             android:soundEffectsEnabled="false"
             android:text="@string/mx_play_complete_replay"
             android:textColor="@color/mx_player_color_main"

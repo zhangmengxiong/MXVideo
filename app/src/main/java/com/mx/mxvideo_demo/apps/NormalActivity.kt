@@ -239,6 +239,11 @@ class NormalActivity : AppCompatActivity() {
         }
         mirrorFalse.performClick()
 
+        canShowSpeedRG.setOnCheckedChangeListener { group, checkedId ->
+            mxVideoStd.getConfig().canShowNetSpeed.set(checkedId == R.id.canShowSpeedTrue)
+        }
+        canShowSpeedTrue.performClick()
+
         gotoNormalScreenWhenErrorRG.setOnCheckedChangeListener { group, checkedId ->
             mxVideoStd.getConfig().gotoNormalScreenWhenError.set(checkedId == R.id.gotoNormalScreenWhenErrorTrue)
         }

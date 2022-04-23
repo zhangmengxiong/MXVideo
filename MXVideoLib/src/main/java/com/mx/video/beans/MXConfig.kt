@@ -100,6 +100,11 @@ class MXConfig : Serializable {
     val canShowSystemTime = MXValueObservable(true)
 
     /**
+     * 是否显示网速信息
+     */
+    val canShowNetSpeed = MXValueObservable(true)
+
+    /**
      * 是否显示底部进度条
      */
     val canShowBottomSeekBar = MXValueObservable(true)
@@ -174,6 +179,7 @@ class MXConfig : Serializable {
         canFullScreen.set(target.canFullScreen.get())
         showFullScreenButton.set(target.showFullScreenButton.get())
         canShowSystemTime.set(target.canShowSystemTime.get())
+        canShowNetSpeed.set(target.canShowNetSpeed.get())
         canShowBottomSeekBar.set(target.canShowBottomSeekBar.get())
         canShowBatteryImg.set(target.canShowBatteryImg.get())
         showTipIfNotWifi.set(target.showTipIfNotWifi.get())

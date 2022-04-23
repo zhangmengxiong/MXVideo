@@ -470,6 +470,36 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:layout_marginTop="10dp"
+                android:text="显示网速："
+                android:textColor="@color/black" />
+
+            <RadioGroup
+                android:id="@+id/canShowSpeedRG"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+
+                <RadioButton
+                    android:id="@+id/canShowSpeedTrue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="循环" />
+
+                <RadioButton
+                    android:id="@+id/canShowSpeedFalse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="不循环" />
+            </RadioGroup>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="10dp"
                 android:text="是否WiFi环境播放前提醒："
                 android:textColor="@color/black" />
 
@@ -480,7 +510,6 @@
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:padding="5dp">
-
 
                 <RadioButton
                     android:id="@+id/showTipIfNotWifiTrue"
@@ -510,7 +539,6 @@
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:padding="5dp">
-
 
                 <RadioButton
                     android:id="@+id/gotoNormalScreenWhenCompleteTrue"

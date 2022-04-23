@@ -29,6 +29,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
     private val timeTicket = MXTicket()
     private val touchHelp by lazy { MXTouchHelp(mxVideo.context) }
     private val timeDelay = MXDelay()
+    private val speedHelp = MXSpeedHelp()
 
     val mxPlayerRootLay: FrameLayout by lazy {
         mxVideo.findViewById(R.id.mxPlayerRootLay) ?: FrameLayout(mxVideo.context)
@@ -40,8 +41,14 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
     val mxPlaceImg: ImageView by lazy {
         mxVideo.findViewById(R.id.mxPlaceImg) ?: ImageView(mxVideo.context)
     }
-    val mxLoading: ProgressBar by lazy {
-        mxVideo.findViewById(R.id.mxLoading) ?: ProgressBar(mxVideo.context)
+    val mxLoadingLay: View by lazy {
+        mxVideo.findViewById(R.id.mxLoadingLay) ?: View(mxVideo.context)
+    }
+    val mxLoading: View by lazy {
+        mxVideo.findViewById(R.id.mxLoading) ?: View(mxVideo.context)
+    }
+    val mxLoadingTxv: TextView by lazy {
+        mxVideo.findViewById(R.id.mxLoadingTxv) ?: TextView(mxVideo.context)
     }
     val mxBottomSeekProgress: ProgressBar by lazy {
         mxVideo.findViewById(R.id.mxBottomSeekProgress) ?: ProgressBar(mxVideo.context)
@@ -116,16 +123,18 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
      * 根节点View列表
      */
     internal val allContentView = arrayOf(
-        mxPlaceImg, mxLoading, mxPlayBtn, mxTopLay, mxBottomLay,
+        mxPlaceImg, mxLoadingLay, mxPlayBtn, mxTopLay, mxBottomLay,
         mxRetryLay, mxReplayLay, mxQuickSeekLay, mxVolumeLightLay
     )
 
     fun initView() {
+        speedHelp.start()
         // 全屏切换时，显示设置
         config.screen.addObserver { screen ->
             mxReturnBtn.visibility = if (screen == MXScreen.FULL) View.VISIBLE else View.GONE
             mxFullscreenBtn.setImageResource(if (screen == MXScreen.FULL) R.drawable.mx_icon_small_screen else R.drawable.mx_icon_full_screen)
 
+            config.playerViewSize.notifyChange()
             config.videoListeners.toList().forEach { listener ->
                 listener.onScreenChange(screen, this)
             }
@@ -228,7 +237,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
 
         // 加载状态变化时，设置页面状态+事件分发
         config.loading.addObserver { loading ->
-            mxLoading.visibility = if (loading) View.VISIBLE else View.GONE
+            mxLoadingLay.visibility = if (loading) View.VISIBLE else View.GONE
             config.videoListeners.toList().forEach { listener ->
                 listener.onBuffering(loading)
             }
@@ -293,6 +302,15 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         timeDelay.setDelayRun(4000) {
             if (config.state.get() == MXState.PLAYING) {
                 playingControlShow.set(false)
+            }
+        }
+
+        // 网速刷新
+        speedHelp.setOnSpeedUpdate { speed ->
+            if (config.canShowNetSpeed.get()) {
+                mxLoadingTxv.text = speed
+            } else {
+                mxLoadingTxv.text = null
             }
         }
 
@@ -477,7 +495,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         setViewShow(mxBottomSeekProgress, mxBottomSeekProgressShow)
         setViewShow(mxPlaceImg, mxPlaceImgShow)
         setViewShow(mxPlayBtn, mxPlayBtnShow)
-        setViewShow(mxLoading, mxLoadingShow)
+        setViewShow(mxLoadingLay, mxLoadingShow)
         setViewShow(mxTopLay, mxTopLayShow)
         setViewShow(mxBottomLay, mxBottomLayShow)
         setViewShow(mxRetryLay, mxRetryLayShow)
@@ -551,6 +569,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         }
 
         mxSeekProgress.setOnSeekBarChangeListener(null)
+        speedHelp.release()
         timeDelay.release()
         timeTicket.release()
         touchHelp.release()
