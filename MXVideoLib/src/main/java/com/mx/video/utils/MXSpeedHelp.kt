@@ -52,16 +52,7 @@ internal class MXSpeedHelp {
     }
 
     private fun getSpeed(): String? {
-        return when {
-            speedNow <= 0 -> null
-            speedNow < 1024 -> {
-                "$speedNow Byte/s"
-            }
-            speedNow < 1024 * 1024 -> {
-                "${speedNow / 1024} Kb/s"
-            }
-            else -> "${speedNow / (1024 * 1024)} Mb/s"
-        }
+        return MXUtils.byteToShow(speedNow ?: 0L)
     }
 
     fun setOnSpeedUpdate(call: ((String?) -> Unit)) {

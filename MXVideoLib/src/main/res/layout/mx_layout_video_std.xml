@@ -251,15 +251,15 @@
             android:max="100"
             android:maxHeight="3dp"
             android:minHeight="3dp"
-            android:paddingLeft="7dp"
-            android:paddingTop="10dp"
-            android:paddingRight="7dp"
-            android:paddingBottom="10dp"
+            android:paddingLeft="5dp"
+            android:paddingTop="7dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="7dp"
             android:progress="0"
             android:progressDrawable="@drawable/mx_bottom_seek_progress"
             android:soundEffectsEnabled="false"
             android:thumb="@drawable/mx_bottom_seek_thumb"
-            android:thumbOffset="7dp" />
+            android:thumbOffset="5dp" />
 
         <TextView
             android:id="@+id/mxTotalTimeTxv"
