@@ -52,15 +52,15 @@ class TestActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (MXVideo.isFullScreen()) {
-            MXVideo.gotoNormalScreen()
+        if (mxVideoStd.isFullScreen()) {
+            mxVideoStd.gotoNormalScreen()
             return
         }
         super.onBackPressed()
     }
 
     override fun onDestroy() {
-        MXVideo.releaseAll()
+        mxVideoStd.release()
         super.onDestroy()
     }
 }

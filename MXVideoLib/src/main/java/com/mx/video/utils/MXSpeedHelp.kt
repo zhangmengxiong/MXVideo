@@ -23,6 +23,11 @@ internal class MXSpeedHelp {
         mHandler.post(ticketRun)
     }
 
+    fun stop() {
+        isStart = false
+        mHandler.removeCallbacksAndMessages(null)
+    }
+
     fun release() {
         isStart = false
         onUpdateCall = null

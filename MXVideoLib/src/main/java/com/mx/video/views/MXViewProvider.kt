@@ -128,7 +128,6 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
     )
 
     fun initView() {
-        speedHelp.start()
         // 全屏切换时，显示设置
         config.screen.addObserver { screen ->
             mxReturnBtn.visibility = if (screen == MXScreen.FULL) View.VISIBLE else View.GONE
@@ -420,6 +419,8 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                 position.set(0 to 0)
             }
             MXState.PREPARING -> {
+                speedHelp.start()
+
                 mxPlaceImgShow = true
                 if (isFullScreen) {
                     mxTopLayShow = true
@@ -470,6 +471,8 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                 timeTicket.start()
             }
             MXState.ERROR -> {
+                speedHelp.stop()
+
                 mxPlaceImgShow = true
                 mxRetryLayShow = true
                 if (isFullScreen) {
@@ -480,6 +483,8 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
                     ?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             }
             MXState.COMPLETE -> {
+                speedHelp.stop()
+
                 mxPlaceImgShow = true
                 mxReplayLayShow = true
                 if (isFullScreen) {
