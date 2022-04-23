@@ -27,10 +27,14 @@ class NormalActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_normal)
 
+        Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
         mxVideoStd.setOnEmptyPlayListener {
-            Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
             mxVideoStd.setSource(
-                MXPlaySource(Uri.parse(ldjVideos.random()), titles.random()),
+                MXPlaySource(
+                    Uri.parse(ldjVideos.random()),
+                    titles.random(),
+                    isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
+                ),
                 player = playerClass, seekTo = 0
             )
             mxVideoStd.startPlay()
@@ -38,7 +42,11 @@ class NormalActivity : AppCompatActivity() {
         randPlay.setOnClickListener {
             Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
             mxVideoStd.setSource(
-                MXPlaySource(Uri.parse(ldjVideos.random()), titles.random()),
+                MXPlaySource(
+                    Uri.parse(ldjVideos.random()),
+                    titles.random(),
+                    isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
+                ),
                 player = playerClass, seekTo = 0
             )
             mxVideoStd.startPlay()
@@ -48,7 +56,8 @@ class NormalActivity : AppCompatActivity() {
             mxVideoStd.setSource(
                 MXPlaySource(
                     Uri.parse(ldjVideos.random()),
-                    titles.random()
+                    titles.random(),
+                    isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
                 ), seekTo = 60, player = playerClass
             )
             mxVideoStd.startPlay()
@@ -58,7 +67,8 @@ class NormalActivity : AppCompatActivity() {
             mxVideoStd.setSource(
                 MXPlaySource(
                     Uri.parse(ldjVideos.random()),
-                    titles.random()
+                    titles.random(),
+                    isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
                 ), player = playerClass, seekTo = 0
             )
             mxVideoStd.startPreload()
@@ -68,7 +78,8 @@ class NormalActivity : AppCompatActivity() {
             mxVideoStd.setSource(
                 MXPlaySource(
                     Uri.parse("http://video1.dgtle.com/backend%2F2020%2F3%2F0%2F%E6%88%91%E6%B2%A1%E6%9C%89%E7%BB%99%E4%B8%80%E5%8A%A08Pro%E5%81%9A%E8%AF%84%E6%B5%8B_%E5%8D%B4%E5%B8%A6%E7%9D%80%E5%AE%83%E6%BC%82%E6%B5%81.mp4_1080.mp4"),
-                    titles.random(), isLiveSource = true
+                    titles.random(), isLiveSource = true,
+                    isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
                 ), player = playerClass, seekTo = 0
             )
             mxVideoStd.startPlay()
@@ -130,6 +141,8 @@ class NormalActivity : AppCompatActivity() {
             }
         }
         playerRG.getChildAt(0)?.performClick()
+
+        canLoopRG.getChildAt(1)?.performClick()
 
         fillTypeRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.fill) {
@@ -214,12 +227,17 @@ class NormalActivity : AppCompatActivity() {
         showTipIfNotWifiRG.setOnCheckedChangeListener { group, checkedId ->
             mxVideoStd.getConfig().showTipIfNotWifi.set(checkedId == R.id.showTipIfNotWifiTrue)
         }
-        showTipIfNotWifiTrue.performClick()
+        showTipIfNotWifiFalse.performClick()
 
         gotoNormalScreenWhenCompleteRG.setOnCheckedChangeListener { group, checkedId ->
             mxVideoStd.getConfig().gotoNormalScreenWhenComplete.set(checkedId == R.id.gotoNormalScreenWhenCompleteTrue)
         }
         gotoNormalScreenWhenCompleteTrue.performClick()
+
+        mirrorRG.setOnCheckedChangeListener { group, checkedId ->
+            mxVideoStd.getConfig().mirrorMode.set(checkedId == R.id.mirrorTrue)
+        }
+        mirrorFalse.performClick()
 
         gotoNormalScreenWhenErrorRG.setOnCheckedChangeListener { group, checkedId ->
             mxVideoStd.getConfig().gotoNormalScreenWhenError.set(checkedId == R.id.gotoNormalScreenWhenErrorTrue)

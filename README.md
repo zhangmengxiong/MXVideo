@@ -216,6 +216,12 @@ mxVideoStd.getConfig().canShowBatteryImg.set(false)
 mxVideoStd.getConfig().showTipIfNotWifi.set(false)
 ```
 
+- 设置打开TextureView的水平镜像模式
+```kotlin
+// 播放前设置 默认=false
+mxVideoStd.getConfig().mirrorMode.set(true)
+```
+
 - 设置播放完成后自动退出全屏
 ```kotlin
 // 播放前设置 默认=true

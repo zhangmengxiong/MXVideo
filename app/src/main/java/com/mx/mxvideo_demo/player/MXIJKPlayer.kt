@@ -43,7 +43,7 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
             this.mediaPlayer = mediaPlayer
 
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
-            mediaPlayer.isLooping = source.isLooping
+            mediaPlayer.isLooping = false
             mediaPlayer.setOnPreparedListener(this@MXIJKPlayer)
             mediaPlayer.setOnCompletionListener(this@MXIJKPlayer)
             mediaPlayer.setOnBufferingUpdateListener(this@MXIJKPlayer)

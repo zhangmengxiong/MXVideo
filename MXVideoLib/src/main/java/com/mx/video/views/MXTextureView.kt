@@ -1,108 +1,141 @@
 package com.mx.video.views
 
 import android.content.Context
+import android.graphics.Matrix
 import android.util.AttributeSet
 import android.view.TextureView
+import com.mx.video.beans.MXConfig
 import com.mx.video.beans.MXOrientation
 import com.mx.video.beans.MXScale
+import com.mx.video.beans.MXSize
+import com.mx.video.utils.MXValueObservable
 
 class MXTextureView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : TextureView(context, attrs, defStyleAttr) {
+    private val size = MXValueObservable(MXSize(0, 0))
+
+    private val sizeObserver = { _: MXSize ->
+        resetTransform()
+    }
+    private val scaleObserver = { _: MXScale ->
+        resetTransform()
+    }
+    private val orientationObserver = { _: MXOrientation ->
+        resetTransform()
+    }
+    private val mirrorObserver = { _: Boolean ->
+        resetTransform()
+    }
+
     init {
         isFocusable = false
         isFocusableInTouchMode = false
+        size.addObserver(sizeObserver)
     }
 
-    private var mVideoWidth = 1280
-    private var mVideoHeight = 720
-    private var displayType = MXScale.CENTER_CROP
-
-    fun setVideoSize(mVideoWidth: Int, mVideoHeight: Int) {
-        if (this.mVideoWidth != mVideoWidth || this.mVideoHeight != mVideoHeight) {
-            this.mVideoWidth = mVideoWidth
-            this.mVideoHeight = mVideoHeight
-            requestLayout()
+    private var config: MXConfig? = null
+    fun setConfig(config: MXConfig) {
+        if (this.config != null) {
+            this.config?.videoSize?.deleteObserver(sizeObserver)
+            this.config?.scale?.deleteObserver(scaleObserver)
+            this.config?.orientation?.deleteObserver(orientationObserver)
+            this.config?.mirrorMode?.deleteObserver(mirrorObserver)
         }
+
+        config.videoSize.addObserver(sizeObserver)
+        config.scale.addObserver(scaleObserver)
+        config.orientation.addObserver(orientationObserver)
+        config.mirrorMode.addObserver(mirrorObserver)
+
+        this.config = config
     }
 
-    fun setDisplayType(type: MXScale) {
-        if (displayType != type) {
-            displayType = type
-            requestLayout()
-        }
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        size.set(MXSize(w, h))
     }
 
-    fun setOrientation(orientation: MXOrientation) {
-        val degree = orientation.degree.toFloat()
-        if (degree != rotation) {
-            super.setRotation(degree)
-            requestLayout()
-        }
-    }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        var widthMeasureSpec = widthMeasureSpec
-        var heightMeasureSpec = heightMeasureSpec
-        val rotation = rotation.toInt() % 360
-        if (rotation == 90 || rotation == 270) {
-            val tmp = widthMeasureSpec
-            widthMeasureSpec = heightMeasureSpec
-            heightMeasureSpec = tmp
-        }
-
-        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
-        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
-
-        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
-        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
-
-        val videoWidth = mVideoWidth
-        val videoHeight = mVideoHeight
-        var videoRatio = 16.0 / 9.0
-
-        if (videoWidth > 0 && videoHeight > 0 && widthSize > 0 && heightSize > 0) {
-            videoRatio = videoWidth.toDouble() / videoHeight
-        } else {
-            // 默认16：9
-            setMeasuredDimension(widthSize, (widthSize / videoRatio).toInt())
+    private val mxMatrix = Matrix()
+    private fun resetTransform() {
+        val config = config
+        val viewWidth = size.get().width.toFloat()
+        val viewHeight = size.get().height.toFloat()
+        val sx = viewWidth / 2f
+        val sy = viewHeight / 2f
+        if (config == null || viewWidth <= 0 || viewHeight <= 0) {
+            // 数据校验
+            setTransform(null)
             return
         }
-        var width = widthSize
-        var height = (widthSize / videoRatio).toInt()
+        val orientation = config.orientation.get()
+        val scale = config.scale.get()
+        val mirror = config.mirrorMode.get()
 
-        when (displayType) {
+        val videoSize = config.videoSize.get()
+        if (videoSize.width <= 0 || videoSize.height <= 0) {
+            // 数据校验
+            setTransform(null)
+            return
+        }
+
+        // 视频宽高比
+        val videoRatio = videoSize.width.toFloat() / videoSize.height.toFloat()
+
+        mxMatrix.reset()
+        mxMatrix.setRotate(orientation.degree.toFloat(), sx, sy)
+        if (orientation.isVertical()) {
+            val target = getScaleCenterCrop(scale, videoRatio, viewWidth, viewHeight)
+
+            mxMatrix.postScale(
+                target.first / viewWidth,
+                target.second / viewHeight,
+                sx, sy
+            )
+        } else if (orientation.isHorizontal()) {
+            val scaleX = viewHeight / viewWidth
+            val scaleY = viewWidth / viewHeight
+            if (scale == MXScale.CENTER_CROP) {
+                val target = getScaleCenterCrop(
+                    scale,
+                    1f / videoRatio,
+                    viewWidth,
+                    viewHeight
+                )
+                mxMatrix.postScale(
+                    scaleY * target.first / viewWidth,
+                    scaleX * target.second / viewHeight,
+                    sx, sy
+                )
+            } else {
+                mxMatrix.postScale(scaleY, scaleX, sx, sy)
+            }
+        }
+        if (mirror) {
+            mxMatrix.postScale(-1f, 1f, sx, sy)
+        }
+
+        setTransform(mxMatrix)
+    }
+
+    /**
+     * 计算缩放后的大小
+     */
+    private fun getScaleCenterCrop(
+        scale: MXScale, videoRatio: Float,
+        w: Float, h: Float
+    ): Pair<Float, Float> {
+        return when (scale) {
             MXScale.FILL_PARENT -> {
-                if (widthMode == MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY) {
-                    width = widthSize
-                    height = heightSize
-                } else if (widthMode == MeasureSpec.EXACTLY) {
-                    width = widthSize
-                    height = (widthSize / videoRatio).toInt()
-                } else if (heightMode == MeasureSpec.EXACTLY) {
-                    width = (heightSize * videoRatio).toInt()
-                    height = heightSize
-                }
+                Pair(w, h)
             }
             MXScale.CENTER_CROP -> {
-                if (widthMode == MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY) {
-                    width = widthSize
-                    height = (widthSize / videoRatio).toInt()
-                    if (height > heightSize) {
-                        val scale = heightSize / height.toDouble()
-                        width = (width * scale).toInt()
-                        height = heightSize
-                    }
-                } else if (widthMode == MeasureSpec.EXACTLY) {
-                    width = widthSize
-                    height = (widthSize / videoRatio).toInt()
-                } else if (heightMode == MeasureSpec.EXACTLY) {
-                    width = (heightSize * videoRatio).toInt()
-                    height = heightSize
+                if (videoRatio > w / h) {
+                    Pair(w, w / videoRatio)
+                } else {
+                    Pair(videoRatio * h, h)
                 }
             }
         }
-//        MXUtils.log("${displayType.name} specMode=$widthMode x $heightMode  specSize=$widthSize x $heightSize  videoSize=$videoWidth x $videoHeight  size=$width x $height")
-        setMeasuredDimension(width, height)
     }
 }

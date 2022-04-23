@@ -52,7 +52,7 @@ class MXConfig : Serializable {
     /**
      * 视频宽高
      */
-    internal val videoSize = MXValueObservable(MXSize(1280, 720))
+    internal val videoSize = MXValueObservable(MXSize(0, 0))
 
     internal val playerViewSize = MXValueObservable(MXSize(0, 0))
 
@@ -60,6 +60,11 @@ class MXConfig : Serializable {
      * 视频缩放
      */
     internal val scale = MXValueObservable(MXScale.CENTER_CROP)
+
+    /**
+     * 播放器宽高比
+     */
+    internal val dimensionRatio = MXValueObservable(0.0)
 
     /**
      * 跳转位置，当>=0时播放前会跳转到对应位置
@@ -77,6 +82,11 @@ class MXConfig : Serializable {
      * 是否可以通过滑动或者进度条调整进度
      */
     val canSeekByUser = MXValueObservable(true)
+
+    /**
+     * 水平镜像模式
+     */
+    val mirrorMode = MXValueObservable(false)
 
     /**
      * 是否能进入全屏
@@ -156,9 +166,11 @@ class MXConfig : Serializable {
         orientation.set(target.orientation.get())
         videoSize.set(target.videoSize.get().clone())
         scale.set(target.scale.get())
+        dimensionRatio.set(target.dimensionRatio.get())
         seekWhenPlay.set(target.seekWhenPlay.get())
         source.set(target.source.get()?.clone())
         canSeekByUser.set(target.canSeekByUser.get())
+        mirrorMode.set(target.mirrorMode.get())
         canFullScreen.set(target.canFullScreen.get())
         showFullScreenButton.set(target.showFullScreenButton.get())
         canShowSystemTime.set(target.canShowSystemTime.get())

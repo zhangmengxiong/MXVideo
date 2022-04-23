@@ -2,6 +2,7 @@ package com.mx.video
 
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
@@ -119,6 +120,7 @@ abstract class MXVideo @JvmOverloads constructor(
     init {
         MXUtils.init(context)
         View.inflate(context, getLayoutId(), this)
+        setBackgroundColor(Color.BLACK)
         isFocusable = false
         isFocusableInTouchMode = false
         provider.initView()
@@ -252,7 +254,6 @@ abstract class MXVideo @JvmOverloads constructor(
     open fun setTextureOrientation(orientation: MXOrientation) {
         MXUtils.log("MXVideo: setTextureOrientation()")
         config.orientation.set(orientation)
-        mxTextureView?.setOrientation(orientation)
     }
 
     /**
@@ -276,7 +277,6 @@ abstract class MXVideo @JvmOverloads constructor(
     open fun setScaleType(type: MXScale) {
         MXUtils.log("MXVideo: setScaleType() ${type.name}")
         config.scale.set(type)
-        mxTextureView?.setDisplayType(type)
     }
 
     /**
@@ -419,12 +419,8 @@ abstract class MXVideo @JvmOverloads constructor(
 
     private fun addTextureView(player: IMXPlayer): MXTextureView {
         provider.mxSurfaceContainer.removeAllViews()
-        val textureView = MXTextureView(context.applicationContext)
-        val size = config.videoSize.get()
-        textureView.setVideoSize(size.width, size.height)
-        textureView.setDisplayType(config.scale.get())
-        textureView.setOrientation(config.orientation.get())
-
+        val textureView = MXTextureView(context)
+        textureView.setConfig(config)
         val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         layoutParams.gravity = Gravity.CENTER
 
@@ -495,12 +491,17 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun onPlayerCompletion() {
         MXUtils.log("MXVideo: onPlayerCompletion()")
-        config.source.get()?.playUri?.let { MXUtils.saveProgress(it, 0) }
+        val source = config.source.get() ?: return
+        source.playUri.let { MXUtils.saveProgress(it, 0) }
         mxPlayer?.release()
-        config.state.set(MXState.COMPLETE)
+        if (source.isLooping) {
+            startVideo()
+        } else {
+            config.state.set(MXState.COMPLETE)
 
-        if (config.gotoNormalScreenWhenComplete.get() && config.screen.get() == MXScreen.FULL) {
-            switchToScreen(MXScreen.NORMAL)
+            if (config.gotoNormalScreenWhenComplete.get() && config.screen.get() == MXScreen.FULL) {
+                switchToScreen(MXScreen.NORMAL)
+            }
         }
     }
 
@@ -571,7 +572,6 @@ abstract class MXVideo @JvmOverloads constructor(
 
         MXUtils.log("MXVideo: onPlayerVideoSizeChanged() $width x $height")
         config.videoSize.set(MXSize(width, height))
-        mxTextureView?.setVideoSize(width, height)
         postInvalidate()
     }
 
@@ -603,31 +603,36 @@ abstract class MXVideo @JvmOverloads constructor(
         }
     }
 
-    private var dimensionRatio: Double = 0.0
-
     /**
      * 设置MXVideo  ViewGroup的宽高比，设置之后会自动计算播放器的高度
      */
     open fun setDimensionRatio(ratio: Double) {
-        MXUtils.log("MXVideo: setDimensionRatio()")
-        if (ratio != dimensionRatio) {
-            this.dimensionRatio = ratio
-            requestLayout()
-        }
+        MXUtils.log("MXVideo: setDimensionRatio($ratio)")
+        config.dimensionRatio.set(ratio)
+        requestLayout()
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        config.playerViewSize.set(MXSize(w, h))
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
-        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
-        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
-        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
+        var ratio = config.dimensionRatio.get()
+        if (ratio <= 0.0) {
+            val size = config.videoSize.get()
+            if (size.width > 0 && size.height > 0) {
+                ratio = size.width.toDouble() / size.height.toDouble()
+            }
+        }
+        if (ratio <= 0.0) ratio = 16.0 / 9.0
 
-        if (dimensionRatio > 0.0
-            && config.screen.get() == MXScreen.NORMAL
-            && widthMode == MeasureSpec.EXACTLY
-        ) {
-            var height = (widthSize / dimensionRatio).toInt()
-            if (height > heightSize && heightMode == MeasureSpec.AT_MOST) {
+        if (config.screen.get() == MXScreen.NORMAL) {
+            val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+            val heightSize = MeasureSpec.getSize(heightMeasureSpec)
+
+            var height = (widthSize / ratio).toInt()
+            if (height > heightSize) {
                 height = heightSize
             }
 
@@ -637,29 +642,7 @@ abstract class MXVideo @JvmOverloads constructor(
             return
         }
 
-        val size = config.videoSize.get()
-        if (size.width > 0 && size.height > 0
-            && config.screen.get() == MXScreen.NORMAL
-            && widthMode == MeasureSpec.EXACTLY
-            && heightMode != MeasureSpec.EXACTLY
-        ) {
-            var height = (widthSize * size.height.toFloat() / size.width).toInt()
-            if (height > heightSize && heightMode == MeasureSpec.AT_MOST) {
-                height = heightSize
-            }
-
-            //  当视频宽高有数据，，且非全屏时，按照视频宽高比调整整个View的高度，默认视频宽高比= 1280 x 720
-            val measureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
-            super.onMeasure(widthMeasureSpec, measureSpec)
-            return
-        }
-
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-    }
-
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-        config.playerViewSize.set(MXSize(w, h))
     }
 
     /**
@@ -680,7 +663,6 @@ abstract class MXVideo @JvmOverloads constructor(
             val selfClone = constructor.newInstance(context)
             selfClone.id = this.id
             selfClone.mxPlayerClass = mxPlayerClass
-            selfClone.dimensionRatio = dimensionRatio
             selfClone.config.cloneBy(config)
 
             selfClone.minimumWidth = target.width

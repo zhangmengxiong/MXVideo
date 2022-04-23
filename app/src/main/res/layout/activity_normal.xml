@@ -7,7 +7,8 @@
     <com.mx.video.MXVideoStd
         android:id="@+id/mxVideoStd"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -179,6 +180,37 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="270度" />
+            </RadioGroup>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="10dp"
+                android:text="镜像模式："
+                android:textColor="@color/black" />
+
+            <RadioGroup
+                android:id="@+id/mirrorRG"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+
+                <RadioButton
+                    android:id="@+id/mirrorTrue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="开启" />
+
+                <RadioButton
+                    android:id="@+id/mirrorFalse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="关闭" />
             </RadioGroup>
 
             <TextView
@@ -401,6 +433,36 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="不支持" />
+            </RadioGroup>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="10dp"
+                android:text="循环播放："
+                android:textColor="@color/black" />
+
+            <RadioGroup
+                android:id="@+id/canLoopRG"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+
+                <RadioButton
+                    android:id="@+id/canLoopTrue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="循环" />
+
+                <RadioButton
+                    android:id="@+id/canLoopFalse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="不循环" />
             </RadioGroup>
 
             <TextView

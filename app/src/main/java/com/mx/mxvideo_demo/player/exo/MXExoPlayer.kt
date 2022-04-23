@@ -38,11 +38,7 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
             val currUrl = source.playUri.toString()
             player.addListener(this)
             player.addAnalyticsListener(this)
-            if (source.isLooping) {
-                player.repeatMode = Player.REPEAT_MODE_ONE
-            } else {
-                player.repeatMode = Player.REPEAT_MODE_OFF
-            }
+            player.repeatMode = Player.REPEAT_MODE_OFF
             player.setMediaSource(
                 ExoSourceBuild.build(context, source.headerMap, currUrl, false)
             )

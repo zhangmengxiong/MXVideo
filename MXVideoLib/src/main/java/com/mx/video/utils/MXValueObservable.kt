@@ -23,8 +23,12 @@ class MXValueObservable<T>(defaultValue: T, private val debug: Boolean = false) 
             observerList.toMutableList()
         }
         if (list.isEmpty()) return
-        mHandler.post {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
             list.forEach { it.invoke(value) }
+        } else {
+            mHandler.post {
+                list.forEach { it.invoke(value) }
+            }
         }
     }
 
