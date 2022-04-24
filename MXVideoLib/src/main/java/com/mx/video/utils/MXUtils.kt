@@ -81,9 +81,9 @@ internal object MXUtils {
         }
     }
 
-    fun byteToShow(byte: Long): String? {
+    fun byteToShow(byte: Long): String {
         return when {
-            byte <= 0L -> null
+            byte <= 0L -> "0 Kb/s"
             byte < 1024L -> {
                 "$byte Byte/s"
             }

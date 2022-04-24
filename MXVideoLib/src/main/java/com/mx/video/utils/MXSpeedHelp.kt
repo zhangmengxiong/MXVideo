@@ -5,27 +5,35 @@ import android.os.Handler
 import android.os.Looper
 import java.lang.Exception
 import kotlin.math.abs
+import kotlin.math.roundToLong
 
 /**
  * 网速检测
  */
 internal class MXSpeedHelp {
-    private var onUpdateCall: ((String?) -> Unit)? = null
+    private val myUid = android.os.Process.myUid()
     private val mHandler = Handler(Looper.getMainLooper())
+    private var onUpdateCall: ((String?) -> Unit)? = null
     private var isStart = false
 
-    private var speedNow = -1L
-    private var preSize = 0L
+    private var preRxBytes = 0L
+    private var preRxTime = 0L
 
     fun start() {
         isStart = true
+        preRxBytes = 0L
+        preRxTime = 0L
         mHandler.removeCallbacksAndMessages(null)
+        onUpdateCall?.invoke(null)
         mHandler.post(ticketRun)
     }
 
     fun stop() {
         isStart = false
+        preRxBytes = 0L
+        preRxTime = 0L
         mHandler.removeCallbacksAndMessages(null)
+        onUpdateCall?.invoke(null)
     }
 
     fun release() {
@@ -38,21 +46,23 @@ internal class MXSpeedHelp {
         override fun run() {
             if (!isStart) return
             try {
-                val rxBytes = TrafficStats.getUidRxBytes(android.os.Process.myUid())
-                if (preSize > 0) {
-                    speedNow = abs(rxBytes - preSize)
+                val rxBytes = TrafficStats.getUidRxBytes(myUid)
+                val time = System.currentTimeMillis()
+                if (preRxBytes > 0 && preRxTime > 0) {
+                    val diffBytes = abs(rxBytes - preRxBytes)
+                    val diffTime = abs(time - preRxTime) / 1000f
+                    val speed = if (diffTime > 0 && diffBytes > 0) {
+                        diffBytes / diffTime
+                    } else 0f
+                    onUpdateCall?.invoke(MXUtils.byteToShow(speed.roundToLong()))
                 }
-                preSize = rxBytes
-                onUpdateCall?.invoke(getSpeed())
+                preRxBytes = rxBytes
+                preRxTime = time
             } catch (e: Exception) {
             } finally {
-                mHandler.postDelayed(this, 1000)
+                mHandler.postDelayed(this, 500)
             }
         }
-    }
-
-    private fun getSpeed(): String? {
-        return MXUtils.byteToShow(speedNow ?: 0L)
     }
 
     fun setOnSpeedUpdate(call: ((String?) -> Unit)) {
