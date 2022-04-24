@@ -185,6 +185,12 @@ mxVideoStd.getConfig().canSeekByUser.set(false)
 mxVideoStd.getConfig().canFullScreen.set(false)
 ```
 
+- 设置缓冲时显示网速信息
+```kotlin
+// 播放前设置 默认=true
+mxVideoStd.getConfig().canShowNetSpeed.set(false)
+```
+
 - 设置全屏按钮是否显示
 ```kotlin
 // 播放前设置 默认=true
