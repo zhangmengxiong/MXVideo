@@ -115,7 +115,7 @@ abstract class MXVideo @JvmOverloads constructor(
     /**
      * 播放器 暂停状态
      */
-    private var isStopState: Boolean = false
+    private var isStopState: Boolean? = null
 
     init {
         MXUtils.init(context)
@@ -233,7 +233,7 @@ abstract class MXVideo @JvmOverloads constructor(
         stopPlay()
 
         MXUtils.log("MXVideo: setSource()")
-        isStopState = false
+        isStopState = null
 
         config.source.set(source)
         mxPlayerClass = player ?: MXSystemPlayer::class.java
@@ -320,7 +320,7 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun onStart() {
         MXUtils.log("MXVideo: onStart()")
-        if (!isStopState) return
+        if (isStopState != true) return
         val source = config.source.get() ?: return
         if (source.isLiveSource) {
             startPlay()
@@ -329,7 +329,7 @@ abstract class MXVideo @JvmOverloads constructor(
                 continuePlay()
             }
         }
-        isStopState = false
+        isStopState = null
     }
 
     /**
@@ -584,6 +584,7 @@ abstract class MXVideo @JvmOverloads constructor(
         val player = mxPlayer
         mxTextureView = null
         mxPlayer = null
+        isStopState = null
 
         if (player != null) {
             MXUtils.log("MXVideo: stopPlay()")
