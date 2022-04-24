@@ -259,7 +259,6 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             // 暂停状态时点击，恢复播放
             if (state == MXState.PAUSE) {
                 mxVideo.continuePlay()
-                config.loading.notifyChange()
                 return@setOnClickListener
             }
 
@@ -287,12 +286,25 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
             }
         }
 
-        mxPlayerRootLay.setOnClickListener {
-            if (config.state.get() == MXState.PLAYING) {
-                playingControlShow.set(!playingControlShow.get())
-                return@setOnClickListener
+        // 点击屏幕响应
+        mxPlayerRootLay.setOnClickListener(object : MXDoubleClickListener() {
+            override fun onClick() {
+                if (config.state.get() == MXState.PLAYING) {
+                    // 播放中单击：控制暂停按钮显示与隐藏
+                    playingControlShow.set(!playingControlShow.get())
+                }
             }
-        }
+
+            override fun onDoubleClick() {
+                val state = config.state.get()
+                val source = config.source.get() ?: return
+                if (state == MXState.PLAYING && config.canPauseByUser.get() && !source.isLiveSource) {
+                    mxVideo.pausePlay()
+                } else if (state == MXState.PAUSE) {
+                    mxVideo.continuePlay()
+                }
+            }
+        })
 
         // 播放时，控件显示3秒后隐藏回调
         timeDelay.setDelayRun(4000) {

@@ -312,6 +312,7 @@ abstract class MXVideo @JvmOverloads constructor(
         if (config.state.get() != MXState.PAUSE) return
         mxPlayer?.start()
         config.state.set(MXState.PLAYING)
+        config.loading.notifyChange()
     }
 
     /**
