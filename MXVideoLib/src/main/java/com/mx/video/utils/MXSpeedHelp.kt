@@ -3,7 +3,6 @@ package com.mx.video.utils
 import android.net.TrafficStats
 import android.os.Handler
 import android.os.Looper
-import java.lang.Exception
 import kotlin.math.abs
 import kotlin.math.roundToLong
 

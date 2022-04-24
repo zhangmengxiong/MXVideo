@@ -14,62 +14,75 @@ open class MXVideoStd @JvmOverloads constructor(
         return R.layout.mx_layout_video_std
     }
 
+    private var onStateListener: ((MXState) -> Unit)? = null
+    private var onPrepareStartListener: (() -> Unit)? = null
+    private var onPreparedListener: (() -> Unit)? = null
     private var onCompleteListener: (() -> Unit)? = null
     private var onErrorListener: (() -> Unit)? = null
-    private var onStartPrepareListener: (() -> Unit)? = null
-    private var onPreparedListener: (() -> Unit)? = null
     private var onEmptyPlayListener: (() -> Unit)? = null
 
-    private var onTimeListener: ((position: Int, duration: Int) -> Unit)? = null
+    private var onPlayTicketListener: ((position: Int, duration: Int) -> Unit)? = null
+    private var onVideoSizeListener: ((width: Int, height: Int) -> Unit)? = null
     private var onBufferListener: ((inBuffer: Boolean) -> Unit)? = null
-    private val videoListener = object : MXVideoListener() {
-        override fun onStateChange(state: MXState, provider: MXViewProvider) {
-            when (state) {
-                MXState.PREPARING -> {
-                    onStartPrepareListener?.invoke()
-                }
-                MXState.PREPARED -> {
-                    onPreparedListener?.invoke()
-                }
-                MXState.COMPLETE -> {
-                    onCompleteListener?.invoke()
-                }
-                MXState.ERROR -> {
-                    onErrorListener?.invoke()
-                }
-            }
-        }
-
-        override fun onPlayTicket(position: Int, duration: Int) {
-            onTimeListener?.invoke(position, duration)
-        }
-
-        override fun onBuffering(inBuffer: Boolean) {
-            onBufferListener?.invoke(inBuffer)
-        }
-
-        override fun onEmptyPlay() {
-            if (onEmptyPlayListener != null) {
-                onEmptyPlayListener?.invoke()
-            } else {
-                Toast.makeText(
-                    this@MXVideoStd.context,
-                    R.string.mx_play_source_not_set,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }
 
     init {
-        addOnVideoListener(videoListener)
+        addOnVideoListener(object : MXVideoListener() {
+            override fun onStateChange(state: MXState, provider: MXViewProvider) {
+                onStateListener?.invoke(state)
+                when (state) {
+                    MXState.PREPARING -> {
+                        onPrepareStartListener?.invoke()
+                    }
+                    MXState.PREPARED -> {
+                        onPreparedListener?.invoke()
+                    }
+                    MXState.COMPLETE -> {
+                        onCompleteListener?.invoke()
+                    }
+                    MXState.ERROR -> {
+                        onErrorListener?.invoke()
+                    }
+                }
+            }
+
+            override fun onPlayTicket(position: Int, duration: Int) {
+                onPlayTicketListener?.invoke(position, duration)
+            }
+
+            override fun onBuffering(inBuffer: Boolean) {
+                onBufferListener?.invoke(inBuffer)
+            }
+
+            override fun onEmptyPlay() {
+                if (onEmptyPlayListener != null) {
+                    onEmptyPlayListener?.invoke()
+                } else {
+                    Toast.makeText(
+                        this@MXVideoStd.context,
+                        R.string.mx_play_source_not_set,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onVideoSizeChange(width: Int, height: Int) {
+                onVideoSizeListener?.invoke(width, height)
+            }
+        })
+    }
+
+    /**
+     * 回调：状态监听
+     */
+    fun setOnStateListener(listener: ((state: MXState) -> Unit)?) {
+        onStateListener = listener
     }
 
     /**
      * 回调：视频准备启动播放
      */
-    fun setOnStartPrepareListener(listener: (() -> Unit)?) {
-        onStartPrepareListener = listener
+    fun setOnPrepareStartListener(listener: (() -> Unit)?) {
+        onPrepareStartListener = listener
     }
 
     /**
@@ -103,8 +116,15 @@ open class MXVideoStd @JvmOverloads constructor(
     /**
      * 回调：视频播放时间变更
      */
-    fun setOnTimeListener(listener: ((position: Int, duration: Int) -> Unit)?) {
-        onTimeListener = listener
+    fun setOnVideoSizeListener(listener: ((width: Int, height: Int) -> Unit)?) {
+        onVideoSizeListener = listener
+    }
+
+    /**
+     * 回调：视频播放时间变更
+     */
+    fun setOnPlayTicketListener(listener: ((position: Int, duration: Int) -> Unit)?) {
+        onPlayTicketListener = listener
     }
 
     /**
@@ -115,12 +135,17 @@ open class MXVideoStd @JvmOverloads constructor(
     }
 
     override fun release() {
-        onBufferListener = null
+        onStateListener = null
+        onPrepareStartListener = null
+        onPreparedListener = null
         onCompleteListener = null
         onErrorListener = null
-        onPreparedListener = null
-        onStartPrepareListener = null
-        onTimeListener = null
+        onEmptyPlayListener = null
+
+        onPlayTicketListener = null
+        onVideoSizeListener = null
+        onBufferListener = null
+
         super.release()
     }
 }

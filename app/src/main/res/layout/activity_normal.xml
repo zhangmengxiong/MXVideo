@@ -37,6 +37,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:textColor="@color/design_default_color_error" />
+
+                <TextView
+                    android:id="@+id/sizeVideoTxv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/design_default_color_error" />
             </LinearLayout>
 
             <Button

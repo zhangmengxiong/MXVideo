@@ -13,7 +13,6 @@ import com.mx.video.utils.touch.MXBaseTouchListener
 import com.mx.video.utils.touch.MXBrightnessTouchListener
 import com.mx.video.utils.touch.MXVolumeTouchListener
 import kotlin.math.min
-import kotlin.math.roundToInt
 
 class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
     /**
