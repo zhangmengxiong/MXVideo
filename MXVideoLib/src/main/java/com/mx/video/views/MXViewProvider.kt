@@ -13,6 +13,7 @@ import com.mx.video.utils.touch.MXBaseTouchListener
 import com.mx.video.utils.touch.MXBrightnessTouchListener
 import com.mx.video.utils.touch.MXVolumeTouchListener
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
     /**
@@ -185,19 +186,13 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
 
             val fullScreen = config.screen.get() == MXScreen.FULL
             val playWidth = if (fullScreen) {
-                (min(size.width, size.height) / 4)
+                (min(size.width, size.height) / 5f).roundToInt()
             } else {
                 mxVideo.resources.getDimensionPixelOffset(R.dimen.mx_player_size_icon_width)
             }
-            setViewSize(mxPlayPauseImg, playWidth, 0)
-            setViewSize(mxReplayImg, playWidth, playWidth / 5)
-
-            val loadingWidth = if (fullScreen) {
-                ((min(size.width, size.height) * 48) / (4 * 50))
-            } else {
-                mxVideo.resources.getDimensionPixelOffset(R.dimen.mx_player_size_loading_width)
-            }
-            setViewSize(mxLoading, loadingWidth, 0)
+            setViewSize(mxPlayPauseImg, playWidth)
+            setViewSize(mxReplayImg, playWidth)
+            setViewSize(mxLoading, (playWidth * (62f / 60f)).roundToInt())
         }
 
         // 控制是否可以被用户快进快退
@@ -555,11 +550,10 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         view.visibility = if (show) View.VISIBLE else View.GONE
     }
 
-    private fun setViewSize(view: View, size: Int, padding: Int) {
+    private fun setViewSize(view: View, size: Int) {
         val lp = view.layoutParams ?: return
         lp.width = size
         lp.height = size
-        view.setPadding(padding, padding, padding, padding)
         view.layoutParams = lp
     }
 

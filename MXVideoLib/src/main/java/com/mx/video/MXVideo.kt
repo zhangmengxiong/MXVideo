@@ -319,9 +319,9 @@ abstract class MXVideo @JvmOverloads constructor(
      * Activity/Fragment 生命周期onStart() 需要调用暂停
      */
     open fun onStart() {
-        MXUtils.log("MXVideo: onStart()")
         if (isStopState != true) return
         val source = config.source.get() ?: return
+        MXUtils.log("MXVideo: onStart()")
         if (source.isLiveSource) {
             startPlay()
         } else {
@@ -336,9 +336,9 @@ abstract class MXVideo @JvmOverloads constructor(
      * Activity/Fragment 生命周期onStop() 需要调用暂停
      */
     open fun onStop() {
-        MXUtils.log("MXVideo: onStop()")
         if (config.state.get() != MXState.PLAYING) return
         val source = config.source.get() ?: return
+        MXUtils.log("MXVideo: onStop()")
         if (source.isLiveSource) {// 直播无法暂停，这里直接停止播放
             stopPlay()
         } else {
@@ -397,8 +397,8 @@ abstract class MXVideo @JvmOverloads constructor(
         val startRun = {
             val player = createPlayer()
             player.setSource(source)
-            val textureView = addTextureView(player)
-            player.setMXVideo(this, textureView)
+            attachTextureView(player)
+
             mxPlayer = player
             PLAYING_VIDEO = this
             config.state.set(MXState.PREPARING)
@@ -419,16 +419,18 @@ abstract class MXVideo @JvmOverloads constructor(
         }
     }
 
-    private fun addTextureView(player: IMXPlayer): MXTextureView {
+    private fun attachTextureView(player: IMXPlayer): MXTextureView {
         provider.mxSurfaceContainer.removeAllViews()
+        provider.mxSurfaceContainer.visibility = View.VISIBLE
         val textureView = MXTextureView(context)
         textureView.setConfig(config)
         val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         layoutParams.gravity = Gravity.CENTER
 
-        provider.mxSurfaceContainer.addView(textureView, layoutParams)
         textureView.surfaceTextureListener = player
         this.mxTextureView = textureView
+        provider.mxSurfaceContainer.addView(textureView, layoutParams)
+        player.setMXVideo(this, textureView)
         return textureView
     }
 
@@ -582,7 +584,10 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     open fun stopPlay() {
         val player = mxPlayer
+
+        mxTextureView?.release()
         mxTextureView = null
+
         mxPlayer = null
         isStopState = null
 

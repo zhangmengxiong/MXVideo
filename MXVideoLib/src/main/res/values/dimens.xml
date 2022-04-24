@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="mx_player_size_icon_width">60dp</dimen>
-    <dimen name="mx_player_size_loading_width">62dp</dimen>
+    <dimen name="mx_player_size_icon_width">56dp</dimen>
     <dimen name="mx_player_size_bottom_layout_height">48dp</dimen>
     <dimen name="mx_player_size_top_layout_height">48dp</dimen>
     <dimen name="mx_player_size_battery_width">22dp</dimen>

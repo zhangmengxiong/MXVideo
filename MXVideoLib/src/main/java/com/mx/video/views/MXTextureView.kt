@@ -51,6 +51,18 @@ class MXTextureView @JvmOverloads constructor(
         this.config = config
     }
 
+    fun release() {
+        this.config?.let { config ->
+            config.videoSize.deleteObserver(sizeObserver)
+            config.scale.deleteObserver(scaleObserver)
+            config.orientation.deleteObserver(orientationObserver)
+            config.mirrorMode.deleteObserver(mirrorObserver)
+        }
+        this.config = null
+        surfaceTextureListener = null
+        size.deleteObservers()
+    }
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         size.set(MXSize(w, h))

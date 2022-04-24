@@ -53,14 +53,15 @@
 
     <ProgressBar
         android:id="@+id/mxLoading"
-        android:layout_width="@dimen/mx_player_size_loading_width"
-        android:layout_height="@dimen/mx_player_size_loading_width"
+        android:layout_width="@dimen/mx_player_size_icon_width"
+        android:layout_height="@dimen/mx_player_size_icon_width"
         android:layout_centerInParent="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:indeterminateDrawable="@drawable/mx_progress_loading"
         android:indeterminateTint="@color/mx_player_color_main"
-        android:soundEffectsEnabled="false" />
+        android:soundEffectsEnabled="false"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/mxLoadingTxv"
@@ -80,7 +81,8 @@
         android:soundEffectsEnabled="false"
         android:text="0 Kb/s"
         android:textColor="@color/mx_player_color_main"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/mxPlayBtn"
@@ -90,7 +92,8 @@
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:padding="15dp"
-        android:soundEffectsEnabled="false">
+        android:soundEffectsEnabled="false"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/mxPlayPauseImg"
@@ -341,13 +344,10 @@
             android:id="@+id/mxReplayImg"
             android:layout_width="@dimen/mx_player_size_icon_width"
             android:layout_height="@dimen/mx_player_size_icon_width"
-            android:background="@drawable/mx_bg_icon_circle"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:padding="10dp"
             android:soundEffectsEnabled="false"
-            android:src="@drawable/mx_icon_replay"
-            android:tint="@color/mx_player_color_main" />
+            android:src="@drawable/mx_icon_replay" />
 
         <TextView
             android:layout_width="wrap_content"
