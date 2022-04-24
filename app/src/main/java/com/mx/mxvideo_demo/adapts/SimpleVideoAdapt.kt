@@ -33,7 +33,7 @@ class SimpleVideoAdapt : BaseSimpleAdapt<String>() {
         mxVideoStd.setSource(
             MXPlaySource(Uri.parse(record), "" + position)
         )
-        mxVideoStd.setOnTimeListener { position, duration ->
+        mxVideoStd.setOnPlayTicketListener { position, duration ->
             println("播放进度：$position / $duration")
         }
     }

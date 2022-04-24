@@ -99,17 +99,16 @@ class NormalActivity : AppCompatActivity() {
                 mFormatter.format("%02d:%02d", minutes, seconds).toString()
             }
         }
-        mxVideoStd.addOnVideoListener(object : MXVideoListener() {
-            override fun onStateChange(state: MXState, provider: MXViewProvider) {
-                statusTxv.text = state.name
-                // Toast.makeText(this@NormalActivity, state.name, Toast.LENGTH_SHORT).show()
-            }
+        mxVideoStd.setOnPlayTicketListener { position, duration ->
+            timeTxv.text = "${stringForTime(position)} / ${stringForTime(duration)}"
+        }
+        mxVideoStd.setOnVideoSizeListener { width, height ->
+            sizeVideoTxv.text = "$width x $height"
+        }
+        mxVideoStd.setOnStateListener { state ->
+            statusTxv.text = state.name
+        }
 
-            override fun onPlayTicket(position: Int, duration: Int) {
-                timeTxv.text = "${stringForTime(position)} / ${stringForTime(duration)}"
-                // println("MXUtils $position / $duration")
-            }
-        })
         videoSourceRG.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.source16x9 -> {
@@ -238,6 +237,11 @@ class NormalActivity : AppCompatActivity() {
             mxVideoStd.getConfig().mirrorMode.set(checkedId == R.id.mirrorTrue)
         }
         mirrorFalse.performClick()
+
+        canShowSpeedRG.setOnCheckedChangeListener { group, checkedId ->
+            mxVideoStd.getConfig().canShowNetSpeed.set(checkedId == R.id.canShowSpeedTrue)
+        }
+        canShowSpeedTrue.performClick()
 
         gotoNormalScreenWhenErrorRG.setOnCheckedChangeListener { group, checkedId ->
             mxVideoStd.getConfig().gotoNormalScreenWhenError.set(checkedId == R.id.gotoNormalScreenWhenErrorTrue)

@@ -254,6 +254,7 @@ abstract class MXVideo @JvmOverloads constructor(
     open fun setTextureOrientation(orientation: MXOrientation) {
         MXUtils.log("MXVideo: setTextureOrientation()")
         config.orientation.set(orientation)
+        requestLayout()
     }
 
     /**
@@ -622,7 +623,11 @@ abstract class MXVideo @JvmOverloads constructor(
         if (ratio <= 0.0) {
             val size = config.videoSize.get()
             if (size.width > 0 && size.height > 0) {
-                ratio = size.width.toDouble() / size.height.toDouble()
+                ratio = if (config.orientation.get().isVertical()) {
+                    size.width.toDouble() / size.height.toDouble()
+                } else {
+                    size.height.toDouble() / size.width.toDouble()
+                }
             }
         }
         if (ratio <= 0.0) ratio = 16.0 / 9.0

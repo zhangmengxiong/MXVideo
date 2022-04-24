@@ -14,6 +14,7 @@ import android.view.Window
 import android.view.WindowManager
 import com.mx.video.BuildConfig
 import com.mx.video.beans.MXOrientation
+import java.text.DecimalFormat
 import java.util.*
 
 internal object MXUtils {
@@ -72,11 +73,26 @@ internal object MXUtils {
         val minutes = (time / 60 % 60)
         val hours = (time / 3600)
         val stringBuilder = StringBuilder()
-        val mFormatter = Formatter(stringBuilder, Locale.getDefault())
+        val formatter = Formatter(stringBuilder, Locale.getDefault())
         return if (hours > 0) {
-            mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString()
+            formatter.format("%d:%02d:%02d", hours, minutes, seconds).toString()
         } else {
-            mFormatter.format("%02d:%02d", minutes, seconds).toString()
+            formatter.format("%02d:%02d", minutes, seconds).toString()
+        }
+    }
+
+    fun byteToShow(byte: Long): String {
+        return when {
+            byte <= 0L -> "0 Kb/s"
+            byte < 1024L -> {
+                "$byte Byte/s"
+            }
+            byte < 1024L * 1024 -> {
+                "${byte / 1024} Kb/s"
+            }
+            else -> {
+                DecimalFormat("#.0").format(byte / (1024f * 1024)) + " Mb/s"
+            }
         }
     }
 
