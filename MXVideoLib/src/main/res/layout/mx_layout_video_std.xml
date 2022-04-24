@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mxPlayerRootLay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,7 +12,6 @@
         android:id="@+id/mxSurfaceContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
         android:animateLayoutChanges="false"
         android:focusable="false"
         android:focusableInTouchMode="false"
@@ -32,7 +31,7 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="0.6dp"
-        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
         android:alpha="0.55"
         android:focusable="false"
         android:focusableInTouchMode="false"
@@ -46,64 +45,48 @@
         android:id="@+id/mxPlaceImg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
+        android:layout_centerInParent="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:scaleType="fitXY"
         android:soundEffectsEnabled="false" />
 
-    <LinearLayout
-        android:id="@+id/mxLoadingLay"
+    <ProgressBar
+        android:id="@+id/mxLoading"
+        android:layout_width="@dimen/mx_player_size_loading_width"
+        android:layout_height="@dimen/mx_player_size_loading_width"
+        android:layout_centerInParent="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:indeterminateDrawable="@drawable/mx_progress_loading"
+        android:indeterminateTint="@color/mx_player_color_main"
+        android:soundEffectsEnabled="false" />
+
+    <TextView
+        android:id="@+id/mxLoadingTxv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:padding="5dp"
-            android:soundEffectsEnabled="false"
-            android:text="哒"
-            android:textColor="@color/mx_player_color_main"
-            android:textSize="12sp"
-            android:visibility="invisible" />
-
-        <ProgressBar
-            android:id="@+id/mxLoading"
-            android:layout_width="@dimen/mx_player_size_loading_width"
-            android:layout_height="@dimen/mx_player_size_loading_width"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:indeterminateDrawable="@drawable/mx_progress_loading"
-            android:indeterminateTint="@color/mx_player_color_main"
-            android:soundEffectsEnabled="false" />
-
-        <TextView
-            android:id="@+id/mxLoadingTxv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:padding="5dp"
-            android:shadowColor="@color/mx_player_color_background"
-            android:shadowDx="0"
-            android:shadowDy="0"
-            android:shadowRadius="3"
-            android:soundEffectsEnabled="false"
-            android:text="0 Kb/s"
-            android:textColor="@color/mx_player_color_main"
-            android:textSize="12sp" />
-    </LinearLayout>
+        android:layout_below="@+id/mxLoading"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="3dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:paddingHorizontal="5dp"
+        android:paddingVertical="3dp"
+        android:shadowColor="@color/mx_player_color_background"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="3"
+        android:soundEffectsEnabled="false"
+        android:text="0 Kb/s"
+        android:textColor="@color/mx_player_color_main"
+        android:textSize="14sp" />
 
     <LinearLayout
         android:id="@+id/mxPlayBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_centerInParent="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:padding="15dp"
@@ -124,7 +107,7 @@
         android:id="@+id/mxTopLay"
         android:layout_width="match_parent"
         android:layout_height="@dimen/mx_player_size_top_layout_height"
-        android:layout_gravity="top"
+        android:layout_alignParentTop="true"
         android:background="@drawable/mx_bg_top"
         android:backgroundTint="@color/mx_player_color_background"
         android:focusable="false"
@@ -212,7 +195,7 @@
         android:id="@+id/mxBottomLay"
         android:layout_width="match_parent"
         android:layout_height="@dimen/mx_player_size_bottom_layout_height"
-        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
         android:background="@drawable/mx_bg_bottom"
         android:backgroundTint="@color/mx_player_color_background"
         android:focusable="false"
@@ -296,7 +279,7 @@
         android:id="@+id/mxRetryLay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_centerInParent="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:gravity="center"
@@ -344,7 +327,7 @@
         android:id="@+id/mxReplayLay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_centerInParent="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:gravity="center"
@@ -387,7 +370,7 @@
         android:id="@+id/mxQuickSeekLay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_centerInParent="true"
         android:background="@drawable/mx_bg_float_layout"
         android:focusable="false"
         android:focusableInTouchMode="false"
@@ -435,7 +418,7 @@
         android:id="@+id/mxVolumeLightLay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_centerInParent="true"
         android:background="@drawable/mx_bg_float_layout"
         android:focusable="false"
         android:focusableInTouchMode="false"
@@ -478,4 +461,4 @@
             android:textSize="17sp"
             android:textStyle="bold" />
     </LinearLayout>
-</FrameLayout>
+</RelativeLayout>

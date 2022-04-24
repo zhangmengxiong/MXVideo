@@ -30,8 +30,8 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
     private val timeDelay = MXDelay()
     private val speedHelp = MXSpeedHelp()
 
-    val mxPlayerRootLay: FrameLayout by lazy {
-        mxVideo.findViewById(R.id.mxPlayerRootLay) ?: FrameLayout(mxVideo.context)
+    val mxPlayerRootLay: View by lazy {
+        mxVideo.findViewById(R.id.mxPlayerRootLay) ?: View(mxVideo.context)
     }
     val mxSurfaceContainer: FrameLayout by lazy {
         mxVideo.findViewById(R.id.mxSurfaceContainer) ?: FrameLayout(mxVideo.context)
@@ -39,9 +39,6 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
 
     val mxPlaceImg: ImageView by lazy {
         mxVideo.findViewById(R.id.mxPlaceImg) ?: ImageView(mxVideo.context)
-    }
-    val mxLoadingLay: View by lazy {
-        mxVideo.findViewById(R.id.mxLoadingLay) ?: View(mxVideo.context)
     }
     val mxLoading: View by lazy {
         mxVideo.findViewById(R.id.mxLoading) ?: View(mxVideo.context)
@@ -53,27 +50,27 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         mxVideo.findViewById(R.id.mxBottomSeekProgress) ?: ProgressBar(mxVideo.context)
     }
 
-    val mxPlayBtn: LinearLayout by lazy {
-        mxVideo.findViewById(R.id.mxPlayBtn) ?: LinearLayout(mxVideo.context)
+    val mxPlayBtn: View by lazy {
+        mxVideo.findViewById(R.id.mxPlayBtn) ?: View(mxVideo.context)
     }
-    val mxRetryLay: LinearLayout by lazy {
-        mxVideo.findViewById(R.id.mxRetryLay) ?: LinearLayout(mxVideo.context)
+    val mxRetryLay: View by lazy {
+        mxVideo.findViewById(R.id.mxRetryLay) ?: View(mxVideo.context)
     }
 
     val mxPlayPauseImg: ImageView by lazy {
         mxVideo.findViewById(R.id.mxPlayPauseImg) ?: ImageView(mxVideo.context)
     }
-    val mxReturnBtn: ImageView by lazy {
-        mxVideo.findViewById(R.id.mxReturnBtn) ?: ImageView(mxVideo.context)
+    val mxReturnBtn: View by lazy {
+        mxVideo.findViewById(R.id.mxReturnBtn) ?: View(mxVideo.context)
     }
-    val mxBatteryImg: ImageView by lazy {
-        mxVideo.findViewById(R.id.mxBatteryImg) ?: ImageView(mxVideo.context)
+    val mxBatteryImg: View by lazy {
+        mxVideo.findViewById(R.id.mxBatteryImg) ?: View(mxVideo.context)
     }
     val mxCurrentTimeTxv: TextView by lazy {
         mxVideo.findViewById(R.id.mxCurrentTimeTxv) ?: TextView(mxVideo.context)
     }
-    val mxSystemTimeTxv: TextView by lazy {
-        mxVideo.findViewById(R.id.mxSystemTimeTxv) ?: TextView(mxVideo.context)
+    val mxSystemTimeTxv: View by lazy {
+        mxVideo.findViewById(R.id.mxSystemTimeTxv) ?: View(mxVideo.context)
     }
     val mxTotalTimeTxv: TextView by lazy {
         mxVideo.findViewById(R.id.mxTotalTimeTxv) ?: TextView(mxVideo.context)
@@ -84,23 +81,23 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
     val mxSeekProgress: SeekBar by lazy {
         mxVideo.findViewById(R.id.mxSeekProgress) ?: SeekBar(mxVideo.context)
     }
-    val mxBottomLay: LinearLayout by lazy {
-        mxVideo.findViewById(R.id.mxBottomLay) ?: LinearLayout(mxVideo.context)
+    val mxBottomLay: View by lazy {
+        mxVideo.findViewById(R.id.mxBottomLay) ?: View(mxVideo.context)
     }
-    val mxTopLay: LinearLayout by lazy {
-        mxVideo.findViewById(R.id.mxTopLay) ?: LinearLayout(mxVideo.context)
+    val mxTopLay: View by lazy {
+        mxVideo.findViewById(R.id.mxTopLay) ?: View(mxVideo.context)
     }
-    val mxReplayLay: LinearLayout by lazy {
-        mxVideo.findViewById(R.id.mxReplayLay) ?: LinearLayout(mxVideo.context)
+    val mxReplayLay: View by lazy {
+        mxVideo.findViewById(R.id.mxReplayLay) ?: View(mxVideo.context)
     }
     val mxReplayImg: ImageView by lazy {
         mxVideo.findViewById(R.id.mxReplayImg) ?: ImageView(mxVideo.context)
     }
-    val mxQuickSeekLay: LinearLayout by lazy {
-        mxVideo.findViewById(R.id.mxQuickSeekLay) ?: LinearLayout(mxVideo.context)
+    val mxQuickSeekLay: View by lazy {
+        mxVideo.findViewById(R.id.mxQuickSeekLay) ?: View(mxVideo.context)
     }
-    val mxVolumeLightLay: LinearLayout by lazy {
-        mxVideo.findViewById(R.id.mxVolumeLightLay) ?: LinearLayout(mxVideo.context)
+    val mxVolumeLightLay: View by lazy {
+        mxVideo.findViewById(R.id.mxVolumeLightLay) ?: View(mxVideo.context)
     }
     val mxVolumeLightTypeTxv: TextView by lazy {
         mxVideo.findViewById(R.id.mxVolumeLightTypeTxv) ?: TextView(mxVideo.context)
@@ -122,7 +119,7 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
      * 根节点View列表
      */
     internal val allContentView = arrayOf(
-        mxPlaceImg, mxLoadingLay, mxPlayBtn, mxTopLay, mxBottomLay,
+        mxPlaceImg, mxLoading, mxLoadingTxv, mxPlayBtn, mxTopLay, mxBottomLay,
         mxRetryLay, mxReplayLay, mxQuickSeekLay, mxVolumeLightLay
     )
 
@@ -235,7 +232,8 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
 
         // 加载状态变化时，设置页面状态+事件分发
         config.loading.addObserver { loading ->
-            mxLoadingLay.visibility = if (loading) View.VISIBLE else View.GONE
+            mxLoading.visibility = if (loading) View.VISIBLE else View.GONE
+            mxLoadingTxv.visibility = if (loading) View.VISIBLE else View.GONE
             config.videoListeners.toList().forEach { listener ->
                 listener.onBuffering(loading)
             }
@@ -499,7 +497,10 @@ class MXViewProvider(val mxVideo: MXVideo, val config: MXConfig) {
         setViewShow(mxBottomSeekProgress, mxBottomSeekProgressShow)
         setViewShow(mxPlaceImg, mxPlaceImgShow)
         setViewShow(mxPlayBtn, mxPlayBtnShow)
-        setViewShow(mxLoadingLay, mxLoadingShow)
+
+        setViewShow(mxLoading, mxLoadingShow)
+        setViewShow(mxLoadingTxv, mxLoadingShow)
+
         setViewShow(mxTopLay, mxTopLayShow)
         setViewShow(mxBottomLay, mxBottomLayShow)
         setViewShow(mxRetryLay, mxRetryLayShow)

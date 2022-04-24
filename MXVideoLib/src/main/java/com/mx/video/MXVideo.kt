@@ -24,34 +24,34 @@ abstract class MXVideo @JvmOverloads constructor(
         private var hasWifiDialogShow = false
         private val parentMap = HashMap<Int, MXParentView>()
 
-        private var playingVideo: MXVideo? = null
+        private var PLAYING_VIDEO: MXVideo? = null
         fun isFullScreen(): Boolean {
-            return playingVideo?.isFullScreen() == true
+            return PLAYING_VIDEO?.isFullScreen() == true
         }
 
         fun gotoNormalScreen() {
-            playingVideo?.gotoNormalScreen()
+            PLAYING_VIDEO?.gotoNormalScreen()
         }
 
         /**
          * 当前播放设为全屏
          */
         fun gotoFullScreen() {
-            playingVideo?.gotoFullScreen()
+            PLAYING_VIDEO?.gotoFullScreen()
         }
 
         /**
          * 停止当前播放
          */
         fun stopAll() {
-            playingVideo?.stopPlay()
+            PLAYING_VIDEO?.stopPlay()
         }
 
         /**
          * 释放当前播放器
          */
         fun releaseAll() {
-            playingVideo?.release()
+            PLAYING_VIDEO?.release()
         }
 
         /**
@@ -389,7 +389,7 @@ abstract class MXVideo @JvmOverloads constructor(
      */
     private fun startVideo() {
         MXUtils.log("MXVideo: startVideo()")
-        playingVideo?.stopPlay()
+        PLAYING_VIDEO?.stopPlay()
         val source = config.source.get() ?: return
         MXUtils.log("startVideo ${source.playUri} player=${mxPlayerClass.name}")
 
@@ -399,7 +399,7 @@ abstract class MXVideo @JvmOverloads constructor(
             val textureView = addTextureView(player)
             player.setMXVideo(this, textureView)
             mxPlayer = player
-            playingVideo = this
+            PLAYING_VIDEO = this
             config.state.set(MXState.PREPARING)
             sensorHelp.addListener(sensorListener)
         }
@@ -591,8 +591,8 @@ abstract class MXVideo @JvmOverloads constructor(
 
         provider.mxSurfaceContainer.removeAllViews()
 
-        if (playingVideo == this) {
-            playingVideo = null
+        if (PLAYING_VIDEO == this) {
+            PLAYING_VIDEO = null
         }
 
         sensorHelp.deleteListener(sensorListener)
