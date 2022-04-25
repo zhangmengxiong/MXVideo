@@ -18,8 +18,6 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
     override fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) {
         postInThread {
-            if (!active) return@postInThread
-
             val mediaPlayer = MediaPlayer()
             this.mediaPlayer = mediaPlayer
 
