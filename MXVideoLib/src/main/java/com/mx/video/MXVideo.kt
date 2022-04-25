@@ -532,7 +532,8 @@ abstract class MXVideo @JvmOverloads constructor(
     private fun startVideo() {
         PLAYING_VIDEO?.stopPlay()
         val source = config.source.get() ?: return
-        MXUtils.log("startVideo ${source.playUri} player=${mxPlayerClass.name}")
+        MXUtils.log("startVideo $source")
+        MXUtils.log("startVideo player=${mxPlayerClass.name}")
 
         val startRun = {
             val player = createPlayer()

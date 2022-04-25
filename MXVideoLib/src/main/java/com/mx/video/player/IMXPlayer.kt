@@ -108,6 +108,7 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         val context = mContext ?: return
         val source = mPlaySource ?: return
         val surface = mSurfaceTexture ?: return
+        video?.onPlayerInfo(" --> prepare <--")
         prepare(context, source, surface)
         hasPrepareCall = true
     }
