@@ -84,27 +84,17 @@
         android:textSize="14sp"
         android:visibility="gone" />
 
-    <LinearLayout
-        android:id="@+id/mxPlayBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/mxPlayPauseBtn"
+        android:layout_width="@dimen/mx_player_size_icon_width"
+        android:layout_height="@dimen/mx_player_size_icon_width"
         android:layout_centerInParent="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:padding="15dp"
+        android:scaleType="centerCrop"
         android:soundEffectsEnabled="false"
-        android:visibility="gone">
+        android:src="@drawable/mx_icon_player_play" />
 
-        <ImageView
-            android:id="@+id/mxPlayPauseImg"
-            android:layout_width="@dimen/mx_player_size_icon_width"
-            android:layout_height="@dimen/mx_player_size_icon_width"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:scaleType="centerCrop"
-            android:soundEffectsEnabled="false"
-            android:src="@drawable/mx_icon_player_play" />
-    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/mxTopLay"

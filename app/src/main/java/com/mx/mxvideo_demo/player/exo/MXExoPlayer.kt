@@ -1,5 +1,6 @@
 package com.mx.mxvideo_demo.player.exo
 
+import android.content.Context
 import android.graphics.SurfaceTexture
 import android.os.Looper
 import android.view.Surface
@@ -12,19 +13,8 @@ import com.mx.video.player.IMXPlayer
 
 class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, AnalyticsListener {
     private var mediaPlayer: ExoPlayer? = null
-    private var mPlaySource: MXPlaySource? = null
 
-    override fun setSource(source: MXPlaySource) {
-        mPlaySource = source
-    }
-
-    override fun prepare() {
-        if (!isActive()) return
-        val source = mPlaySource ?: return
-        val surface = mSurfaceTexture ?: return
-        val context = context ?: return
-        releaseNow()
-        initHandler()
+    override fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) {
         postInMainThread {
             isBuffering = false
             isPreparedCall = false
@@ -59,17 +49,19 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
     }
 
     override fun pause() {
-        if (!isActive()) return
+        if (!active) return
         mediaPlayer?.pause()
     }
 
     override fun isPlaying(): Boolean {
-        if (!isActive()) return false
+        if (!active) return false
         return mediaPlayer?.isPlaying ?: false
     }
 
     // 这里不需要处理未播放状态的快进快退，MXVideo会判断。
     override fun seekTo(time: Int) {
+        val source = source ?: return
+        if (!active || source.isLiveSource) return
         postInMainThread {
             val duration = getDuration()
             if (duration != 0 && time >= duration) {
@@ -86,70 +78,38 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
 
         val mediaPlayer = mediaPlayer
         this.mediaPlayer = null
-        mSurfaceTexture = null
 
-        postInMainThread {
+        try {
             mediaPlayer?.setVideoSurface(null)
             mediaPlayer?.release()
-            quitHandler()
+        } catch (e: Exception) {
         }
     }
 
-    private fun releaseNow() {
-        val mediaPlayer = mediaPlayer
-        this.mediaPlayer = null
-        quitHandler()
-        postInThread {
-            mediaPlayer?.setVideoSurface(null)
-            mediaPlayer?.release()
-        }
-    }
-
-    override fun getCurrentPosition(): Int {
-        if (!isActive()) return 0
+    override fun getPosition(): Int {
+        if (!active) return 0
         return mediaPlayer?.currentPosition?.div(1000)?.toInt() ?: 0
     }
 
     override fun getDuration(): Int {
-        if (!isActive()) return 0
+        if (!active) return 0
         var duration = mediaPlayer?.duration ?: 0
         if (duration < 0) duration = 0
         return (duration / 1000).toInt()
     }
 
     override fun setVolume(leftVolume: Float, rightVolume: Float) {
-        if (!isActive()) return
+        if (!active) return
         mediaPlayer?.volume = (leftVolume + rightVolume) / 2f
     }
 
     override fun setSpeed(speed: Float) {
-        if (!isActive()) return
+        if (!active) return
         mediaPlayer?.playbackParameters = PlaybackParameters(speed, 1.0f)
     }
 
-    override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
-        if (!isActive()) return
-        val texture = mSurfaceTexture
-        if (texture == null) {
-            mSurfaceTexture = surface
-            prepare()
-        } else {
-            mTextureView?.setSurfaceTexture(texture)
-        }
-    }
-
-    override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
-    }
-
-    override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
-        return false
-    }
-
-    override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
-    }
-
     override fun onPlaybackStateChanged(state: Int) {
-        if (!isActive()) return
+        if (!active) return
         onPlayWhenReadyChanged(isLastReportedPlayWhenReady ?: false, state)
     }
 
@@ -187,19 +147,19 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
         newPosition: Player.PositionInfo,
         reason: Int
     ) {
-        if (!isActive()) return
+        if (!active) return
         if (reason == Player.DISCONTINUITY_REASON_SEEK) {
             notifySeekComplete()
         }
     }
 
     override fun onPlayerError(error: PlaybackException) {
-        if (!isActive()) return
+        if (!active) return
         notifyError(error.message)
     }
 
     override fun onVideoSizeChanged(videoSize: VideoSize) {
-        if (!isActive()) return
+        if (!active) return
         notifyVideoSize(videoSize.width, videoSize.height)
     }
 }

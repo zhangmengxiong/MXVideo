@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.widget.Toast
 import com.mx.video.beans.MXState
 import com.mx.video.listener.MXVideoListener
-import com.mx.video.views.MXViewProvider
+import com.mx.video.views.MXViewSet
 
 open class MXVideoStd @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -27,7 +27,7 @@ open class MXVideoStd @JvmOverloads constructor(
 
     init {
         addOnVideoListener(object : MXVideoListener() {
-            override fun onStateChange(state: MXState, provider: MXViewProvider) {
+            override fun onStateChange(state: MXState, viewSet: MXViewSet) {
                 onStateListener?.invoke(state)
                 when (state) {
                     MXState.PREPARING -> {

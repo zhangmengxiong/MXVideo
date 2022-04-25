@@ -7,7 +7,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Handler
 import com.mx.video.beans.MXOrientation
-import com.mx.video.beans.MXSensorListener
+import com.mx.video.listener.MXSensorListener
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.roundToInt

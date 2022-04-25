@@ -14,9 +14,10 @@ import com.mx.mxvideo_demo.thumbnails
 import com.mx.mxvideo_demo.titles
 import com.mx.video.MXVideo
 import com.mx.video.beans.MXPlaySource
+import com.mx.video.beans.MXScreen
 import com.mx.video.beans.MXState
 import com.mx.video.listener.MXVideoListener
-import com.mx.video.views.MXViewProvider
+import com.mx.video.views.MXViewSet
 import kotlinx.android.synthetic.main.activity_full.*
 
 class FullScreenActivity : AppCompatActivity() {
@@ -35,9 +36,9 @@ class FullScreenActivity : AppCompatActivity() {
             statusTxv.text = state.name
         }
         mxVideoStd.addOnVideoListener(object : MXVideoListener() {
-            override fun onStateChange(state: MXState, provider: MXViewProvider) {
-                provider.mxReturnBtn.visibility = View.VISIBLE
-                provider.mxReturnBtn.setOnClickListener {
+            override fun onStateChange(state: MXState, viewSet: MXViewSet) {
+                viewSet.mxReturnBtn.visibility = View.VISIBLE
+                viewSet.mxReturnBtn.setOnClickListener {
                     onBackPressed()
                 }
             }
@@ -47,12 +48,12 @@ class FullScreenActivity : AppCompatActivity() {
         mxVideoStd.getConfig().showFullScreenButton.set(false)
         mxVideoStd.getConfig().gotoNormalScreenWhenComplete.set(false)
         mxVideoStd.getConfig().gotoNormalScreenWhenError.set(false)
+        mxVideoStd.setPlayer(MXIJKPlayer::class.java)
         mxVideoStd.setSource(
-            MXPlaySource(Uri.parse(ldjVideos.first()), titles.random()),
-            player = MXIJKPlayer::class.java, seekTo = 0
+            MXPlaySource(Uri.parse(ldjVideos.first()), titles.random()), seekTo = 0
         )
         mxVideoStd.startPlay()
-        mxVideoStd.gotoFullScreen()
+        mxVideoStd.switchToScreen(MXScreen.FULL)
     }
 
     override fun onStart() {

@@ -1,4 +1,6 @@
-package com.mx.video.beans
+package com.mx.video.listener
+
+import com.mx.video.beans.MXOrientation
 
 /**
  * 设备旋转监听接口

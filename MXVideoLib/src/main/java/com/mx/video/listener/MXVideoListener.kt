@@ -2,13 +2,13 @@ package com.mx.video.listener
 
 import com.mx.video.beans.MXScreen
 import com.mx.video.beans.MXState
-import com.mx.video.views.MXViewProvider
+import com.mx.video.views.MXViewSet
 
 open class MXVideoListener {
     /**
      * 状态变化
      */
-    open fun onStateChange(state: MXState, provider: MXViewProvider) = Unit
+    open fun onStateChange(state: MXState, viewSet: MXViewSet) = Unit
 
     /**
      * 播放时间回调
@@ -20,7 +20,7 @@ open class MXVideoListener {
     /**
      * 全屏/小屏 状态监听
      */
-    open fun onScreenChange(screen: MXScreen, provider: MXViewProvider) = Unit
+    open fun onScreenChange(screen: MXScreen, viewSet: MXViewSet) = Unit
 
     /**
      * 视频宽高监听

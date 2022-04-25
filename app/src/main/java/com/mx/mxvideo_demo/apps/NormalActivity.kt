@@ -31,8 +31,7 @@ class NormalActivity : AppCompatActivity() {
                     Uri.parse("http://ynjt.obs.cn-north-4.myhuaweicloud.com:80/video/Record/tuiliu.danengshou.com/live/continuous_record/mp4/1650505735583_2022-04-21-01-49-40/2022-04-21-01-49-40.mp4"),
                     titles.random(),
                     isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
-                ),
-                player = playerClass, seekTo = 0
+                ), seekTo = 0
             )
             mxVideoStd.startPlay()
         }
@@ -43,8 +42,7 @@ class NormalActivity : AppCompatActivity() {
                     Uri.parse(ldjVideos.random()),
                     titles.random(),
                     isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
-                ),
-                player = playerClass, seekTo = 0
+                ), seekTo = 0
             )
             mxVideoStd.startPlay()
         }
@@ -55,7 +53,7 @@ class NormalActivity : AppCompatActivity() {
                     Uri.parse(ldjVideos.random()),
                     titles.random(),
                     isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
-                ), seekTo = 60, player = playerClass
+                ), seekTo = 60
             )
             mxVideoStd.startPlay()
         }
@@ -66,7 +64,7 @@ class NormalActivity : AppCompatActivity() {
                     Uri.parse(ldjVideos.random()),
                     titles.random(),
                     isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
-                ), player = playerClass, seekTo = 0
+                ), seekTo = 0
             )
             mxVideoStd.startPreload()
         }
@@ -77,7 +75,7 @@ class NormalActivity : AppCompatActivity() {
                     Uri.parse("http://1011.hlsplay.aodianyun.com/demo/game.flv"),
                     titles.random(), isLiveSource = true,
                     isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
-                ), player = playerClass, seekTo = 0
+                ), seekTo = 0
             )
             mxVideoStd.startPlay()
         }
@@ -135,6 +133,7 @@ class NormalActivity : AppCompatActivity() {
             } else {
                 playerClass = MXSystemPlayer::class.java
             }
+            mxVideoStd.setPlayer(playerClass)
         }
         playerRG.getChildAt(0)?.performClick()
 

@@ -9,9 +9,9 @@ import com.mx.mxvideo_demo.R
 import com.mx.mxvideo_demo.ldjVideos
 import com.mx.mxvideo_demo.thumbnails
 import com.mx.mxvideo_demo.titles
-import com.mx.video.MXVideo
 import com.mx.video.MXVideoStd
 import com.mx.video.beans.MXPlaySource
+import com.mx.video.beans.MXScreen
 import com.mx.video.player.IMXPlayer
 import kotlinx.android.synthetic.main.activity_test.*
 
@@ -25,17 +25,17 @@ class TestActivity : AppCompatActivity() {
 
         mxVideoStd.setOnEmptyPlayListener {
             Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
+            mxVideoStd.setPlayer(playerClass)
             mxVideoStd.setSource(
-                MXPlaySource(Uri.parse(ldjVideos.random()), titles.random()),
-                player = playerClass, seekTo = 0
+                MXPlaySource(Uri.parse(ldjVideos.random()), titles.random()), seekTo = 0
             )
             mxVideoStd.startPlay()
         }
 
         startFullPlay.setOnClickListener {
-            mxVideoStd.gotoFullScreen()
+            mxVideoStd.switchToScreen(MXScreen.FULL)
             Handler().postDelayed({
-                mxVideoStd.gotoNormalScreen()
+                mxVideoStd.switchToScreen(MXScreen.NORMAL)
                 mxVideoStd.stopPlay()
             }, 10L * 1000)
         }
@@ -52,8 +52,8 @@ class TestActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (mxVideoStd.isFullScreen()) {
-            mxVideoStd.gotoNormalScreen()
+        if (mxVideoStd.currentScreen() == MXScreen.FULL) {
+            mxVideoStd.switchToScreen(MXScreen.NORMAL)
             return
         }
         super.onBackPressed()

@@ -1,5 +1,6 @@
 package com.mx.mxvideo_demo.player
 
+import android.content.Context
 import android.graphics.SurfaceTexture
 import android.media.AudioManager
 import android.view.Surface
@@ -22,22 +23,10 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
     }
 
     var mediaPlayer: IjkMediaPlayer? = null
-    var mPlaySource: MXPlaySource? = null
 
-    override fun setSource(source: MXPlaySource) {
-        mPlaySource = source
-    }
-
-    override fun prepare() {
-        if (!isActive()) return
-        val source = mPlaySource ?: return
-        val surface = mSurfaceTexture ?: return
-        val context = context ?: return
-
-        releaseNow()
-        initHandler()
+    override fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) {
         postInThread {
-            if (!isActive()) return@postInThread
+            if (!active) return@postInThread
 
             val mediaPlayer = IjkMediaPlayer()
             this.mediaPlayer = mediaPlayer
@@ -105,25 +94,26 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
     }
 
     override fun start() {
-        if (!isActive()) return
+        if (!active) return
         postInThread { mediaPlayer?.start() }
         notifyStartPlay()
         postBuffering()
     }
 
     override fun pause() {
-        if (!isActive()) return
+        if (!active) return
         postInThread { mediaPlayer?.pause() }
     }
 
     override fun isPlaying(): Boolean {
-        if (!isActive()) return false
+        if (!active) return false
         return mediaPlayer?.isPlaying ?: false
     }
 
     // 这里不需要处理未播放状态的快进快退，MXVideo会判断。
     override fun seekTo(time: Int) {
-        if (!isActive()) return
+        val source = source ?: return
+        if (!active || source.isLiveSource) return
         val duration = getDuration()
         if (duration != 0 && time >= duration) {
             // 如果直接跳转到结束位置，则直接complete
@@ -141,94 +131,63 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
 
         val mediaPlayer = mediaPlayer
         this.mediaPlayer = null
-        mSurfaceTexture = null
-
-        postInThread {
+        try {
             mediaPlayer?.setSurface(null)
             mediaPlayer?.release()
-            quitHandler()
+        } catch (e: Exception) {
         }
     }
 
-    private fun releaseNow() {
-        val mediaPlayer = mediaPlayer
-        this.mediaPlayer = null
-        mediaPlayer?.setSurface(null)
-        mediaPlayer?.release()
-        quitHandler()
-    }
-
-    override fun getCurrentPosition(): Int {
-        if (!isActive()) return 0
+    override fun getPosition(): Int {
+        if (!active) return 0
         return mediaPlayer?.currentPosition?.div(1000)?.toInt() ?: 0
     }
 
     override fun getDuration(): Int {
-        if (!isActive()) return 0
+        if (!active) return 0
         var duration = mediaPlayer?.duration ?: 0
         if (duration < 0) duration = 0
         return (duration / 1000).toInt()
     }
 
     override fun setVolume(leftVolume: Float, rightVolume: Float) {
-        if (!isActive()) return
+        if (!active) return
         mediaPlayer?.setVolume(leftVolume, rightVolume)
     }
 
     override fun setSpeed(speed: Float) {
-        if (!isActive()) return
+        if (!active) return
         mediaPlayer?.setSpeed(speed)
     }
 
-    override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
-        if (!isActive()) return
-        val texture = mSurfaceTexture
-        if (texture == null) {
-            mSurfaceTexture = surface
-            prepare()
-        } else {
-            mTextureView?.setSurfaceTexture(texture)
-        }
-    }
-
-    override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
-    }
-
-    override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
-        return false
-    }
-
-    override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
-    }
-
     override fun onPrepared(mp: IMediaPlayer?) {
-        if (!isActive()) return
+        if (!active) return
         notifyPrepared()
     }
 
     override fun onCompletion(mp: IMediaPlayer?) {
-        if (!isActive()) return
+        if (!active) return
         notifyPlayerCompletion()
     }
 
     override fun onBufferingUpdate(mp: IMediaPlayer?, percent: Int) {
-        if (!isActive()) return
+        if (!active) return
         notifyBufferingUpdate(percent)
     }
 
     override fun onSeekComplete(mp: IMediaPlayer?) {
-        if (!isActive()) return
+        if (!active) return
         notifySeekComplete()
     }
 
     override fun onError(mp: IMediaPlayer?, what: Int, extra: Int): Boolean {
-        if (!isActive()) return true
+        if (!active) return true
         notifyError("what = $what    extra = $extra")
         return true
     }
 
     override fun onInfo(mp: IMediaPlayer?, what: Int, extra: Int): Boolean {
-        if (!isActive()) return true
+        if (!active) return true
         when (what) {
             IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> {
                 notifyStartPlay()
@@ -244,7 +203,7 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
     }
 
     override fun onVideoSizeChanged(p0: IMediaPlayer?, p1: Int, p2: Int, p3: Int, p4: Int) {
-        if (!isActive()) return
+        if (!active) return
         notifyVideoSize(p1, p2)
     }
 }
