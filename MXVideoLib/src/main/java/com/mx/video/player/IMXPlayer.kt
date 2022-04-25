@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  *      释放资源
  */
 abstract class IMXPlayer : TextureView.SurfaceTextureListener {
-    private val isActive = AtomicBoolean(true)
+    private val isActive = AtomicBoolean(false)
     private var isBuffering = false
     private var isPrepared = false
     private var isStartPlay = false
@@ -140,7 +140,6 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         this.mContext = context
         this.video = video
         this.mTextureView = textureView
-        isActive.set(true)
 
         this.isBuffering = false
         this.isPrepared = false
@@ -148,12 +147,18 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         this.hasPrepareCall = false
     }
 
+    fun startPlay() {
+        isActive.set(true)
+        requestPrepare()
+    }
+
     internal fun setSource(source: MXPlaySource) {
         mPlaySource = source
+        requestPrepare()
     }
 
     private var hasPrepareCall = false
-    fun requestPrepare() {
+    private fun requestPrepare() {
         if (!active) return
         if (hasPrepareCall) return
         val context = mContext ?: return
@@ -164,7 +169,7 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     }
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
-        if (!active) return
+//        if (!active) return
         val texture = mSurfaceTexture
         if (texture == null) {
             mSurfaceTexture = surface
@@ -261,9 +266,9 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         if (!active) return
         val video = video ?: return
         postInMainThread {
+            release()
             video.onPlayerError(message)
         }
-        release()
     }
 
     /**
@@ -297,7 +302,6 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         postInMainThread {
             video.onPlayerCompletion()
         }
-        release()
     }
 
     /**

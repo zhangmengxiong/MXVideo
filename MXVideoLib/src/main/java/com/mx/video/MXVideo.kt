@@ -539,7 +539,7 @@ abstract class MXVideo @JvmOverloads constructor(
             val textureView = viewSet.attachTextureView(player)
             player.setMXVideo(context, this, textureView)
             player.setSource(source)
-            player.requestPrepare()
+            player.startPlay()
 
             mxPlayer = player
             PLAYING_VIDEO = this
