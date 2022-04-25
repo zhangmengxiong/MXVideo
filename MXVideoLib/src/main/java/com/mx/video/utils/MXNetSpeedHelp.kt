@@ -9,7 +9,7 @@ import kotlin.math.roundToLong
 /**
  * 网速检测
  */
-internal class MXSpeedHelp {
+internal class MXNetSpeedHelp {
     private val myUid = android.os.Process.myUid()
     private val mHandler = Handler(Looper.getMainLooper())
     private var onUpdateCall: ((String?) -> Unit)? = null

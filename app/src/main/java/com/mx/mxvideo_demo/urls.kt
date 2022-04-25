@@ -84,7 +84,7 @@ val ldjVideos = arrayOf(
     "$server_name/v/饺子真萌.mp4"
 )
 
-val VIDEO_16x9 = "$server_name/v/ldj/01-ldj.mp4"
+val VIDEO_16x9 = "http://video1.dgtle.com/backend%2F2020%2F3%2F0%2F%E6%88%91%E6%B2%A1%E6%9C%89%E7%BB%99%E4%B8%80%E5%8A%A08Pro%E5%81%9A%E8%AF%84%E6%B5%8B_%E5%8D%B4%E5%B8%A6%E7%9D%80%E5%AE%83%E6%BC%82%E6%B5%81.mp4_1080.mp4"
 val VIDEO_4x3 = "$server_name/v/饺子主动.mp4"
 val VIDEO_9x16 = "$server_name/v/饺子真会.mp4"
 

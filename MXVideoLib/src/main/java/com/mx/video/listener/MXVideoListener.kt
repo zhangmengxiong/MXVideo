@@ -1,4 +1,4 @@
-package com.mx.video.utils
+package com.mx.video.listener
 
 import com.mx.video.beans.MXScreen
 import com.mx.video.beans.MXState

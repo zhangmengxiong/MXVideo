@@ -3,7 +3,7 @@ package com.mx.video.utils
 import android.os.Handler
 import android.os.Looper
 
-class MXValueObservable<T>(defaultValue: T, private val debug: Boolean = false) {
+class MXValueObservable<T>(defaultValue: T) {
     private val mHandler = Handler(Looper.getMainLooper())
     private val lock = Object()
     private val observerList = ArrayList<((value: T) -> Unit)>()
@@ -14,11 +14,7 @@ class MXValueObservable<T>(defaultValue: T, private val debug: Boolean = false) 
         if (value == _value) {
             return
         }
-        val old = _value
         _value = value
-        if (debug) {
-            MXUtils.log("属性变化：${old} -> $value")
-        }
         val list = synchronized(lock) {
             observerList.toMutableList()
         }

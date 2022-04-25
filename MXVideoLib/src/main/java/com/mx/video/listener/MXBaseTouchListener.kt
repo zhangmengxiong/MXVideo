@@ -1,6 +1,6 @@
-package com.mx.video.utils.touch
+package com.mx.video.listener
 
-internal interface MXTouchListener {
+internal interface MXBaseTouchListener {
     fun touchStart() {}
     fun touchMove(percent: Float) {}
     fun touchEnd(percent: Float) {}

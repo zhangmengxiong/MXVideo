@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.Toast
 import com.mx.video.beans.MXState
-import com.mx.video.utils.MXVideoListener
+import com.mx.video.listener.MXVideoListener
 import com.mx.video.views.MXViewProvider
 
 open class MXVideoStd @JvmOverloads constructor(

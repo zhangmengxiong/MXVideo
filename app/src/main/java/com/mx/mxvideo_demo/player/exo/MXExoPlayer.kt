@@ -88,7 +88,7 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
         this.mediaPlayer = null
         mSurfaceTexture = null
 
-        postInThread {
+        postInMainThread {
             mediaPlayer?.setVideoSurface(null)
             mediaPlayer?.release()
             quitHandler()

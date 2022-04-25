@@ -1,7 +1,7 @@
 package com.mx.video.beans
 
+import com.mx.video.listener.MXVideoListener
 import com.mx.video.utils.MXValueObservable
-import com.mx.video.utils.MXVideoListener
 import java.io.Serializable
 import java.util.concurrent.atomic.AtomicInteger
 

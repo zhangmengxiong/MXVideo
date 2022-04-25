@@ -10,7 +10,6 @@ internal class MXVolumeHelp(context: Context) {
 
     companion object {
         private val audioFocus = AudioManager.OnAudioFocusChangeListener {
-
         }
     }
 

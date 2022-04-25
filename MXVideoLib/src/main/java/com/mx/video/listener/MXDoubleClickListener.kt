@@ -1,4 +1,4 @@
-package com.mx.video.utils
+package com.mx.video.listener
 
 import android.os.Handler
 import android.os.Looper

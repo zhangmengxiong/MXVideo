@@ -9,11 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.mx.video.beans.*
+import com.mx.video.listener.MXVideoListener
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
 import com.mx.video.utils.MXSensorHelp
 import com.mx.video.utils.MXUtils
-import com.mx.video.utils.MXVideoListener
 import com.mx.video.views.MXTextureView
 import com.mx.video.views.MXViewProvider
 
@@ -21,6 +21,10 @@ abstract class MXVideo @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
     companion object {
+        fun init(context: Context) {
+            MXUtils.init(context)
+        }
+
         private var hasWifiDialogShow = false
         private val parentMap = HashMap<Int, MXParentView>()
 
@@ -312,7 +316,6 @@ abstract class MXVideo @JvmOverloads constructor(
         if (config.state.get() != MXState.PAUSE) return
         mxPlayer?.start()
         config.state.set(MXState.PLAYING)
-        config.loading.notifyChange()
     }
 
     /**
@@ -609,6 +612,7 @@ abstract class MXVideo @JvmOverloads constructor(
         } else {
             config.state.set(MXState.NORMAL)
         }
+        config.loading.set(false)
     }
 
     /**
@@ -626,6 +630,11 @@ abstract class MXVideo @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
+        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
+
         var ratio = config.dimensionRatio.get()
         if (ratio <= 0.0) {
             val size = config.videoSize.get()
@@ -637,12 +646,15 @@ abstract class MXVideo @JvmOverloads constructor(
                 }
             }
         }
-        if (ratio <= 0.0) ratio = 16.0 / 9.0
+
+        if (ratio <= 0.0 && widthMode == MeasureSpec.EXACTLY && heightMode == MeasureSpec.AT_MOST) {
+            // 高度自适应、且没有宽高比，设置宽高比为 16：9
+            ratio = 16.0 / 9.0
+        }
+
+//        MXUtils.log("MXVideo: onMeasure($widthMode,$heightMode,$widthSize,$heightSize) $ratio")
 
         if (config.screen.get() == MXScreen.NORMAL) {
-            val widthSize = MeasureSpec.getSize(widthMeasureSpec)
-            val heightSize = MeasureSpec.getSize(heightMeasureSpec)
-
             var height = (widthSize / ratio).toInt()
             if (height > heightSize) {
                 height = heightSize

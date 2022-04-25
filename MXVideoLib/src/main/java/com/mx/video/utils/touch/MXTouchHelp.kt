@@ -1,9 +1,9 @@
-package com.mx.video.utils
+package com.mx.video.utils.touch
 
 import android.content.Context
 import android.view.MotionEvent
 import android.view.ViewConfiguration
-import com.mx.video.utils.touch.MXTouchListener
+import com.mx.video.listener.MXBaseTouchListener
 import kotlin.math.abs
 
 internal class MXTouchHelp(context: Context) {
@@ -16,7 +16,6 @@ internal class MXTouchHelp(context: Context) {
     private var isSeekVerticalRight = false
 
     private var isInTouch = false
-    fun isInActive() = isInTouch
 
     private var viewWidth = 0
     private var viewHeight = 0
@@ -25,9 +24,9 @@ internal class MXTouchHelp(context: Context) {
         viewHeight = height
     }
 
-    var horizontalTouch: MXTouchListener? = null
-    var verticalLeftTouch: MXTouchListener? = null
-    var verticalRightTouch: MXTouchListener? = null
+    var horizontalTouch: MXBaseTouchListener? = null
+    var verticalLeftTouch: MXBaseTouchListener? = null
+    var verticalRightTouch: MXBaseTouchListener? = null
 
     fun onTouch(motionEvent: MotionEvent): Boolean {
         if (viewWidth == 0 || viewHeight == 0) return false
