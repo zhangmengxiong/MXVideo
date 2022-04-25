@@ -6,6 +6,7 @@ import android.os.Looper
 import android.view.Surface
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.analytics.AnalyticsListener
+import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.video.VideoSize
 import com.mx.video.beans.MXPlaySource
@@ -26,6 +27,13 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
                 .setLoadControl(DefaultLoadControl()).build()
             this.mediaPlayer = player
             val currUrl = source.playUri.toString()
+
+            val build = AudioAttributes.Builder().apply {
+                setUsage(C.USAGE_MEDIA)
+                setContentType(C.CONTENT_TYPE_MUSIC)
+            }
+            player.setAudioAttributes(build.build(), false)
+
             player.addListener(this)
             player.addAnalyticsListener(this)
             player.repeatMode = Player.REPEAT_MODE_OFF

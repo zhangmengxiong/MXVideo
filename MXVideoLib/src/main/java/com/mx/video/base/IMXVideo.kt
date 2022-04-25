@@ -1,9 +1,6 @@
 package com.mx.video.base
 
-import com.mx.video.beans.MXOrientation
-import com.mx.video.beans.MXPlaySource
-import com.mx.video.beans.MXScale
-import com.mx.video.beans.MXScreen
+import com.mx.video.beans.*
 import com.mx.video.player.IMXPlayer
 
 interface IMXVideo {
@@ -42,6 +39,11 @@ interface IMXVideo {
      * @param ratio 宽/高
      */
     fun setDimensionRatio(ratio: Double)
+
+    /**
+     * 设置静音
+     */
+    fun setAudioMute(mute: Boolean)
 
     /**
      * 开始播放
