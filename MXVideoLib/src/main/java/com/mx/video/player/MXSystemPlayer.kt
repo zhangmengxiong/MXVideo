@@ -28,7 +28,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
             } else {
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
             }
-            mediaPlayer.isLooping = source.isLooping
+            mediaPlayer.isLooping = false
             mediaPlayer.setOnPreparedListener(this@MXSystemPlayer)
             mediaPlayer.setOnCompletionListener(this@MXSystemPlayer)
             mediaPlayer.setOnBufferingUpdateListener(this@MXSystemPlayer)
