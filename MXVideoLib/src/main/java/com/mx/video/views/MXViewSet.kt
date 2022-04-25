@@ -7,7 +7,6 @@ import com.mx.video.R
 import com.mx.video.beans.MXConfig
 import com.mx.video.beans.MXScreen
 import com.mx.video.beans.MXState
-import com.mx.video.player.IMXPlayer
 
 class MXViewSet(val rootView: View, val config: MXConfig) {
     val context = rootView.context
@@ -93,7 +92,7 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
         rootView.findViewById(R.id.mxFullscreenBtn) ?: ImageView(context)
     }
 
-    fun attachTextureView(player: IMXPlayer): MXTextureView {
+    fun attachTextureView( ): MXTextureView {
         mxSurfaceContainer.removeAllViews()
         setViewShow(mxSurfaceContainer, true)
         val textureView = MXTextureView(context)
@@ -103,8 +102,6 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
             FrameLayout.LayoutParams.MATCH_PARENT
         )
         layoutParams.gravity = Gravity.CENTER
-
-        textureView.surfaceTextureListener = player
         mxSurfaceContainer.addView(textureView, layoutParams)
         return textureView
     }

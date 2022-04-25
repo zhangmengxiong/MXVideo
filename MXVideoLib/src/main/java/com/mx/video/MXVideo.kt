@@ -532,14 +532,13 @@ abstract class MXVideo @JvmOverloads constructor(
     private fun startVideo() {
         PLAYING_VIDEO?.stopPlay()
         val source = config.source.get() ?: return
-        MXUtils.log("startVideo ${source.playUri} player=${mxPlayerClass.name}")
+        MXUtils.log("startVideo $source")
+        MXUtils.log("startVideo player=${mxPlayerClass.name}")
 
         val startRun = {
             val player = createPlayer()
-            val textureView = viewSet.attachTextureView(player)
-            player.setMXVideo(context, this, textureView)
-            player.setSource(source)
-            player.requestPrepare()
+            val textureView = viewSet.attachTextureView()
+            player.startPlay(context, this, source, textureView)
 
             mxPlayer = player
             PLAYING_VIDEO = this
