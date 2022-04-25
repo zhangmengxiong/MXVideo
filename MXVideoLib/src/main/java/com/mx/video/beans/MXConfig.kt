@@ -1,5 +1,6 @@
 package com.mx.video.beans
 
+import android.media.AudioAttributes
 import com.mx.video.listener.MXVideoListener
 import com.mx.video.utils.MXValueObservable
 import java.io.Serializable
@@ -48,6 +49,11 @@ class MXConfig : Serializable {
      * 视频SurfaceView的旋转角度
      */
     internal val orientation = MXValueObservable(MXOrientation.DEGREE_0)
+
+    /**
+     * 静音状态
+     */
+    internal val audioMute = MXValueObservable(false)
 
     /**
      * 视频宽高
@@ -169,6 +175,7 @@ class MXConfig : Serializable {
 
     internal fun cloneBy(target: MXConfig) {
         orientation.set(target.orientation.get())
+        audioMute.set(target.audioMute.get())
         videoSize.set(target.videoSize.get().clone())
         scale.set(target.scale.get())
         dimensionRatio.set(target.dimensionRatio.get())

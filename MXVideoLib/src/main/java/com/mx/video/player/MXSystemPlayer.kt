@@ -22,13 +22,15 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
             this.mediaPlayer = mediaPlayer
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                val build = AudioAttributes.Builder()
-                build.setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                val build = AudioAttributes.Builder().apply {
+                    setUsage(AudioAttributes.USAGE_MEDIA)
+                    setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                }
                 mediaPlayer.setAudioAttributes(build.build())
             } else {
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
             }
-            mediaPlayer.isLooping = source.isLooping
+            mediaPlayer.isLooping = false
             mediaPlayer.setOnPreparedListener(this@MXSystemPlayer)
             mediaPlayer.setOnCompletionListener(this@MXSystemPlayer)
             mediaPlayer.setOnBufferingUpdateListener(this@MXSystemPlayer)

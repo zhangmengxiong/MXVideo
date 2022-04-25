@@ -141,6 +141,15 @@ abstract class MXVideo @JvmOverloads constructor(
                 switchToScreen(MXScreen.NORMAL)
             }
         }
+        config.audioMute.addObserver { mute ->
+            val player = mxPlayer ?: return@addObserver
+            if (mute) {
+                player.setVolume(0f, 0f)
+            } else {
+                player.setVolume(1f, 1f)
+            }
+        }
+
         config.screen.addObserver { screen ->
             val windows = MXUtils.findWindowsDecorView(context) ?: return@addObserver
             when (screen) {
@@ -286,6 +295,11 @@ abstract class MXVideo @JvmOverloads constructor(
         requestLayout()
     }
 
+    override fun setAudioMute(mute: Boolean) {
+        MXUtils.log("MXVideo: setAudioMute($mute)")
+        config.audioMute.set(mute)
+    }
+
     override fun startPlay() {
         MXUtils.log("MXVideo: startPlay()")
         stopPlay()
@@ -400,6 +414,7 @@ abstract class MXVideo @JvmOverloads constructor(
     override fun onPlayerPrepared() {
         val player = mxPlayer ?: return
 
+        config.audioMute.notifyChange()
         config.state.set(MXState.PREPARED)
         if (config.isPreloading.get()) {
             MXUtils.log("MXVideo: onPlayerPrepared -> need click start button to play")

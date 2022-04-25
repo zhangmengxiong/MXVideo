@@ -195,6 +195,36 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:layout_marginTop="10dp"
+                android:text="静音："
+                android:textColor="@color/black" />
+
+            <RadioGroup
+                android:id="@+id/muteRG"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+
+                <RadioButton
+                    android:id="@+id/muteTrue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="开启" />
+
+                <RadioButton
+                    android:id="@+id/muteFalse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="关闭" />
+            </RadioGroup>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="10dp"
                 android:text="镜像模式："
                 android:textColor="@color/black" />
 

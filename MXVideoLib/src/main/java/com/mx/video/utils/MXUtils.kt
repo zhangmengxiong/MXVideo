@@ -70,15 +70,10 @@ internal object MXUtils {
             return "00:00"
         }
         val seconds = (time % 60)
-        val minutes = (time / 60 % 60)
-        val hours = (time / 3600)
+        val minutes = (time / 60)
         val stringBuilder = StringBuilder()
         val formatter = Formatter(stringBuilder, Locale.getDefault())
-        return if (hours > 0) {
-            formatter.format("%d:%02d:%02d", hours, minutes, seconds).toString()
-        } else {
-            formatter.format("%02d:%02d", minutes, seconds).toString()
-        }
+        return formatter.format("%02d:%02d", minutes, seconds).toString()
     }
 
     fun byteToShow(byte: Long): String {
