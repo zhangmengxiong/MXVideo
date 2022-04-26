@@ -373,16 +373,18 @@ abstract class MXVideo @JvmOverloads constructor(
         if (!config.canPauseByUser.get()) return
         val source = config.source.get() ?: return
         if (source.isLiveSource) return
+        val player = mxPlayer ?: return
 
         MXUtils.log("MXVideo: pausePlay()")
-        mxPlayer?.pause()
+        player.pause()
         config.state.set(MXState.PAUSE)
     }
 
     override fun continuePlay() {
         if (config.state.get() !in arrayOf(MXState.PAUSE, MXState.PREPARED)) return
+        val player = mxPlayer ?: return
         MXUtils.log("MXVideo: continuePlay()")
-        mxPlayer?.start()
+        player.start()
         config.state.set(MXState.PLAYING)
     }
 
