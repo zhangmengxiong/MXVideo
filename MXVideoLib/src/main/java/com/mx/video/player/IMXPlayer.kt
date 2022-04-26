@@ -190,10 +190,11 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     abstract fun getDuration(): Int
 
     /**
-     * 设置播放器音量
+     * 设置播放器音量百分比
+     * 静音 = 0f ,   默认 = 1f
      * 取值范围：0.0 -> 1.0
      */
-    abstract fun setVolume(leftVolume: Float, rightVolume: Float)
+    abstract fun setVolumePercent(leftVolume: Float, rightVolume: Float)
 
     /**
      * 设置播放速度
@@ -212,6 +213,7 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         if (!active) return
         val video = video ?: return
         mxHandler.postInMainThread {
+            release()
             video.onPlayerError(message)
         }
     }
@@ -245,6 +247,7 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         if (!active) return
         val video = video ?: return
         mxHandler.postInMainThread {
+            release()
             video.onPlayerCompletion()
         }
     }

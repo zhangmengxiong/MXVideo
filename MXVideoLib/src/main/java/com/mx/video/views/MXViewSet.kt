@@ -1,6 +1,7 @@
 package com.mx.video.views
 
 import android.view.Gravity
+import android.view.TextureView
 import android.view.View
 import android.widget.*
 import com.mx.video.R
@@ -92,7 +93,7 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
         rootView.findViewById(R.id.mxFullscreenBtn) ?: ImageView(context)
     }
 
-    fun attachTextureView( ): MXTextureView {
+    fun attachTextureView(): MXTextureView {
         mxSurfaceContainer.removeAllViews()
         setViewShow(mxSurfaceContainer, true)
         val textureView = MXTextureView(context)
@@ -104,6 +105,17 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
         layoutParams.gravity = Gravity.CENTER
         mxSurfaceContainer.addView(textureView, layoutParams)
         return textureView
+    }
+
+    fun detachTextureView() {
+        (0..mxSurfaceContainer.childCount).mapNotNull {
+            mxSurfaceContainer.getChildAt(it)
+        }.forEach { view ->
+            if (view is TextureView) {
+                view.surfaceTextureListener = null
+            }
+        }
+        mxSurfaceContainer.removeAllViews()
     }
 
     fun setViewShow(view: View, show: Boolean?) {

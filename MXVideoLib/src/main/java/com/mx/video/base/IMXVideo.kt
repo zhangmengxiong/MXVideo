@@ -46,6 +46,13 @@ interface IMXVideo {
     fun setAudioMute(mute: Boolean)
 
     /**
+     * 设置播放器音量百分比，实际音量 = (volume * 系统当前音量)
+     * @param percent
+     *      取值范围：0 -> 1
+     */
+    fun setVolumePercent(percent: Float)
+
+    /**
      * 开始播放
      */
     fun startPlay()

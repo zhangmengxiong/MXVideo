@@ -141,13 +141,9 @@ abstract class MXVideo @JvmOverloads constructor(
                 switchToScreen(MXScreen.NORMAL)
             }
         }
-        config.audioMute.addObserver { mute ->
+        config.volumePercent.addObserver { volume ->
             val player = mxPlayer ?: return@addObserver
-            if (mute) {
-                player.setVolume(0f, 0f)
-            } else {
-                player.setVolume(1f, 1f)
-            }
+            player.setVolumePercent(volume, volume)
         }
 
         config.screen.addObserver { screen ->
@@ -202,7 +198,6 @@ abstract class MXVideo @JvmOverloads constructor(
     }
 
     fun addOnVideoListener(listener: MXVideoListener) {
-        MXUtils.log("MXVideo: addOnVideoListener()")
         if (!config.videoListeners.contains(listener)) {
             config.videoListeners.add(listener)
         }
@@ -297,7 +292,17 @@ abstract class MXVideo @JvmOverloads constructor(
 
     override fun setAudioMute(mute: Boolean) {
         MXUtils.log("MXVideo: setAudioMute($mute)")
-        config.audioMute.set(mute)
+        config.volumePercent.set(if (mute) 0f else 1f)
+    }
+
+    override fun setVolumePercent(percent: Float) {
+        MXUtils.log("MXVideo: setAudioVolume($percent)")
+        val volume = when {
+            percent < 0f -> 0f
+            percent > 1f -> 1f
+            else -> percent
+        }
+        config.volumePercent.set(volume)
     }
 
     override fun startPlay() {
@@ -347,7 +352,7 @@ abstract class MXVideo @JvmOverloads constructor(
             player.release()
         }
 
-        viewSet.mxSurfaceContainer.removeAllViews()
+        viewSet.detachTextureView()
 
         if (PLAYING_VIDEO == this) {
             PLAYING_VIDEO = null
@@ -414,7 +419,7 @@ abstract class MXVideo @JvmOverloads constructor(
     override fun onPlayerPrepared() {
         val player = mxPlayer ?: return
 
-        config.audioMute.notifyChange()
+        config.volumePercent.notifyChange()
         config.state.set(MXState.PREPARED)
         if (config.isPreloading.get()) {
             MXUtils.log("MXVideo: onPlayerPrepared -> need click start button to play")

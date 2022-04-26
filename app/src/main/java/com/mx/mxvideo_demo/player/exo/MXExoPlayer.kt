@@ -106,7 +106,7 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
         return (duration / 1000).toInt()
     }
 
-    override fun setVolume(leftVolume: Float, rightVolume: Float) {
+    override fun setVolumePercent(leftVolume: Float, rightVolume: Float) {
         if (!active) return
         mediaPlayer?.volume = (leftVolume + rightVolume) / 2f
     }

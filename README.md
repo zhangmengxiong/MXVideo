@@ -127,13 +127,31 @@ com.mx.mxvideo_demo.player.MXExoPlayer
 com.mx.mxvideo_demo.player.MXIJKPlayer
 
 // 设置播放源是可以设置内核，默认 = MXSystemPlayer
-mxVideoStd.setSource(MXPlaySource(Uri.parse("xxx"), "xxx"), player = MXSystemPlayer::class.java)
+mxVideoStd.setPlayer(MXSystemPlayer::class.java)
+```
+
+- 设置播放地址，标题，跳转等信息
+```kotlin
+mxVideoStd.setSource(MXPlaySource(Uri.parse("xxx"), title = "xxx"), seekTo = 0)
 ```
 
 - 视频渲染旋转角度
 ```kotlin
 // 默认旋转角度 = MXOrientation.DEGREE_0
 mxVideoStd.setTextureOrientation(MXOrientation.DEGREE_90)
+```
+
+- 设置当前视频静音,不会影响系统音量
+```kotlin
+// 默认=false
+mxVideoStd.setAudioMute(true)
+```
+
+- 设置播放器音量百分比，实际音量 = (volume * 系统当前音量)
+```kotlin
+// 默认=1f，当设置=0f时，视频则静音
+// 取值范围：0f -> 1f
+mxVideoStd.setVolumePercent(0.5f)
 ```
 
 - 视频填充规则
@@ -238,6 +256,7 @@ mxVideoStd.getConfig().gotoNormalScreenWhenComplete.set(false)
 ```kotlin
 // 播放前设置 默认=true
 mxVideoStd.getConfig().gotoNormalScreenWhenError.set(false)
+```
 
 - 设置播放时用户不可以暂停
 ```kotlin
@@ -245,12 +264,11 @@ mxVideoStd.getConfig().gotoNormalScreenWhenError.set(false)
 mxVideoStd.getConfig().canPauseByUser.set(false)
 ```
 
-
 - 设置播放时如果手机横屏则自动进入全屏播放
 ```kotlin
 // 播放前设置 默认=false
 mxVideoStd.getConfig().autoFullScreenBySensor.set(true)
-
+```
 
 - 设置全屏播放时屏幕方向自动跟随重力方向
 ```kotlin

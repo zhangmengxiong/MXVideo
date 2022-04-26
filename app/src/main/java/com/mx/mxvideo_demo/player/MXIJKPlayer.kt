@@ -148,7 +148,7 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
         return (duration / 1000).toInt()
     }
 
-    override fun setVolume(leftVolume: Float, rightVolume: Float) {
+    override fun setVolumePercent(leftVolume: Float, rightVolume: Float) {
         if (!active) return
         mediaPlayer?.setVolume(leftVolume, rightVolume)
     }
