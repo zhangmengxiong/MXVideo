@@ -204,6 +204,11 @@ class NormalActivity : AppCompatActivity() {
         }
         canSeekTrue.performClick()
 
+        muteRG.setOnCheckedChangeListener { group, checkedId ->
+            mxVideoStd.setAudioMute(checkedId == R.id.muteTrue)
+        }
+        muteFalse.performClick()
+
         canFullRG.setOnCheckedChangeListener { group, checkedId ->
             mxVideoStd.getConfig().canFullScreen.set(checkedId == R.id.canFullTrue)
         }

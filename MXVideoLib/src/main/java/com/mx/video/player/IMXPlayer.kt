@@ -3,7 +3,7 @@ package com.mx.video.player
 import android.content.Context
 import android.graphics.SurfaceTexture
 import android.view.TextureView
-import com.mx.video.base.IMXVideo
+import com.mx.video.base.IMXPlayerCallback
 import com.mx.video.beans.MXPlaySource
 import com.mx.video.views.MXTextureView
 import java.util.concurrent.atomic.AtomicBoolean
@@ -42,7 +42,7 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     private var isStartPlay = false
 
     private var mContext: Context? = null
-    private var video: IMXVideo? = null
+    private var playerCallback: IMXPlayerCallback? = null
     private var mTextureView: MXTextureView? = null
     private var mSurfaceTexture: SurfaceTexture? = null
     private var mPlaySource: MXPlaySource? = null
@@ -81,12 +81,12 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
 
     internal fun startPlay(
         context: Context,
-        video: IMXVideo,
+        callback: IMXPlayerCallback,
         source: MXPlaySource,
         textureView: MXTextureView
     ) {
         this.mContext = context
-        this.video = video
+        this.playerCallback = callback
         this.mTextureView = textureView
         this.mPlaySource = source
 
@@ -108,7 +108,7 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         val context = mContext ?: return
         val source = mPlaySource ?: return
         val surface = mSurfaceTexture ?: return
-        video?.onPlayerInfo(" --> prepare <--")
+        playerCallback?.onPlayerInfo(" --> prepare <--")
         prepare(context, source, surface)
         hasPrepareCall = true
     }
@@ -128,6 +128,7 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     }
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
+
         return false
     }
 
@@ -165,7 +166,7 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     open fun release() {
         isActive.set(false)
         mxHandler.stop()
-        video?.onPlayerInfo(" --> release <--")
+        playerCallback?.onPlayerInfo(" --> release <--")
 
         isBuffering = false
         isPrepared = false
@@ -173,7 +174,9 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         hasPrepareCall = false
 
         mContext = null
-        video = null
+        playerCallback = null
+
+        mTextureView?.release()
         mTextureView = null
         mSurfaceTexture = null
         Runtime.getRuntime().gc()
@@ -190,10 +193,11 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     abstract fun getDuration(): Int
 
     /**
-     * 设置播放器音量
+     * 设置播放器音量百分比
+     * 静音 = 0f ,   默认 = 1f
      * 取值范围：0.0 -> 1.0
      */
-    abstract fun setVolume(leftVolume: Float, rightVolume: Float)
+    abstract fun setVolumePercent(leftVolume: Float, rightVolume: Float)
 
     /**
      * 设置播放速度
@@ -210,9 +214,10 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      */
     protected fun notifyError(message: String?) {
         if (!active) return
-        val video = video ?: return
+        val callback = playerCallback ?: return
         mxHandler.postInMainThread {
-            video.onPlayerError(message)
+            release()
+            callback.onPlayerError(message)
         }
     }
 
@@ -221,9 +226,9 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      */
     protected fun notifyVideoSize(width: Int, height: Int) {
         if (!active) return
-        val video = video ?: return
+        val callback = playerCallback ?: return
         mxHandler.postInMainThread {
-            video.onPlayerVideoSizeChanged(width, height)
+            callback.onPlayerVideoSizeChanged(width, height)
         }
     }
 
@@ -232,9 +237,9 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      */
     protected fun notifySeekComplete() {
         if (!active) return
-        val video = video ?: return
+        val callback = playerCallback ?: return
         mxHandler.postInMainThread {
-            video.onPlayerSeekComplete()
+            callback.onPlayerSeekComplete()
         }
     }
 
@@ -243,9 +248,10 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      */
     protected fun notifyPlayerCompletion() {
         if (!active) return
-        val video = video ?: return
+        val callback = playerCallback ?: return
         mxHandler.postInMainThread {
-            video.onPlayerCompletion()
+            release()
+            callback.onPlayerCompletion()
         }
     }
 
@@ -254,9 +260,9 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      */
     protected fun notifyBufferingUpdate(percent: Int) {
         if (!active) return
-        val video = video ?: return
+        val callback = playerCallback ?: return
         mxHandler.postInMainThread {
-            video.onPlayerBufferProgress(percent)
+            callback.onPlayerBufferProgress(percent)
         }
     }
 
@@ -268,10 +274,10 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         if (!active) return
         if (!isPrepared || !isStartPlay) return
         if (isBuffering == start) return
-        val video = video ?: return
+        val callback = playerCallback ?: return
         isBuffering = start
         mxHandler.postInMainThread {
-            video.onPlayerBuffering(start)
+            callback.onPlayerBuffering(start)
         }
     }
 
@@ -280,9 +286,9 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      */
     protected fun postBuffering() {
         if (!active) return
-        val video = video ?: return
+        val callback = playerCallback ?: return
         mxHandler.postInMainThread {
-            video.onPlayerBuffering(isBuffering)
+            callback.onPlayerBuffering(isBuffering)
         }
     }
 
@@ -292,11 +298,11 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     protected fun notifyPrepared() {
         if (!active) return
         if (isPrepared) return
-        val video = video ?: return
+        val callback = playerCallback ?: return
 
         isPrepared = true
         mxHandler.postInMainThread {
-            video.onPlayerPrepared()
+            callback.onPlayerPrepared()
         }
     }
 
@@ -307,10 +313,10 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         if (!active) return
         if (!isPrepared) return
         if (isStartPlay) return
-        val video = video ?: return
+        val callback = playerCallback ?: return
         isStartPlay = true
         mxHandler.postInMainThread {
-            video.onPlayerStartPlay()
+            callback.onPlayerStartPlay()
         }
     }
 
@@ -319,9 +325,9 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      */
     protected fun onPlayerInfo(message: String?) {
         if (!active) return
-        val video = video ?: return
+        val callback = playerCallback ?: return
         mxHandler.postInMainThread {
-            video.onPlayerInfo(message)
+            callback.onPlayerInfo(message)
         }
     }
 }

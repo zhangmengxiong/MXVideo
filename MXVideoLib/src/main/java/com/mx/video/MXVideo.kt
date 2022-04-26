@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import com.mx.video.base.IMXPlayerCallback
 import com.mx.video.base.IMXVideo
 import com.mx.video.beans.*
 import com.mx.video.listener.MXSensorListener
@@ -21,7 +22,7 @@ import com.mx.video.views.MXViewSet
 
 abstract class MXVideo @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr), IMXVideo {
+) : FrameLayout(context, attrs, defStyleAttr), IMXVideo, IMXPlayerCallback {
     companion object {
         fun init(context: Context) {
             MXUtils.init(context)
@@ -141,13 +142,9 @@ abstract class MXVideo @JvmOverloads constructor(
                 switchToScreen(MXScreen.NORMAL)
             }
         }
-        config.audioMute.addObserver { mute ->
+        config.volumePercent.addObserver { volume ->
             val player = mxPlayer ?: return@addObserver
-            if (mute) {
-                player.setVolume(0f, 0f)
-            } else {
-                player.setVolume(1f, 1f)
-            }
+            player.setVolumePercent(volume, volume)
         }
 
         config.screen.addObserver { screen ->
@@ -202,7 +199,6 @@ abstract class MXVideo @JvmOverloads constructor(
     }
 
     fun addOnVideoListener(listener: MXVideoListener) {
-        MXUtils.log("MXVideo: addOnVideoListener()")
         if (!config.videoListeners.contains(listener)) {
             config.videoListeners.add(listener)
         }
@@ -252,7 +248,6 @@ abstract class MXVideo @JvmOverloads constructor(
         isStopState = null
         config.source.set(source)
         config.seekWhenPlay.set(seekTo)
-        viewSet.mxTitleTxv.text = source?.title
         if (source != null) {
             config.state.set(MXState.NORMAL)
         } else {
@@ -297,7 +292,17 @@ abstract class MXVideo @JvmOverloads constructor(
 
     override fun setAudioMute(mute: Boolean) {
         MXUtils.log("MXVideo: setAudioMute($mute)")
-        config.audioMute.set(mute)
+        config.volumePercent.set(if (mute) 0f else 1f)
+    }
+
+    override fun setVolumePercent(percent: Float) {
+        MXUtils.log("MXVideo: setAudioVolume($percent)")
+        val volume = when {
+            percent < 0f -> 0f
+            percent > 1f -> 1f
+            else -> percent
+        }
+        config.volumePercent.set(volume)
     }
 
     override fun startPlay() {
@@ -347,7 +352,7 @@ abstract class MXVideo @JvmOverloads constructor(
             player.release()
         }
 
-        viewSet.mxSurfaceContainer.removeAllViews()
+        viewSet.detachTextureView()
 
         if (PLAYING_VIDEO == this) {
             PLAYING_VIDEO = null
@@ -368,16 +373,18 @@ abstract class MXVideo @JvmOverloads constructor(
         if (!config.canPauseByUser.get()) return
         val source = config.source.get() ?: return
         if (source.isLiveSource) return
+        val player = mxPlayer ?: return
 
         MXUtils.log("MXVideo: pausePlay()")
-        mxPlayer?.pause()
+        player.pause()
         config.state.set(MXState.PAUSE)
     }
 
     override fun continuePlay() {
         if (config.state.get() !in arrayOf(MXState.PAUSE, MXState.PREPARED)) return
+        val player = mxPlayer ?: return
         MXUtils.log("MXVideo: continuePlay()")
-        mxPlayer?.start()
+        player.start()
         config.state.set(MXState.PLAYING)
     }
 
@@ -414,7 +421,7 @@ abstract class MXVideo @JvmOverloads constructor(
     override fun onPlayerPrepared() {
         val player = mxPlayer ?: return
 
-        config.audioMute.notifyChange()
+        config.volumePercent.notifyChange()
         config.state.set(MXState.PREPARED)
         if (config.isPreloading.get()) {
             MXUtils.log("MXVideo: onPlayerPrepared -> need click start button to play")

@@ -51,9 +51,10 @@ class MXConfig : Serializable {
     internal val orientation = MXValueObservable(MXOrientation.DEGREE_0)
 
     /**
-     * 静音状态
+     * 声音大小百分比
+     * 静音 = 0f ，   默认 = 1f
      */
-    internal val audioMute = MXValueObservable(false)
+    internal val volumePercent = MXValueObservable(1f)
 
     /**
      * 视频宽高
@@ -175,7 +176,7 @@ class MXConfig : Serializable {
 
     internal fun cloneBy(target: MXConfig) {
         orientation.set(target.orientation.get())
-        audioMute.set(target.audioMute.get())
+        volumePercent.set(target.volumePercent.get())
         videoSize.set(target.videoSize.get().clone())
         scale.set(target.scale.get())
         dimensionRatio.set(target.dimensionRatio.get())

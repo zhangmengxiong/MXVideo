@@ -22,10 +22,9 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
             this.mediaPlayer = mediaPlayer
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                val build = AudioAttributes.Builder().apply {
-                    setUsage(AudioAttributes.USAGE_MEDIA)
-                    setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                }
+                val build = AudioAttributes.Builder()
+                build.setUsage(AudioAttributes.USAGE_MEDIA)
+                build.setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 mediaPlayer.setAudioAttributes(build.build())
             } else {
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
@@ -113,7 +112,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
         return duration / 1000
     }
 
-    override fun setVolume(leftVolume: Float, rightVolume: Float) {
+    override fun setVolumePercent(leftVolume: Float, rightVolume: Float) {
         if (!active) return
         mediaPlayer?.setVolume(leftVolume, rightVolume)
     }

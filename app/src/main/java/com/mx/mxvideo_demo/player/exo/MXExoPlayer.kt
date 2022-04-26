@@ -28,10 +28,9 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
             this.mediaPlayer = player
             val currUrl = source.playUri.toString()
 
-            val build = AudioAttributes.Builder().apply {
-                setUsage(C.USAGE_MEDIA)
-                setContentType(C.CONTENT_TYPE_MUSIC)
-            }
+            val build = AudioAttributes.Builder()
+            build.setUsage(C.USAGE_MEDIA)
+            build.setContentType(C.CONTENT_TYPE_MUSIC)
             player.setAudioAttributes(build.build(), false)
 
             player.addListener(this)
@@ -106,7 +105,7 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, Analytic
         return (duration / 1000).toInt()
     }
 
-    override fun setVolume(leftVolume: Float, rightVolume: Float) {
+    override fun setVolumePercent(leftVolume: Float, rightVolume: Float) {
         if (!active) return
         mediaPlayer?.volume = (leftVolume + rightVolume) / 2f
     }
