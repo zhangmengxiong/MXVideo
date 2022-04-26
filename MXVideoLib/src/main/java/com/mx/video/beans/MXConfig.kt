@@ -1,5 +1,6 @@
 package com.mx.video.beans
 
+import android.media.AudioAttributes
 import com.mx.video.listener.MXVideoListener
 import com.mx.video.utils.MXValueObservable
 import java.io.Serializable
