@@ -111,7 +111,9 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
         (0..mxSurfaceContainer.childCount).mapNotNull {
             mxSurfaceContainer.getChildAt(it)
         }.forEach { view ->
-            if (view is TextureView) {
+            if (view is MXTextureView) {
+                view.release()
+            } else if (view is TextureView) {
                 view.surfaceTextureListener = null
             }
         }

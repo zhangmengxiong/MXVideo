@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import com.mx.video.base.IMXPlayerCallback
 import com.mx.video.base.IMXVideo
 import com.mx.video.beans.*
 import com.mx.video.listener.MXSensorListener
@@ -21,7 +22,7 @@ import com.mx.video.views.MXViewSet
 
 abstract class MXVideo @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr), IMXVideo {
+) : FrameLayout(context, attrs, defStyleAttr), IMXVideo, IMXPlayerCallback {
     companion object {
         fun init(context: Context) {
             MXUtils.init(context)
