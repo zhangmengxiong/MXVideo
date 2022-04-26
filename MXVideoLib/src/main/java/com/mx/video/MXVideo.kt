@@ -248,7 +248,6 @@ abstract class MXVideo @JvmOverloads constructor(
         isStopState = null
         config.source.set(source)
         config.seekWhenPlay.set(seekTo)
-        viewSet.mxTitleTxv.text = source?.title
         if (source != null) {
             config.state.set(MXState.NORMAL)
         } else {

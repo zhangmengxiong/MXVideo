@@ -113,6 +113,7 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
         }
         // 播放源变化时，控制视频是否可以被用户快进快退
         config.source.addObserver { source ->
+            viewSet.mxTitleTxv.text = source?.title
             viewSet.mxSeekProgress.isEnabled = config.sourceCanSeek()
 
             if (source?.isLiveSource == true) {
@@ -429,16 +430,6 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
      * 释放资源，释放后无法再次播放
      */
     fun release() {
-        val batteryImg = viewSet.mxBatteryImg
-        if (batteryImg is MXBatteryImageView) {
-            batteryImg.release()
-        }
-
-        val timeTxv = viewSet.mxSystemTimeTxv
-        if (timeTxv is MXTimeTextView) {
-            timeTxv.release()
-        }
-
         for (field in this::class.java.declaredFields) {
             val any = field.get(this)
             if (any is MXValueObservable<*>) {
@@ -447,7 +438,6 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
             }
         }
 
-        viewSet.mxSeekProgress.setOnSeekBarChangeListener(null)
         speedHelp.release()
         delayDismiss.release()
         timeTicket.release()

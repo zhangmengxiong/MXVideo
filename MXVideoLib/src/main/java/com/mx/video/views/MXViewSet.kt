@@ -278,5 +278,15 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
     }
 
     fun release() {
+        val batteryImg = mxBatteryImg
+        if (batteryImg is MXBatteryImageView) {
+            batteryImg.release()
+        }
+
+        val timeTxv = mxSystemTimeTxv
+        if (timeTxv is MXTimeTextView) {
+            timeTxv.release()
+        }
+        mxSeekProgress.setOnSeekBarChangeListener(null)
     }
 }
