@@ -9,10 +9,12 @@
     implementation 'com.gitee.zhangmengxiong:MXVideo:x.x.x'
 ```
 
-![Image text](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/1.png)
-![Image text](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/2.png)
-![Image text](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/3.png)
-![Image text](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/4.png)
+![Normal](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/1.png)
+![Land Screen](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/2.png)
+![Touch Seek](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/3.png)
+![Pause](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/4.png)
+![Rotation](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/5.png)
+![Light Seek](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/6.png)
 
 #### 功能特性
 - 任意播放器内核（包含开源IJK、谷歌Exo、阿里云等等）
