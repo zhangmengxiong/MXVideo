@@ -4,9 +4,9 @@
     <item name="mxSurfaceContainer" type="id" />
     <item name="mxBottomSeekProgress" type="id" />
     <item name="mxPlaceImg" type="id" />
-    <item name="mxPlayBtn" type="id" />
-    <item name="mxPlayPauseImg" type="id" />
     <item name="mxLoading" type="id" />
+    <item name="mxLoadingTxv" type="id" />
+    <item name="mxPlayPauseBtn" type="id" />
     <item name="mxTopLay" type="id" />
     <item name="mxReturnBtn" type="id" />
     <item name="mxTitleTxv" type="id" />
@@ -19,6 +19,7 @@
     <item name="mxFullscreenBtn" type="id" />
     <item name="mxRetryLay" type="id" />
     <item name="mxReplayLay" type="id" />
+    <item name="mxReplayImg" type="id" />
 
     <item name="mxQuickSeekLay" type="id" />
     <item name="mxQuickSeekCurrentTxv" type="id" />

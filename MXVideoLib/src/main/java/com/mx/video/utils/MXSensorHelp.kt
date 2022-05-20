@@ -7,7 +7,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Handler
 import com.mx.video.beans.MXOrientation
-import com.mx.video.beans.MXSensorListener
+import com.mx.video.listener.MXSensorListener
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.roundToInt
@@ -15,7 +15,7 @@ import kotlin.math.roundToInt
 /**
  * 屏幕旋转监听
  */
-class MXSensorHelp private constructor(
+internal class MXSensorHelp private constructor(
     private val context: Context,
     private val minChangeTime: Long = 1500
 ) {

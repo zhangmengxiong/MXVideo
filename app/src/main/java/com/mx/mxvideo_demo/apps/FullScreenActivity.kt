@@ -7,14 +7,18 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.mx.mxvideo_demo.*
+import com.mx.mxvideo_demo.R
+import com.mx.mxvideo_demo.ldjVideos
 import com.mx.mxvideo_demo.player.MXIJKPlayer
+import com.mx.mxvideo_demo.thumbnails
+import com.mx.mxvideo_demo.titles
 import com.mx.video.MXVideo
 import com.mx.video.beans.MXPlaySource
+import com.mx.video.beans.MXScreen
 import com.mx.video.beans.MXState
-import com.mx.video.utils.MXVideoListener
-import com.mx.video.views.MXViewProvider
-import kotlinx.android.synthetic.main.activity_normal.*
+import com.mx.video.listener.MXVideoListener
+import com.mx.video.views.MXViewSet
+import kotlinx.android.synthetic.main.activity_full.*
 
 class FullScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,20 +32,38 @@ class FullScreenActivity : AppCompatActivity() {
         setContentView(R.layout.activity_full)
         Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
 
+        mxVideoStd.setOnStateListener { state ->
+            statusTxv.text = state.name
+        }
         mxVideoStd.addOnVideoListener(object : MXVideoListener() {
-            override fun onStateChange(state: MXState, provider: MXViewProvider) {
-                provider.mxReturnBtn.visibility = View.VISIBLE
-                provider.mxReturnBtn.setOnClickListener {
+            override fun onStateChange(state: MXState, viewSet: MXViewSet) {
+                viewSet.mxReturnBtn.visibility = View.VISIBLE
+                viewSet.mxReturnBtn.setOnClickListener {
                     onBackPressed()
                 }
             }
         })
+
         // 屏蔽全屏按钮
-        mxVideoStd.getConfig().showFullScreenBtn = false
+        mxVideoStd.getConfig().showFullScreenButton.set(false)
+        mxVideoStd.getConfig().gotoNormalScreenWhenComplete.set(false)
+        mxVideoStd.getConfig().gotoNormalScreenWhenError.set(false)
+        mxVideoStd.setPlayer(MXIJKPlayer::class.java)
         mxVideoStd.setSource(
-            MXPlaySource(Uri.parse(ldjVideos.first()), titles.random()),
-            player = MXIJKPlayer::class.java, seekTo = 0
+            MXPlaySource(Uri.parse(ldjVideos.first()), titles.random()), seekTo = 0
         )
+        mxVideoStd.startPlay()
+        mxVideoStd.switchToScreen(MXScreen.FULL)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mxVideoStd.onStart()
+    }
+
+    override fun onStop() {
+        mxVideoStd.onStop()
+        super.onStop()
     }
 
     override fun onBackPressed() {

@@ -5,11 +5,16 @@
 > 简书相关介绍（待完善）：https://www.jianshu.com/nb/50294642
 
 最新版本：[![](https://jitpack.io/v/com.gitee.zhangmengxiong/MXVideo.svg)](https://jitpack.io/#com.gitee.zhangmengxiong/MXVideo)
+```groovy
+    implementation 'com.gitee.zhangmengxiong:MXVideo:x.x.x'
+```
 
-![Image text](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/1.png)
-![Image text](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/2.png)
-![Image text](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/3.png)
-![Image text](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/4.png)
+![Normal](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/1.png)
+![Land Screen](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/2.png)
+![Touch Seek](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/3.png)
+![Pause](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/4.png)
+![Rotation](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/5.png)
+![Light Seek](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/6.png)
 
 #### 功能特性
 - 任意播放器内核（包含开源IJK、谷歌Exo、阿里云等等）
@@ -124,13 +129,31 @@ com.mx.mxvideo_demo.player.MXExoPlayer
 com.mx.mxvideo_demo.player.MXIJKPlayer
 
 // 设置播放源是可以设置内核，默认 = MXSystemPlayer
-mxVideoStd.setSource(MXPlaySource(Uri.parse("xxx"), "xxx"), player = MXSystemPlayer::class.java)
+mxVideoStd.setPlayer(MXSystemPlayer::class.java)
+```
+
+- 设置播放地址，标题，跳转等信息
+```kotlin
+mxVideoStd.setSource(MXPlaySource(Uri.parse("xxx"), title = "xxx"), seekTo = 0)
 ```
 
 - 视频渲染旋转角度
 ```kotlin
 // 默认旋转角度 = MXOrientation.DEGREE_0
-mxVideoStd.setOrientation(MXOrientation.DEGREE_90)
+mxVideoStd.setTextureOrientation(MXOrientation.DEGREE_90)
+```
+
+- 设置当前视频静音,不会影响系统音量
+```kotlin
+// 默认=false
+mxVideoStd.setAudioMute(true)
+```
+
+- 设置播放器音量百分比，实际音量 = (volume * 系统当前音量)
+```kotlin
+// 默认=1f，当设置=0f时，视频则静音
+// 取值范围：0f -> 1f
+mxVideoStd.setVolumePercent(0.5f)
 ```
 
 - 视频填充规则
@@ -173,49 +196,92 @@ mxVideoStd.seekTo(55)
 - 设置不能快进快退
 ```kotlin
 // 播放前设置 默认=true
-mxVideoStd.getConfig().canSeekByUser = false
+mxVideoStd.getConfig().canSeekByUser.set(false)
 ```
 
 - 设置不能全屏
 ```kotlin
 // 播放前设置 默认=true
-mxVideoStd.getConfig().canFullScreen = false
+mxVideoStd.getConfig().canFullScreen.set(false)
+```
+
+- 设置缓冲时显示网速信息
+```kotlin
+// 播放前设置 默认=true
+mxVideoStd.getConfig().canShowNetSpeed.set(false)
+```
+
+- 设置全屏按钮是否显示
+```kotlin
+// 播放前设置 默认=true
+// 全屏按钮只有在  canFullScreen=true && showFullScreenButton=true 时显示
+mxVideoStd.getConfig().showFullScreenButton.set(false)
 ```
 
 - 设置不显示控件右上角时间
 ```kotlin
 // 播放前设置 默认=true
-mxVideoStd.getConfig().canShowSystemTime = false
+mxVideoStd.getConfig().canShowSystemTime.set(false)
 ```
 
+- 设置不显示底部 1dp 高度的进度条
+```kotlin
+// 播放前设置 默认=true
+mxVideoStd.getConfig().canShowBottomSeekBar.set(false)
+```
 
 - 设置不显示控件右上角电量图
 ```kotlin
 // 播放前设置 默认=true
-mxVideoStd.getConfig().canShowBatteryImg = false
+mxVideoStd.getConfig().canShowBatteryImg.set(false)
 ```
 
 - 设置关闭WiFi环境播放前提醒
 ```kotlin
 // 播放前设置 默认=true
-mxVideoStd.getConfig().showTipIfNotWifi = false
+mxVideoStd.getConfig().showTipIfNotWifi.set(false)
+```
+
+- 设置打开TextureView的水平镜像模式
+```kotlin
+// 播放前设置 默认=false
+mxVideoStd.getConfig().mirrorMode.set(true)
 ```
 
 - 设置播放完成后自动退出全屏
 ```kotlin
 // 播放前设置 默认=true
-mxVideoStd.getConfig().gotoNormalScreenWhenComplete = true
+mxVideoStd.getConfig().gotoNormalScreenWhenComplete.set(false)
 ```
 
 - 设置播放错误后自动退出全屏
 ```kotlin
 // 播放前设置 默认=true
-mxVideoStd.getConfig().gotoNormalScreenWhenError = true
+mxVideoStd.getConfig().gotoNormalScreenWhenError.set(false)
 ```
 
-- 设置屏幕方向根据重力感应自动进入全屏、小屏模式
+- 设置播放时用户不可以暂停
+```kotlin
+// 播放前设置 默认=true
+mxVideoStd.getConfig().canPauseByUser.set(false)
+```
+
+- 设置播放时如果手机横屏则自动进入全屏播放
 ```kotlin
 // 播放前设置 默认=false
-mxVideoStd.getConfig().autoRotateBySensor = true
+mxVideoStd.getConfig().autoFullScreenBySensor.set(true)
 ```
+
+- 设置全屏播放时屏幕方向自动跟随重力方向
+```kotlin
+// 播放前设置 默认=true
+mxVideoStd.getConfig().autoRotateBySensorWhenFullScreen.set(false)
+```
+
+- 设置直播流播放错误时自动重试
+```kotlin
+// 播放前设置 默认=false
+mxVideoStd.getConfig().replayLiveSourceWhenError.set(true)
+```
+
 

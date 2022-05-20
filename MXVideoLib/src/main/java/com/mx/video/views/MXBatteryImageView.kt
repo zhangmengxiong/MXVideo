@@ -8,9 +8,8 @@ import android.os.BatteryManager
 import android.util.AttributeSet
 import android.widget.ImageView
 import com.mx.video.R
-import com.mx.video.utils.MXUtils
 
-class MXBatteryImageView @JvmOverloads constructor(
+internal class MXBatteryImageView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ImageView(context, attrs, defStyleAttr) {
     private val levelImage = arrayOf(
@@ -23,6 +22,8 @@ class MXBatteryImageView @JvmOverloads constructor(
     )
 
     init {
+        isFocusable = false
+        isFocusableInTouchMode = false
         setImageResource(levelImage[3])
     }
 
@@ -42,7 +43,10 @@ class MXBatteryImageView @JvmOverloads constructor(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        context.registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        try {
+            context.registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        } catch (e: Exception) {
+        }
     }
 
     override fun onDetachedFromWindow() {

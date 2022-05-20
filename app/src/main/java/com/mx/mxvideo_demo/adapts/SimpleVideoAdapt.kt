@@ -10,8 +10,8 @@ import com.mx.mxvideo_demo.ldjVideos
 import com.mx.mxvideo_demo.thumbnails
 import com.mx.recycleview.base.BaseSimpleAdapt
 import com.mx.recycleview.base.BaseViewHolder
-import com.mx.video.beans.MXPlaySource
 import com.mx.video.MXVideoStd
+import com.mx.video.beans.MXPlaySource
 
 class SimpleVideoAdapt : BaseSimpleAdapt<String>() {
     init {
@@ -28,11 +28,14 @@ class SimpleVideoAdapt : BaseSimpleAdapt<String>() {
         val mxVideoStd = itemView.findViewById<MXVideoStd>(R.id.mxVideoStd)
         Glide.with(mxVideoStd.context).load(thumbnails.random())
             .into(mxVideoStd.getPosterImageView())
-//            mxVideoStd.setDimensionRatio(16.0 / 9.0)
+        mxVideoStd.setDimensionRatio(16.0 / 9.0)
         mxVideoStd.reset()
         mxVideoStd.setSource(
             MXPlaySource(Uri.parse(record), "" + position)
         )
+        mxVideoStd.setOnPlayTicketListener { position, duration ->
+            println("播放进度：$position / $duration")
+        }
     }
 
     override fun onViewDetachedFromWindow(holder: BaseViewHolder) {

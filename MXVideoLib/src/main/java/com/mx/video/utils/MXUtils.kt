@@ -14,9 +14,10 @@ import android.view.Window
 import android.view.WindowManager
 import com.mx.video.BuildConfig
 import com.mx.video.beans.MXOrientation
+import java.text.DecimalFormat
 import java.util.*
 
-object MXUtils {
+internal object MXUtils {
     private val activityFlagMap = HashMap<String, Int?>()
     private val activityOrientationMap = HashMap<String, Int?>()
 
@@ -31,13 +32,13 @@ object MXUtils {
         }
     }
 
-    private var isDebug = false
+    private var isDebug = BuildConfig.DEBUG
     fun setDebug(debug: Boolean) {
         isDebug = debug
     }
 
     fun log(any: Any) {
-        if (isDebug || BuildConfig.DEBUG) {
+        if (isDebug) {
             Log.v(MXUtils::class.java.simpleName, any.toString())
         }
     }
@@ -69,14 +70,24 @@ object MXUtils {
             return "00:00"
         }
         val seconds = (time % 60)
-        val minutes = (time / 60 % 60)
-        val hours = (time / 3600)
+        val minutes = (time / 60)
         val stringBuilder = StringBuilder()
-        val mFormatter = Formatter(stringBuilder, Locale.getDefault())
-        return if (hours > 0) {
-            mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString()
-        } else {
-            mFormatter.format("%02d:%02d", minutes, seconds).toString()
+        val formatter = Formatter(stringBuilder, Locale.getDefault())
+        return formatter.format("%02d:%02d", minutes, seconds).toString()
+    }
+
+    fun byteToShow(byte: Long): String {
+        return when {
+            byte <= 0L -> "0 Kb/s"
+            byte < 1024L -> {
+                "$byte Byte/s"
+            }
+            byte < 1024L * 1024 -> {
+                "${byte / 1024} Kb/s"
+            }
+            else -> {
+                DecimalFormat("#.0").format(byte / (1024f * 1024)) + " Mb/s"
+            }
         }
     }
 
