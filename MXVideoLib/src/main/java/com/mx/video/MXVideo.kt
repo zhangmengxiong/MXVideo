@@ -171,11 +171,7 @@ abstract class MXVideo @JvmOverloads constructor(
 
                     MXUtils.setFullScreen(context)
                     if (config.willChangeOrientationWhenFullScreen()) {
-                        var orientation = sensorHelp.getOrientation()
-                        if (orientation.isVertical()) {
-                            orientation = MXOrientation.DEGREE_270
-                        }
-                        MXUtils.setScreenOrientation(context, orientation)
+                        MXUtils.setScreenOrientation(context, sensorHelp.getOrientation())
                     }
 
                     postInvalidate()
@@ -506,6 +502,9 @@ abstract class MXVideo @JvmOverloads constructor(
 
         MXUtils.log("MXVideo: onPlayerVideoSizeChanged() $width x $height")
         config.videoSize.set(MXSize(width, height))
+        if (config.screen.get() == MXScreen.FULL && config.willChangeOrientationWhenFullScreen()) {
+            MXUtils.setScreenOrientation(context, sensorHelp.getOrientation())
+        }
         postInvalidate()
     }
 
@@ -685,20 +684,19 @@ abstract class MXVideo @JvmOverloads constructor(
 
     private val sensorListener = object : MXSensorListener {
         override fun onChange(orientation: MXOrientation) {
-            MXUtils.log("设备方向变更：$orientation")
+            MXUtils.log("MXVideo 设备方向变更：$orientation")
             if (!isPlaying() || !config.willChangeOrientationWhenFullScreen()) {
                 // 当不在播放，或者不需要变更方向时，不处理
                 return
             }
             val screen = config.screen.get()
-
-            if (config.autoRotateBySensorWhenFullScreen.get() && screen == MXScreen.FULL) {
-                // 全屏时，方向切换，变更一下
-                MXUtils.setScreenOrientation(context, orientation)
-            }
-
-            if (config.autoFullScreenBySensor.get()) {
-                if (orientation.isHorizontal() && screen == MXScreen.NORMAL) {
+            if (screen == MXScreen.FULL) {
+                if (config.autoRotateBySensorWhenFullScreen.get()) {
+                    // 全屏时，方向切换，变更一下
+                    MXUtils.setScreenOrientation(context, orientation)
+                }
+            } else {
+                if (config.autoFullScreenBySensor.get() && orientation.isHorizontal()) {
                     switchToScreen(MXScreen.FULL)
                 }
             }
