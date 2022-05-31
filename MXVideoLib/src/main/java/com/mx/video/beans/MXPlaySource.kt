@@ -24,13 +24,6 @@ data class MXPlaySource(
     val headerMap: MutableMap<String, String> = HashMap(),
 
     /**
-     * 全屏时是否需要变更Activity方向
-     * 如果 = null，会自动根据视频宽高来判断
-     * 默认 = null
-     */
-    val changeOrientationWhenFullScreen: Boolean? = null,
-
-    /**
      * 是否循环播放，默认 = false
      */
     val isLooping: Boolean = false,
@@ -51,7 +44,6 @@ data class MXPlaySource(
             playUri,
             title,
             headerMap,
-            changeOrientationWhenFullScreen,
             isLooping,
             enableSaveProgress,
             isLiveSource
@@ -68,7 +60,6 @@ data class MXPlaySource(
         if (playUri != other.playUri) return false
         if (title != other.title) return false
         if (headerMap != other.headerMap) return false
-        if (changeOrientationWhenFullScreen != other.changeOrientationWhenFullScreen) return false
         if (isLooping != other.isLooping) return false
         if (enableSaveProgress != other.enableSaveProgress) return false
         if (isLiveSource != other.isLiveSource) return false
@@ -80,7 +71,6 @@ data class MXPlaySource(
         var result = playUri.hashCode()
         result = 31 * result + (title?.hashCode() ?: 0)
         result = 31 * result + headerMap.hashCode()
-        result = 31 * result + (changeOrientationWhenFullScreen?.hashCode() ?: 0)
         result = 31 * result + isLooping.hashCode()
         result = 31 * result + enableSaveProgress.hashCode()
         result = 31 * result + isLiveSource.hashCode()
@@ -88,6 +78,6 @@ data class MXPlaySource(
     }
 
     override fun toString(): String {
-        return "MXPlaySource(playUri=$playUri, title=$title, headerMap=$headerMap, changeOrientationWhenFullScreen=$changeOrientationWhenFullScreen, isLooping=$isLooping, enableSaveProgress=$enableSaveProgress, isLiveSource=$isLiveSource)"
+        return "MXPlaySource(playUri=$playUri, title=$title, headerMap=$headerMap, isLooping=$isLooping, enableSaveProgress=$enableSaveProgress, isLiveSource=$isLiveSource)"
     }
 }

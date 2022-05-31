@@ -6,7 +6,7 @@
 
 最新版本：[![](https://jitpack.io/v/com.gitee.zhangmengxiong/MXVideo.svg)](https://jitpack.io/#com.gitee.zhangmengxiong/MXVideo)
 ```groovy
-    implementation 'com.gitee.zhangmengxiong:MXVideo:x.x.x'
+    implementation 'com.gitee.zhangmengxiong:MXVideo:1.7.6'
 ```
 
 ![Normal](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/1.png)
@@ -78,7 +78,6 @@ mxVideoStd.startPlay()
 | :----- | :--: | -------: |
 | title | 标题 | "" |
 | headerMap | 网络请求头部 | null |
-| changeOrientationWhenFullScreen | 全屏时是否需要变更Activity方向，如果 = null，会自动根据视频宽高来判断 | null |
 | isLooping | 是否循环播放 | false |
 | enableSaveProgress | 是否存储、读取播放进度 | true |
 | isLiveSource | 是否直播源，当时直播时，不显示进度，无法快进快退暂停 | false |
@@ -274,8 +273,11 @@ mxVideoStd.getConfig().autoFullScreenBySensor.set(true)
 
 - 设置全屏播放时屏幕方向自动跟随重力方向
 ```kotlin
-// 播放前设置 默认=true
-mxVideoStd.getConfig().autoRotateBySensorWhenFullScreen.set(false)
+// 播放前设置 默认=MXSensorMode.SENSOR_FIT_VIDEO
+// MXSensorMode.SENSOR_AUTO = 跟随重力方向
+// MXSensorMode.SENSOR_FIT_VIDEO = 跟随视频宽高自动旋转 0 或 180 度
+// MXSensorMode.SENSOR_NO = 根据视频宽高比固定横屏/竖屏，横屏 = 视频宽>=高   --   竖屏 = 视频宽<高
+mxVideoStd.getConfig().fullScreenSensorMode.set(MXSensorMode.SENSOR_AUTO)
 ```
 
 - 设置直播流播放错误时自动重试

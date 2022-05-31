@@ -1,6 +1,5 @@
 package com.mx.video.beans
 
-import android.media.AudioAttributes
 import com.mx.video.listener.MXVideoListener
 import com.mx.video.utils.MXValueObservable
 import java.io.Serializable
@@ -13,7 +12,6 @@ class MXConfig : Serializable {
     companion object {
         private val videoViewIndex = AtomicInteger(1)
     }
-
 
     /**
      * 当前View的ID，全局ID
@@ -147,9 +145,9 @@ class MXConfig : Serializable {
     val autoFullScreenBySensor = MXValueObservable(false)
 
     /**
-     * 播放时随着感应器旋转而全屏/小屏
+     * 全屏播放时屏幕方向处理模式
      */
-    val autoRotateBySensorWhenFullScreen = MXValueObservable(true)
+    val fullScreenSensorMode = MXValueObservable(MXSensorMode.SENSOR_FIT_VIDEO)
 
     /**
      * 直播流，播放失败时自动重新播放
@@ -161,17 +159,6 @@ class MXConfig : Serializable {
      */
     internal fun sourceCanSeek(): Boolean {
         return canSeekByUser.get() && (source.get()?.isLiveSource != true)
-    }
-
-    /**
-     * 全屏时是否变更屏幕方向
-     */
-    internal fun willChangeOrientationWhenFullScreen(): Boolean {
-        if (source.get()?.changeOrientationWhenFullScreen == true) {
-            return true
-        }
-        val size = videoSize.get()
-        return size.width > size.height
     }
 
     internal fun cloneBy(target: MXConfig) {
@@ -195,7 +182,7 @@ class MXConfig : Serializable {
         gotoNormalScreenWhenError.set(target.gotoNormalScreenWhenError.get())
         canPauseByUser.set(target.canPauseByUser.get())
         autoFullScreenBySensor.set(target.autoFullScreenBySensor.get())
-        autoRotateBySensorWhenFullScreen.set(target.autoRotateBySensorWhenFullScreen.get())
+        fullScreenSensorMode.set(target.fullScreenSensorMode.get())
         replayLiveSourceWhenError.set(target.replayLiveSourceWhenError.get())
         playerViewSize.set(target.playerViewSize.get().clone())
     }
