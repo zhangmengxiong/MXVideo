@@ -44,8 +44,8 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
             mediaPlayer.setDataSource(UrlSource().apply {
                 this.uri = source.playUri.toString()
             })
-            mediaPlayer.prepare()
             mediaPlayer.setSurface(Surface(surface))
+            mediaPlayer.prepare()
         }
     }
 
