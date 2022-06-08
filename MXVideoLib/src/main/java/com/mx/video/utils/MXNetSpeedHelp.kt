@@ -43,7 +43,8 @@ internal class MXNetSpeedHelp {
 
     private val ticketRun = object : Runnable {
         override fun run() {
-            if (!isStart) return
+            val onUpdateCall = onUpdateCall
+            if (!isStart || onUpdateCall == null) return
             try {
                 val rxBytes = TrafficStats.getUidRxBytes(myUid)
                 val time = System.currentTimeMillis()
@@ -53,7 +54,7 @@ internal class MXNetSpeedHelp {
                     val speed = if (diffTime > 0 && diffBytes > 0) {
                         diffBytes / diffTime
                     } else 0f
-                    onUpdateCall?.invoke(MXUtils.byteToShow(speed.roundToLong()))
+                    onUpdateCall.invoke(MXUtils.byteToShow(speed.roundToLong()))
                 }
                 preRxBytes = rxBytes
                 preRxTime = time

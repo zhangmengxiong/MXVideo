@@ -57,6 +57,7 @@ class MXValueObservable<T>(defaultValue: T) {
 
     internal fun deleteObservers() {
         synchronized(lock) {
+            mHandler.removeCallbacksAndMessages(null)
             observerList.clear()
         }
     }

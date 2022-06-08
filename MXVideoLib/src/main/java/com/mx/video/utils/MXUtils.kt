@@ -133,11 +133,14 @@ internal object MXUtils {
         if (!activityOrientationMap.containsKey(currentActivityId)) {
             activityOrientationMap[currentActivityId] = activity.requestedOrientation
         }
-        activity.requestedOrientation = when (orientation) {
+        val targetOrientation = when (orientation) {
             MXOrientation.DEGREE_0 -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             MXOrientation.DEGREE_90 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
             MXOrientation.DEGREE_180 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
             MXOrientation.DEGREE_270 -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        }
+        if (targetOrientation != activity.requestedOrientation) {
+            activity.requestedOrientation = targetOrientation
         }
     }
 

@@ -38,9 +38,9 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
             mediaPlayer.setOnErrorListener(this@MXSystemPlayer)
             mediaPlayer.setOnInfoListener(this@MXSystemPlayer)
             mediaPlayer.setOnVideoSizeChangedListener(this@MXSystemPlayer)
+            mediaPlayer.setSurface(Surface(surface))
             mediaPlayer.setDataSource(context, source.playUri, source.headerMap)
             mediaPlayer.prepareAsync()
-            mediaPlayer.setSurface(Surface(surface))
         }
     }
 

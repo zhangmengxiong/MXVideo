@@ -55,6 +55,20 @@ abstract class MXVideo @JvmOverloads constructor(
         }
 
         /**
+         * 生命周期回调 onStart()
+         */
+        fun onStart() {
+            PLAYING_VIDEO?.onStart()
+        }
+
+        /**
+         * 生命周期回调 onStop()
+         */
+        fun onStop() {
+            PLAYING_VIDEO?.onStop()
+        }
+
+        /**
          * 释放当前播放器
          */
         fun releaseAll() {
@@ -170,14 +184,7 @@ abstract class MXVideo @JvmOverloads constructor(
                     windows.addView(this, fullLayout)
 
                     MXUtils.setFullScreen(context)
-                    if (config.willChangeOrientationWhenFullScreen()) {
-                        var orientation = sensorHelp.getOrientation()
-                        if (orientation.isVertical()) {
-                            orientation = MXOrientation.DEGREE_270
-                        }
-                        MXUtils.setScreenOrientation(context, orientation)
-                    }
-
+                    requestActivityOrientation()
                     postInvalidate()
                 }
                 MXScreen.NORMAL -> {
@@ -196,6 +203,48 @@ abstract class MXVideo @JvmOverloads constructor(
                 }
             }
         }
+        config.fullScreenSensorMode.addObserver {
+            if (config.screen.get() == MXScreen.FULL) {
+                requestActivityOrientation()
+            }
+        }
+    }
+
+    private fun requestActivityOrientation() {
+        val orientation = sensorHelp.getOrientation()
+        val size = config.videoSize.get()
+        if (size.width <= 0 || size.height <= 0) {
+            return
+        }
+        val targetOrientation: MXOrientation = when (config.fullScreenSensorMode.get()) {
+            MXSensorMode.SENSOR_AUTO -> {
+                orientation
+            }
+            MXSensorMode.SENSOR_FIT_VIDEO -> {
+                if (orientation.isHorizontal()) {
+                    if (size.width >= size.height) {
+                        orientation
+                    } else {
+                        MXOrientation.DEGREE_0
+                    }
+                } else {
+                    if (size.height >= size.width) {
+                        orientation
+                    } else {
+                        MXOrientation.DEGREE_270
+                    }
+                }
+            }
+            MXSensorMode.SENSOR_NO -> {
+                if (size.width >= size.height) {
+                    MXOrientation.DEGREE_270
+                } else {
+                    MXOrientation.DEGREE_0
+                }
+            }
+        }
+//        MXUtils.log("MXVideo: setScreenOrientation：${config.fullScreenSensorMode.get()} --> $targetOrientation --> (${size.width} x ${size.height})")
+        MXUtils.setScreenOrientation(context, targetOrientation)
     }
 
     fun addOnVideoListener(listener: MXVideoListener) {
@@ -506,6 +555,10 @@ abstract class MXVideo @JvmOverloads constructor(
 
         MXUtils.log("MXVideo: onPlayerVideoSizeChanged() $width x $height")
         config.videoSize.set(MXSize(width, height))
+
+        if (config.screen.get() == MXScreen.FULL) {
+            requestActivityOrientation()
+        }
         postInvalidate()
     }
 
@@ -635,26 +688,24 @@ abstract class MXVideo @JvmOverloads constructor(
             }
         }
 
-        if (ratio <= 0.0 && widthMode == MeasureSpec.EXACTLY && heightMode == MeasureSpec.AT_MOST) {
+        // 宽高比=0，宽度=match_parent, 高度!=?px 设置默认宽高比
+        if (ratio <= 0.0 && widthMode == MeasureSpec.EXACTLY && heightMode != MeasureSpec.EXACTLY) {
             // 高度自适应、且没有宽高比，设置宽高比为 16：9
             ratio = 16.0 / 9.0
         }
 
-//        MXUtils.log("MXVideo: onMeasure($widthMode,$heightMode,$widthSize,$heightSize) $ratio")
-
         if (config.screen.get() == MXScreen.NORMAL) {
             var height = (widthSize / ratio).toInt()
-            if (height > heightSize) {
+            if (heightSize != 0 && height > heightSize) {
                 height = heightSize
             }
-
+            // MXUtils.log("MXVideo: onMeasure($widthMode,$heightMode,$widthSize,$heightSize) $height --> $ratio")
             // 当外部设置固定宽高比，且非全屏时，调整测量高度
             val measureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
             super.onMeasure(widthMeasureSpec, measureSpec)
-            return
+        } else {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         }
-
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
     private fun cloneMeToLayout(target: MXParentView) {
@@ -685,22 +736,18 @@ abstract class MXVideo @JvmOverloads constructor(
 
     private val sensorListener = object : MXSensorListener {
         override fun onChange(orientation: MXOrientation) {
-            MXUtils.log("设备方向变更：$orientation")
-            if (!isPlaying() || !config.willChangeOrientationWhenFullScreen()) {
+            MXUtils.log("MXVideo 设备方向变更：$orientation")
+            if (config.state.get() !in arrayOf(MXState.PLAYING, MXState.PAUSE)) {
                 // 当不在播放，或者不需要变更方向时，不处理
                 return
             }
-            val screen = config.screen.get()
-
-            if (config.autoRotateBySensorWhenFullScreen.get() && screen == MXScreen.FULL) {
-                // 全屏时，方向切换，变更一下
-                MXUtils.setScreenOrientation(context, orientation)
-            }
-
-            if (config.autoFullScreenBySensor.get()) {
-                if (orientation.isHorizontal() && screen == MXScreen.NORMAL) {
-                    switchToScreen(MXScreen.FULL)
-                }
+            if (config.screen.get() == MXScreen.NORMAL
+                && config.autoFullScreenBySensor.get()
+                && orientation.isHorizontal()
+            ) {
+                switchToScreen(MXScreen.FULL)
+            } else if (config.screen.get() == MXScreen.FULL) {
+                requestActivityOrientation()
             }
         }
     }
