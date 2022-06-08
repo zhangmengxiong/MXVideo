@@ -25,6 +25,7 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
             val mediaPlayer = AliPlayerFactory.createAliPlayer(context)
             this.mediaPlayer = mediaPlayer
 
+            mediaPlayer.setTraceId("DisableAnalytics") // 禁止日志埋点上报
             mediaPlayer.isLoop = false
             mediaPlayer.isAutoPlay = false
             mediaPlayer.setOnPreparedListener(this@MXAliPlayer)
