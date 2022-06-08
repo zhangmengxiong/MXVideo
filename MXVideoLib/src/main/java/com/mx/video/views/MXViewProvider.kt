@@ -98,7 +98,7 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
 
             val fullScreen = (config.screen.get() == MXScreen.FULL)
             val playWidth = if (fullScreen) {
-                (min(size.width, size.height) / 5f).roundToInt()
+                (min(size.width, size.height) / 5.5f).roundToInt()
             } else {
                 viewSet.context.resources.getDimensionPixelOffset(R.dimen.mx_player_size_icon_width)
             }

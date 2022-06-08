@@ -111,6 +111,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="EXO" />
+                <RadioButton
+                    android:id="@+id/playerAli"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="阿里" />
             </RadioGroup>
 
             <TextView

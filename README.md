@@ -122,10 +122,13 @@ mxVideoStd.addOnVideoListener(object : MXVideoListener() {
 com.mx.video.player.MXSystemPlayer
 
 // 谷歌的Exo播放器
-com.mx.mxvideo_demo.player.MXExoPlayer
+com.mx.mxvideo_demo.player.exo.MXExoPlayer
 
 // IJK播放器
 com.mx.mxvideo_demo.player.MXIJKPlayer
+
+// 阿里云播放器，仅支持 ”armeabi-v7a“、”arm64-v8a“ 两种CPU
+com.mx.mxvideo_demo.player.MXAliPlayer
 
 // 设置播放源是可以设置内核，默认 = MXSystemPlayer
 mxVideoStd.setPlayer(MXSystemPlayer::class.java)
