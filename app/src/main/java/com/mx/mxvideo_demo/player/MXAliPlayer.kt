@@ -12,6 +12,7 @@ import com.aliyun.player.bean.InfoCode
 import com.aliyun.player.source.UrlSource
 import com.mx.video.beans.MXPlaySource
 import com.mx.video.player.IMXPlayer
+import kotlin.math.roundToInt
 
 
 class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletionListener,
@@ -25,9 +26,6 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
             val mediaPlayer = AliPlayerFactory.createAliPlayer(context)
             this.mediaPlayer = mediaPlayer
 
-            mediaPlayer.setTraceId("DisableAnalytics") // 禁止日志埋点上报
-            mediaPlayer.isLoop = false
-            mediaPlayer.isAutoPlay = false
             mediaPlayer.setOnPreparedListener(this@MXAliPlayer)
             mediaPlayer.setOnCompletionListener(this@MXAliPlayer)
             mediaPlayer.setOnSeekCompleteListener(this@MXAliPlayer)
@@ -37,10 +35,11 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
             mediaPlayer.setOnLoadingStatusListener(this@MXAliPlayer)
             mediaPlayer.setOnStateChangedListener(this@MXAliPlayer)
 
+            mediaPlayer.isLoop = false
+            mediaPlayer.isAutoPlay = false
             mediaPlayer.scaleMode = IPlayer.ScaleMode.SCALE_TO_FILL
             mediaPlayer.rotateMode = IPlayer.RotateMode.ROTATE_0
             mediaPlayer.mirrorMode = IPlayer.MirrorMode.MIRROR_MODE_NONE
-
 
             mediaPlayer.setDataSource(UrlSource().apply {
                 this.uri = source.playUri.toString()
@@ -84,8 +83,8 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
         }
 
         postInThread {
+            mediaPlayer?.seekTo(time * 1000L, IPlayer.SeekMode.Accurate)
             currentPosition = time
-            mediaPlayer?.seekTo(time * 1000L)
         }
     }
 
@@ -116,7 +115,7 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
 
     override fun setVolumePercent(leftVolume: Float, rightVolume: Float) {
         if (!active) return
-        mediaPlayer?.volume = leftVolume
+        mediaPlayer?.volume = (leftVolume + rightVolume) / 2f
     }
 
     override fun setSpeed(speed: Float) {
@@ -139,30 +138,29 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
         notifySeekComplete()
     }
 
-    override fun onError(p0: ErrorInfo?) {
+    override fun onError(info: ErrorInfo?) {
         if (!active) return
-        notifyError("what = ${p0.toString()}")
+        notifyError("what = ${info.toString()}")
     }
 
     override fun onInfo(infoBean: InfoBean) {
         if (infoBean.code == InfoCode.CurrentPosition) {
-            //extraValue为当前播放进度，单位为毫秒
-            currentPosition = (infoBean.extraValue / 1000).toInt()
+            currentPosition = (infoBean.extraValue / 1000f).roundToInt()
         }
     }
 
-    override fun onVideoSizeChanged(p0: Int, p1: Int) {
+    override fun onVideoSizeChanged(width: Int, height: Int) {
         if (!active) return
-        notifyVideoSize(p0, p1)
+        notifyVideoSize(width, height)
     }
 
     override fun onLoadingBegin() {
         notifyBuffering(true)
     }
 
-    override fun onLoadingProgress(p0: Int, p1: Float) {
+    override fun onLoadingProgress(progress: Int, netSpeed: Float) {
         if (!active) return
-        notifyBufferingUpdate(p0)
+        notifyBufferingUpdate(progress)
     }
 
     override fun onLoadingEnd() {
