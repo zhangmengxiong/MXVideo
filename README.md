@@ -289,4 +289,13 @@ mxVideoStd.getConfig().fullScreenSensorMode.set(MXSensorMode.SENSOR_AUTO)
 mxVideoStd.getConfig().replayLiveSourceWhenError.set(true)
 ```
 
+- 设置播放器内控件动画效果
+```kotlin
+// 将动画时长设置为 <=0 时，禁止动画效果
+mxVideoStd.getConfig().animatorDuration.set(0L)
+
+// 默认时长200毫秒
+mxVideoStd.getConfig().animatorDuration.set(200L)
+```
+
 

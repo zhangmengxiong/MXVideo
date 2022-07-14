@@ -155,6 +155,11 @@ class MXConfig : Serializable {
     val replayLiveSourceWhenError = MXValueObservable(false)
 
     /**
+     * 显示/隐藏动画的时长
+     */
+    val animatorDuration = MXValueObservable(200L)
+
+    /**
      * 是否可以快进快退
      */
     internal fun sourceCanSeek(): Boolean {
@@ -185,6 +190,7 @@ class MXConfig : Serializable {
         fullScreenSensorMode.set(target.fullScreenSensorMode.get())
         replayLiveSourceWhenError.set(target.replayLiveSourceWhenError.get())
         playerViewSize.set(target.playerViewSize.get().clone())
+        animatorDuration.set(target.animatorDuration.get())
     }
 
     internal fun release() {

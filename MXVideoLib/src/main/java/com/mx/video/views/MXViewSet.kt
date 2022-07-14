@@ -8,6 +8,8 @@ import com.mx.video.R
 import com.mx.video.beans.MXConfig
 import com.mx.video.beans.MXScreen
 import com.mx.video.beans.MXState
+import com.mx.video.beans.MXViewAnimator
+import com.mx.video.utils.MXAnimatorHelp
 
 class MXViewSet(val rootView: View, val config: MXConfig) {
     val context = rootView.context
@@ -93,6 +95,15 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
         rootView.findViewById(R.id.mxFullscreenBtn) ?: ImageView(context)
     }
 
+    /**
+     * 控制相关View是否启用动画效果，以及动画属性
+     */
+    private val animatorPropSet = HashMap<Int, MXViewAnimator>().apply {
+//        put(R.id.mxPlayPauseBtn, MXViewAnimator.CENTER)
+        put(R.id.mxTopLay, MXViewAnimator.TOP)
+        put(R.id.mxBottomLay, MXViewAnimator.BOTTOM)
+    }
+
     fun attachTextureView(): MXTextureView {
         mxSurfaceContainer.removeAllViews()
         setViewShow(mxSurfaceContainer, true)
@@ -123,8 +134,19 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
     fun setViewShow(view: View, show: Boolean?) {
         show ?: return
         val visibility = if (show) View.VISIBLE else View.GONE
-        if (view.visibility == visibility) return
-        view.visibility = visibility
+//        if (view.visibility == visibility) return
+
+        val duration = config.animatorDuration.get()
+        val prop = animatorPropSet[view.id]
+        if (prop != null && view.parent != null && view.isAttachedToWindow && duration > 0L) {
+            if (visibility == View.VISIBLE) {
+                MXAnimatorHelp.show(view, duration)
+            } else {
+                MXAnimatorHelp.hide(view, duration, prop)
+            }
+        } else {
+            view.visibility = visibility
+        }
     }
 
     fun setViewVisible(view: View, visibility: Int) {
