@@ -6,6 +6,7 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.mx.mxvideo_demo.*
+import com.mx.mxvideo_demo.player.MXAliPlayer
 import com.mx.mxvideo_demo.player.MXIJKPlayer
 import com.mx.mxvideo_demo.player.exo.MXExoPlayer
 import com.mx.video.MXVideo
@@ -130,6 +131,8 @@ class NormalActivity : AppCompatActivity() {
                 playerClass = MXIJKPlayer::class.java
             } else if (checkedId == R.id.playerEXO) {
                 playerClass = MXExoPlayer::class.java
+            } else if (checkedId == R.id.playerAli) {
+                playerClass = MXAliPlayer::class.java
             } else {
                 playerClass = MXSystemPlayer::class.java
             }

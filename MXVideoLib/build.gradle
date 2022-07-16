@@ -33,7 +33,7 @@ afterEvaluate {
 
                 groupId = 'com.mx.video'
                 artifactId = 'MXVideo'
-                version = '1.0.0'
+                version = '1.7.7'
             }
         }
     }

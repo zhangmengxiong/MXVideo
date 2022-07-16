@@ -1,9 +1,10 @@
 package com.mx.video.utils
 
 import android.os.Handler
+import android.os.Looper
 
 internal class MXTicket {
-    private val mHandler = Handler()
+    private val mHandler = Handler(Looper.getMainLooper())
     private var isTicketStart = false
     private var runnable: Runnable? = null
     fun setTicketRun(runnable: Runnable) {

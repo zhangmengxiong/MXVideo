@@ -6,6 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Handler
+import android.os.Looper
 import com.mx.video.beans.MXOrientation
 import com.mx.video.listener.MXSensorListener
 import kotlin.math.abs
@@ -23,7 +24,7 @@ internal class MXSensorHelp private constructor(
     private val DATA_Y = 1
     private val DATA_Z = 2
 
-    private val mHandler = Handler()
+    private val mHandler = Handler(Looper.getMainLooper())
     private val sensorManager by lazy { context.getSystemService(Context.SENSOR_SERVICE) as SensorManager }
     private val sensor by lazy { sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) }
     private var isStart = false
