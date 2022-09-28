@@ -12,7 +12,7 @@ import com.google.android.exoplayer2.video.VideoSize
 import com.mx.video.beans.MXPlaySource
 import com.mx.video.player.IMXPlayer
 
-class MXExoPlayer : IMXPlayer(), Player.Listener, Player.EventListener, AnalyticsListener {
+class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
     private var mediaPlayer: ExoPlayer? = null
 
     override fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) {

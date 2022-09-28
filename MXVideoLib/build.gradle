@@ -24,6 +24,7 @@ android {
     kotlinOptions {
         jvmTarget = '11'
     }
+    namespace 'com.mx.video'
 }
 afterEvaluate {
     publishing {
@@ -33,7 +34,7 @@ afterEvaluate {
 
                 groupId = 'com.mx.video'
                 artifactId = 'MXVideo'
-                version = '1.7.7'
+                version = rootProject.ext.versionName
             }
         }
     }

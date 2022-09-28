@@ -198,8 +198,8 @@ class MXConfig : Serializable {
         for (field in this::class.java.declaredFields) {
             val any = field.get(this)
             if (any is MXValueObservable<*>) {
-//                MXUtils.log("${field.name} -> deleteObservers")
-                any.deleteObservers()
+//                MXUtils.log("${field.name} -> release")
+                any.release()
             }
         }
     }

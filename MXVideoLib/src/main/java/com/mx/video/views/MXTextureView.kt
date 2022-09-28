@@ -60,7 +60,7 @@ class MXTextureView @JvmOverloads constructor(
         }
         this.config = null
         surfaceTextureListener = null
-        size.deleteObservers()
+        size.release()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {

@@ -7,7 +7,7 @@ class MXValueObservable<T>(defaultValue: T) {
     private val mHandler = Handler(Looper.getMainLooper())
     private val lock = Object()
     private val observerList = ArrayList<((value: T) -> Unit)>()
-
+    private var _active = true
     private var _value: T = defaultValue
 
     fun set(value: T) {
@@ -15,15 +15,20 @@ class MXValueObservable<T>(defaultValue: T) {
             return
         }
         _value = value
+
         val list = synchronized(lock) {
             observerList.toMutableList()
         }
+
+        if (!_active) return
         if (list.isEmpty()) return
         if (Looper.myLooper() == Looper.getMainLooper()) {
             list.forEach { it.invoke(value) }
         } else {
             mHandler.post {
-                list.forEach { it.invoke(value) }
+                if (_active) {
+                    list.forEach { it.invoke(value) }
+                }
             }
         }
     }
@@ -32,9 +37,12 @@ class MXValueObservable<T>(defaultValue: T) {
         val list = synchronized(lock) {
             observerList.toMutableList()
         }
+        if (!_active) return
         if (list.isEmpty()) return
         mHandler.post {
-            list.forEach { it.invoke(_value) }
+            if (_active) {
+                list.forEach { it.invoke(_value) }
+            }
         }
     }
 
@@ -42,20 +50,27 @@ class MXValueObservable<T>(defaultValue: T) {
 
     internal fun addObserver(o: ((value: T) -> Unit)?) {
         o ?: return
+        if (!_active) return
         synchronized(lock) {
             observerList.add(o)
         }
-        mHandler.post { o.invoke(_value) }
+        mHandler.post {
+            if (_active) {
+                o.invoke(_value)
+            }
+        }
     }
 
     internal fun deleteObserver(o: ((value: T) -> Unit)?) {
         o ?: return
+        if (!_active) return
         synchronized(lock) {
             observerList.remove(o)
         }
     }
 
-    internal fun deleteObservers() {
+    internal fun release() {
+        _active = false
         synchronized(lock) {
             mHandler.removeCallbacksAndMessages(null)
             observerList.clear()

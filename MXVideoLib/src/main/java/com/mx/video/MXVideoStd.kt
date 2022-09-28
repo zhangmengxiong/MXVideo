@@ -42,6 +42,7 @@ open class MXVideoStd @JvmOverloads constructor(
                     MXState.ERROR -> {
                         onErrorListener?.invoke()
                     }
+                    else -> {}
                 }
             }
 

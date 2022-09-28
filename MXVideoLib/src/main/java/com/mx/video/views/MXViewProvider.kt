@@ -433,8 +433,8 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
         for (field in this::class.java.declaredFields) {
             val any = field.get(this)
             if (any is MXValueObservable<*>) {
-//                MXUtils.log("${field.name} -> deleteObservers")
-                any.deleteObservers()
+//                MXUtils.log("${field.name} -> release")
+                any.release()
             }
         }
 
