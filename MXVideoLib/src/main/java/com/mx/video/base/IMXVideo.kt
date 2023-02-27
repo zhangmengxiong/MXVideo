@@ -1,13 +1,27 @@
 package com.mx.video.base
 
-import com.mx.video.beans.*
+import com.mx.video.beans.MXOrientation
+import com.mx.video.beans.MXPlaySource
+import com.mx.video.beans.MXScale
+import com.mx.video.beans.MXScreen
 import com.mx.video.player.IMXPlayer
+import com.mx.video.views.MXTextureView
 
 interface IMXVideo {
     /**
      * 设置播放器
      */
     fun setPlayer(player: Class<out IMXPlayer>? = null)
+
+    /**
+     * 获取当前播放器实例
+     */
+    fun getPlayer(): IMXPlayer?
+
+    /**
+     * 获取当前播放TextureView实例
+     */
+    fun getTextureView(): MXTextureView?
 
     /**
      * 设置播放源

@@ -78,6 +78,21 @@
                 android:padding="10dp"
                 android:text="直播流 开始" />
 
+            <Button
+                android:id="@+id/screenCaptureBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:padding="10dp"
+                android:text="截屏" />
+
+            <ImageView
+                android:id="@+id/screenCapImg"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                android:scaleType="fitXY" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -111,6 +126,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="EXO" />
+
                 <RadioButton
                     android:id="@+id/playerAli"
                     android:layout_width="wrap_content"

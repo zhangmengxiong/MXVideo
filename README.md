@@ -6,7 +6,7 @@
 
 最新版本：[![](https://jitpack.io/v/com.gitee.zhangmengxiong/MXVideo.svg)](https://jitpack.io/#com.gitee.zhangmengxiong/MXVideo)
 ```groovy
-    implementation 'com.gitee.zhangmengxiong:MXVideo:1.7.6'
+    implementation 'com.gitee.zhangmengxiong:MXVideo:1.7.9'
 ```
 
 ![Normal](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/1.png)
@@ -26,6 +26,7 @@
 - 播放器支持设置宽高比，设置宽高比后，高度固定。
 - 自动保存与恢复播放进度（可关闭）
 - 支持循环播放、全屏时竖屏模式、可关闭快进快退功能、可关闭全屏功能、可关闭非WiFi环境下流量提醒
+- 支持播放时获取实时截屏Bitmap
 
 ##### 1、通过 dependence 引入MXVideo
 ```groovy
@@ -296,6 +297,14 @@ mxVideoStd.getConfig().animatorDuration.set(0L)
 
 // 默认时长200毫秒
 mxVideoStd.getConfig().animatorDuration.set(200L)
+```
+
+- 播放时截屏
+```kotlin
+if (mxVideoStd.isPlaying()) {
+    val bitmap: Bitmap? = mxVideoStd.getTextureView()?.bitmap
+    screenCapImg.setImageBitmap(bitmap)
+}
 ```
 
 

@@ -1,7 +1,6 @@
 package com.mx.video.views
 
 import android.view.Gravity
-import android.view.TextureView
 import android.view.View
 import android.widget.*
 import com.mx.video.R
@@ -105,30 +104,33 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
     }
 
     fun attachTextureView(): MXTextureView {
-        mxSurfaceContainer.removeAllViews()
+        if (mxSurfaceContainer.childCount > 0) {
+            detachTextureView()
+        }
         setViewShow(mxSurfaceContainer, true)
         val textureView = MXTextureView(context)
         textureView.setConfig(config)
-        val layoutParams = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.MATCH_PARENT
+        val params = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT
         )
-        layoutParams.gravity = Gravity.CENTER
-        mxSurfaceContainer.addView(textureView, layoutParams)
+        params.gravity = Gravity.CENTER
+        mxSurfaceContainer.addView(textureView, params)
         return textureView
     }
 
     fun detachTextureView() {
-        (0..mxSurfaceContainer.childCount).mapNotNull {
+        (0 until mxSurfaceContainer.childCount).mapNotNull {
             mxSurfaceContainer.getChildAt(it)
-        }.forEach { view ->
-            if (view is MXTextureView) {
-                view.release()
-            } else if (view is TextureView) {
-                view.surfaceTextureListener = null
-            }
+        }.mapNotNull { if (it is MXTextureView) it else null }.forEach { view ->
+            view.release()
         }
         mxSurfaceContainer.removeAllViews()
+    }
+
+    fun getTextureView(): MXTextureView? {
+        return (0 until mxSurfaceContainer.childCount).mapNotNull {
+            mxSurfaceContainer.getChildAt(it)
+        }.firstNotNullOfOrNull { if (it is MXTextureView) it else null }
     }
 
     fun setViewShow(view: View, show: Boolean?) {
@@ -169,9 +171,7 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
             setViewShow(mxLoadingTxv, true)
             return
         }
-        if (!config.isPreloading.get() &&
-            state in arrayOf(MXState.PREPARING, MXState.PREPARED)
-        ) {
+        if (!config.isPreloading.get() && state in arrayOf(MXState.PREPARING, MXState.PREPARED)) {
             setViewShow(mxLoading, true)
             setViewShow(mxLoadingTxv, true)
             return
@@ -184,8 +184,7 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
     fun processPlaceImg() {
         val state = config.state.get()
         setViewShow(
-            mxPlaceImg,
-            state !in arrayOf(MXState.PLAYING, MXState.PAUSE)
+            mxPlaceImg, state !in arrayOf(MXState.PLAYING, MXState.PAUSE)
         )
     }
 
@@ -193,9 +192,7 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
         val state = config.state.get()
 
         // 预加载
-        if (config.isPreloading.get() &&
-            state in arrayOf(MXState.PREPARING, MXState.PREPARED)
-        ) {
+        if (config.isPreloading.get() && state in arrayOf(MXState.PREPARING, MXState.PREPARED)) {
             setViewShow(mxPlayPauseBtn, true)
             mxPlayPauseBtn.setImageResource(R.drawable.mx_icon_player_play)
             return
@@ -236,13 +233,8 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
         val screen = config.screen.get()
 
         // 全屏的时候，现实顶部导航栏
-        if (screen == MXScreen.FULL &&
-            state in arrayOf(
-                MXState.IDLE,
-                MXState.NORMAL,
-                MXState.PREPARING,
-                MXState.ERROR,
-                MXState.COMPLETE
+        if (screen == MXScreen.FULL && state in arrayOf(
+                MXState.IDLE, MXState.NORMAL, MXState.PREPARING, MXState.ERROR, MXState.COMPLETE
             )
         ) {
             setViewShow(mxTopLay, true)

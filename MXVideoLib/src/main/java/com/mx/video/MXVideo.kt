@@ -114,11 +114,6 @@ abstract class MXVideo @JvmOverloads constructor(
     private var mxPlayer: IMXPlayer? = null
 
     /**
-     * 当前TextureView
-     */
-    private var mxTextureView: MXTextureView? = null
-
-    /**
      * 共享配置
      */
     private val config = MXConfig()
@@ -285,6 +280,10 @@ abstract class MXVideo @JvmOverloads constructor(
         mxPlayerClass = player ?: MXSystemPlayer::class.java
     }
 
+    override fun getPlayer(): IMXPlayer? {
+        return mxPlayer
+    }
+
     /**
      * 设置播放数据源
      * @param source 播放源
@@ -354,6 +353,13 @@ abstract class MXVideo @JvmOverloads constructor(
         config.volumePercent.set(volume)
     }
 
+    override fun getTextureView(): MXTextureView? {
+        if (isPlaying()) {
+            return viewSet.getTextureView()
+        }
+        return null
+    }
+
     override fun startPlay() {
         MXUtils.log("MXVideo: startPlay()")
         stopPlay()
@@ -389,9 +395,6 @@ abstract class MXVideo @JvmOverloads constructor(
 
     override fun stopPlay() {
         val player = mxPlayer
-
-        mxTextureView?.release()
-        mxTextureView = null
 
         mxPlayer = null
         isStopState = null

@@ -1,5 +1,6 @@
 package com.mx.mxvideo_demo.apps
 
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.widget.LinearLayout
@@ -79,6 +80,12 @@ class NormalActivity : AppCompatActivity() {
                 ), seekTo = 0
             )
             mxVideoStd.startPlay()
+        }
+        screenCaptureBtn.setOnClickListener {
+            if (mxVideoStd.isPlaying()) {
+                val bitmap: Bitmap? = mxVideoStd.getTextureView()?.bitmap
+                screenCapImg.setImageBitmap(bitmap)
+            }
         }
         fun stringForTime(time: Int): String {
             if (time <= 0 || time >= 24 * 60 * 60 * 1000) {
