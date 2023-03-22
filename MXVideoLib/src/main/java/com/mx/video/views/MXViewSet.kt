@@ -206,7 +206,11 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
 
         // 下面几种情况下，显示播放按钮
         if (state in arrayOf(MXState.IDLE, MXState.NORMAL, MXState.PREPARED, MXState.PAUSE)) {
-            setViewShow(mxPlayPauseBtn, true)
+            if (config.source.get() == null && config.hidePlayBtnWhenNoSource.get()) {
+                setViewShow(mxPlayPauseBtn, false)
+            } else {
+                setViewShow(mxPlayPauseBtn, true)
+            }
             return
         }
         // 下面几种情况下，隐藏播放按钮

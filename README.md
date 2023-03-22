@@ -6,7 +6,7 @@
 
 最新版本：[![](https://jitpack.io/v/com.gitee.zhangmengxiong/MXVideo.svg)](https://jitpack.io/#com.gitee.zhangmengxiong/MXVideo)
 ```groovy
-    implementation 'com.gitee.zhangmengxiong:MXVideo:1.7.9'
+    implementation 'com.gitee.zhangmengxiong:MXVideo:1.8.0'
 ```
 
 ![Normal](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/1.png)
@@ -212,6 +212,12 @@ mxVideoStd.getConfig().canFullScreen.set(false)
 ```kotlin
 // 播放前设置 默认=true
 mxVideoStd.getConfig().canShowNetSpeed.set(false)
+```
+
+- 没有设置source时不显示播放按钮
+```kotlin
+// 播放前设置 默认=false
+mxVideoStd.getConfig().hidePlayBtnWhenNoSource.set(false)
 ```
 
 - 设置全屏按钮是否显示

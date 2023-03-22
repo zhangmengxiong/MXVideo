@@ -125,6 +125,20 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
                 viewSet.setViewVisible(viewSet.mxCurrentTimeTxv, View.VISIBLE)
                 viewSet.setViewVisible(viewSet.mxTotalTimeTxv, View.VISIBLE)
             }
+            if (config.hidePlayBtnWhenNoSource.get() && source == null) {
+                viewSet.setViewVisible(viewSet.mxPlayPauseBtn, View.INVISIBLE)
+            }
+        }
+        config.hidePlayBtnWhenNoSource.addObserver { hide ->
+            if (hide) {
+                if (config.source.get() == null) {
+                    viewSet.setViewVisible(viewSet.mxPlayPauseBtn, View.INVISIBLE)
+                }
+            } else {
+                if (config.state.get() in arrayOf(MXState.IDLE, MXState.NORMAL)) {
+                    viewSet.setViewVisible(viewSet.mxPlayPauseBtn, View.VISIBLE)
+                }
+            }
         }
 
         // 预加载状态更新

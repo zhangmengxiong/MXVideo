@@ -155,6 +155,11 @@ class MXConfig : Serializable {
     val replayLiveSourceWhenError = MXValueObservable(false)
 
     /**
+     * 没有设置source时不显示播放按钮
+     */
+    val hidePlayBtnWhenNoSource = MXValueObservable(false)
+
+    /**
      * 显示/隐藏动画的时长
      */
     val animatorDuration = MXValueObservable(200L)
@@ -190,6 +195,7 @@ class MXConfig : Serializable {
         fullScreenSensorMode.set(target.fullScreenSensorMode.get())
         replayLiveSourceWhenError.set(target.replayLiveSourceWhenError.get())
         playerViewSize.set(target.playerViewSize.get().clone())
+        hidePlayBtnWhenNoSource.set(target.hidePlayBtnWhenNoSource.get())
         animatorDuration.set(target.animatorDuration.get())
     }
 

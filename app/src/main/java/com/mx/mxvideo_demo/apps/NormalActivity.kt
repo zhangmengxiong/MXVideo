@@ -147,6 +147,15 @@ class NormalActivity : AppCompatActivity() {
         }
         playerRG.getChildAt(0)?.performClick()
 
+        hidePlayBtnWhenNoSourceRG.setOnCheckedChangeListener { group, checkedId ->
+            if (checkedId == R.id.hidePlayBtnWhenNoSourceTrue) {
+                mxVideoStd.getConfig().hidePlayBtnWhenNoSource.set(true)
+            } else {
+                mxVideoStd.getConfig().hidePlayBtnWhenNoSource.set(false)
+            }
+        }
+        hidePlayBtnWhenNoSourceRG.getChildAt(1)?.performClick()
+
         canLoopRG.getChildAt(1)?.performClick()
 
         fillTypeRG.setOnCheckedChangeListener { group, checkedId ->
