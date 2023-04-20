@@ -11,13 +11,13 @@ import com.mx.mxvideo_demo.apps.NormalActivity
 import com.mx.mxvideo_demo.apps.RecycleViewActivity
 import com.mx.mxvideo_demo.apps.TestActivity
 import com.mx.video.MXVideo
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.recycleView
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        SourceItem.init(this)
         val adapt = HomeAdapt(
             arrayListOf(
                 HomePages("播放器(各种参数切换)", NormalActivity::class.java),

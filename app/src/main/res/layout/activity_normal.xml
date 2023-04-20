@@ -47,51 +47,49 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/randPlay"
+                android:id="@+id/sourceBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
-                android:padding="10dp"
-                android:text="随机播放" />
+                android:singleLine="true"
+                android:text="《请选择播放源》" />
 
-            <Button
-                android:id="@+id/randTo10SecPlay"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
-                android:padding="10dp"
-                android:text="随机第60S 开始" />
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/preloadPlay"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:padding="10dp"
-                android:text="预加载 开始" />
+                <Button
+                    android:id="@+id/startPlayBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="开始播放" />
 
-            <Button
-                android:id="@+id/livePlay"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:padding="10dp"
-                android:text="直播流 开始" />
+                <Button
+                    android:id="@+id/preloadPlay"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="预加载 开始" />
 
-            <Button
-                android:id="@+id/screenCaptureBtn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:padding="10dp"
-                android:text="截屏" />
+                <Button
+                    android:id="@+id/screenCaptureBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="截屏" />
+            </LinearLayout>
+
 
             <ImageView
                 android:id="@+id/screenCapImg"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_gravity="center_horizontal"
-                android:scaleType="fitXY" />
+                android:scaleType="fitXY"
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="wrap_content"

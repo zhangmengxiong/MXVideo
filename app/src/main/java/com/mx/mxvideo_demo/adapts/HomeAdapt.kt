@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import com.mx.adapt.MXBaseSimpleAdapt
 import com.mx.mxvideo_demo.HomePages
 import com.mx.mxvideo_demo.R
-import kotlinx.android.synthetic.main.adapt_home_item.view.*
+import kotlinx.android.synthetic.main.adapt_home_item.view.textTxv
 
 class HomeAdapt (list: ArrayList<HomePages>) : MXBaseSimpleAdapt<HomePages>(list) {
     override fun createItem(inflater: LayoutInflater, parent: ViewGroup, viewType: Int): View {

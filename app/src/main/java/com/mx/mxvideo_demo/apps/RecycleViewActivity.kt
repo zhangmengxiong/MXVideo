@@ -6,11 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mx.mxvideo_demo.R
+import com.mx.mxvideo_demo.SourceItem
 import com.mx.mxvideo_demo.adapts.SimpleVideoAdapt
-import com.mx.mxvideo_demo.ldjVideos
 import com.mx.video.MXVideo
-import kotlinx.android.synthetic.main.activity_full.*
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_recycle_view.recycleView
 
 class RecycleViewActivity : AppCompatActivity() {
     private val adapt = SimpleVideoAdapt()
@@ -26,7 +25,7 @@ class RecycleViewActivity : AppCompatActivity() {
                 }
             }
         })
-        adapt.list.addAll(ldjVideos)
+        adapt.list.addAll(SourceItem.all())
         recycleView.adapter = adapt
     }
 

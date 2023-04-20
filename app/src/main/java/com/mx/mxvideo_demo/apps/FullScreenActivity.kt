@@ -8,9 +8,8 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.mx.mxvideo_demo.R
+import com.mx.mxvideo_demo.SourceItem
 import com.mx.mxvideo_demo.player.MXIJKPlayer
-import com.mx.mxvideo_demo.thumbnails
-import com.mx.mxvideo_demo.titles
 import com.mx.video.MXVideo
 import com.mx.video.beans.MXPlaySource
 import com.mx.video.beans.MXScreen
@@ -18,9 +17,11 @@ import com.mx.video.beans.MXSensorMode
 import com.mx.video.beans.MXState
 import com.mx.video.listener.MXVideoListener
 import com.mx.video.views.MXViewSet
-import kotlinx.android.synthetic.main.activity_full.*
+import kotlinx.android.synthetic.main.activity_full.mxVideoStd
+import kotlinx.android.synthetic.main.activity_full.statusTxv
 
 class FullScreenActivity : AppCompatActivity() {
+    val source = SourceItem.random16x9()
     override fun onCreate(savedInstanceState: Bundle?) {
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         window.setFlags(
@@ -30,7 +31,7 @@ class FullScreenActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_full)
-        Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
+        Glide.with(this).load(source.img).into(mxVideoStd.getPosterImageView())
 
         mxVideoStd.setOnStateListener { state ->
             statusTxv.text = state.name
@@ -53,8 +54,8 @@ class FullScreenActivity : AppCompatActivity() {
         mxVideoStd.setPlayer(MXIJKPlayer::class.java)
         mxVideoStd.setSource(
             MXPlaySource(
-                Uri.parse("https://1258108869.vod2.myqcloud.com/1696dab2vodcq1258108869/3b1520aa387702301056235269/f0.mp4"),
-                titles.random()
+                Uri.parse(source.url),
+                source.name
             ), seekTo = 0
         )
         mxVideoStd.startPlay()

@@ -10,8 +10,6 @@ import android.os.Looper
 import com.mx.video.beans.MXOrientation
 import com.mx.video.listener.MXSensorListener
 import kotlin.math.abs
-import kotlin.math.atan2
-import kotlin.math.roundToInt
 
 /**
  * 屏幕旋转监听
@@ -20,10 +18,6 @@ internal class MXSensorHelp private constructor(
     private val context: Context,
     private val minChangeTime: Long = 1500
 ) {
-    private val DATA_X = 0
-    private val DATA_Y = 1
-    private val DATA_Z = 2
-
     private val mHandler = Handler(Looper.getMainLooper())
     private val sensorManager by lazy { context.getSystemService(Context.SENSOR_SERVICE) as SensorManager }
     private val sensor by lazy { sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) }
@@ -60,7 +54,7 @@ internal class MXSensorHelp private constructor(
             sensorManager.registerListener(
                 sensorListener,
                 sensor,
-                SensorManager.SENSOR_DELAY_NORMAL
+                SensorManager.SENSOR_DELAY_UI
             )
             isStart = true
         }
@@ -77,42 +71,20 @@ internal class MXSensorHelp private constructor(
 
     private val sensorListener = object : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent) {
-            val values: FloatArray = event.values
-            var dg = 0
-            val x = -values[DATA_X]
-            val y = -values[DATA_Y]
-            val z = -values[DATA_Z]
-            val magnitude = x * x + y * y
-            if (magnitude * 4 >= z * z) {
-                val oneEightyOverPi = 57.29577957855f
-                val angle = (atan2(-y.toDouble(), x.toDouble()) * oneEightyOverPi).toFloat()
-                dg = 90 - angle.roundToInt()
-                // normalize to 0 - 359 range
-                while (dg >= 360) {
-                    dg -= 360
-                }
-                while (dg < 0) {
-                    dg += 360
-                }
-            }
-            val orientation = when (dg) {
-                in ((90 - 45) until (90 + 45)) -> {
-                    MXOrientation.DEGREE_90
-                }
-                in ((180 - 45) until (180 + 45)) -> {
-                    MXOrientation.DEGREE_180
-                }
-                in ((270 - 45) until (270 + 45)) -> {
-                    MXOrientation.DEGREE_270
-                }
-                else -> {
-                    MXOrientation.DEGREE_0
-                }
+            val values = event.values
+            val x = values[0]
+            val y = values[1]
+            if (abs(x) < 3.0 && abs(y) < 3.0) return
+            val orientation = if (abs(x) > abs(y)) {
+                if (x < 0) MXOrientation.DEGREE_90 else MXOrientation.DEGREE_270
+            } else {
+                if (y < 0) MXOrientation.DEGREE_180 else MXOrientation.DEGREE_0
             }
             synchronized(this@MXSensorHelp) {
                 if (orientation != _orientation) {
                     _orientation = orientation
                     sendOrientationChange(orientation)
+                    MXUtils.log("MXSensorHelp -> orientation=$orientation")
                 }
             }
         }

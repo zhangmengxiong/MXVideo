@@ -1,8 +1,13 @@
 package com.mx.video.views
 
+import android.os.Build
 import android.view.Gravity
 import android.view.View
-import android.widget.*
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.SeekBar
+import android.widget.TextView
 import com.mx.video.R
 import com.mx.video.beans.MXConfig
 import com.mx.video.beans.MXScreen
@@ -135,12 +140,15 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
 
     fun setViewShow(view: View, show: Boolean?) {
         show ?: return
-        val visibility = if (show) View.VISIBLE else View.GONE
-//        if (view.visibility == visibility) return
+        if (view.parent == null) return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (!view.isAttachedToWindow) return
+        }
 
         val duration = config.animatorDuration.get()
         val prop = animatorPropSet[view.id]
-        if (prop != null && view.parent != null && view.isAttachedToWindow && duration > 0L) {
+        val visibility = if (show) View.VISIBLE else View.GONE
+        if (prop != null && duration > 0L) {
             if (visibility == View.VISIBLE) {
                 MXAnimatorHelp.show(view, duration)
             } else {

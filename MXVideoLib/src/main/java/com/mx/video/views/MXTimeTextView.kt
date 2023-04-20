@@ -6,7 +6,8 @@ import android.os.Looper
 import android.util.AttributeSet
 import android.widget.TextView
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 internal class MXTimeTextView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0

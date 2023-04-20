@@ -7,8 +7,16 @@ import com.mx.video.base.IMXVideo
 import com.mx.video.beans.MXConfig
 import com.mx.video.beans.MXScreen
 import com.mx.video.beans.MXState
-import com.mx.video.listener.*
-import com.mx.video.utils.*
+import com.mx.video.listener.MXBrightnessTouchListener
+import com.mx.video.listener.MXDoubleClickListener
+import com.mx.video.listener.MXProgressSeekListener
+import com.mx.video.listener.MXProgressSeekTouchListener
+import com.mx.video.listener.MXVolumeTouchListener
+import com.mx.video.utils.MXDismissDelay
+import com.mx.video.utils.MXNetSpeedHelp
+import com.mx.video.utils.MXTicket
+import com.mx.video.utils.MXUtils
+import com.mx.video.utils.MXValueObservable
 import com.mx.video.utils.touch.MXTouchHelp
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -234,7 +242,7 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
 
         // 点击屏幕响应
         viewSet.mxPlayerRootLay.setOnClickListener(object : MXDoubleClickListener() {
-            override fun onClick() {
+            override fun onSingleClick() {
                 if (config.state.get() == MXState.PLAYING) {
                     // 播放中单击：控制暂停按钮显示与隐藏
                     showWhenPlaying.set(!showWhenPlaying.get())
@@ -271,12 +279,7 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
         // 进度条循环刷新
         timeTicket.setTicketRun {
             val state = config.state.get()
-            if (state in arrayOf(
-                    MXState.PREPARED,
-                    MXState.PLAYING,
-                    MXState.PAUSE
-                )
-            ) {
+            if (state in arrayOf(MXState.PREPARED, MXState.PLAYING, MXState.PAUSE)) {
                 val duration = mxVideo.getDuration()
                 val position = mxVideo.getPosition()
                 this.position.set(position to duration)

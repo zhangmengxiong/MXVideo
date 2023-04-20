@@ -5,6 +5,7 @@ import android.graphics.SurfaceTexture
 import android.view.TextureView
 import com.mx.video.base.IMXPlayerCallback
 import com.mx.video.beans.MXPlaySource
+import com.mx.video.utils.MXUtils
 import com.mx.video.views.MXTextureView
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -77,6 +78,10 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
                 run.invoke()
             }
         }
+    }
+
+    fun log(any: Any) {
+        MXUtils.log(any)
     }
 
     internal fun startPlay(

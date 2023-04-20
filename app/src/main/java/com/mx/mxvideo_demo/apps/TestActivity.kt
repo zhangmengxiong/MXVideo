@@ -6,14 +6,12 @@ import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.mx.mxvideo_demo.R
-import com.mx.mxvideo_demo.ldjVideos
-import com.mx.mxvideo_demo.thumbnails
-import com.mx.mxvideo_demo.titles
+import com.mx.mxvideo_demo.SourceItem
 import com.mx.video.MXVideoStd
 import com.mx.video.beans.MXPlaySource
 import com.mx.video.beans.MXScreen
 import com.mx.video.player.IMXPlayer
-import kotlinx.android.synthetic.main.activity_test.*
+import kotlinx.android.synthetic.main.activity_test.startFullPlay
 
 class TestActivity : AppCompatActivity() {
     private var playerClass: Class<out IMXPlayer>? = null
@@ -24,10 +22,11 @@ class TestActivity : AppCompatActivity() {
         setContentView(R.layout.activity_test)
 
         mxVideoStd.setOnEmptyPlayListener {
-            Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
+            val source = SourceItem.random16x9()
+            Glide.with(this).load(source.img).into(mxVideoStd.getPosterImageView())
             mxVideoStd.setPlayer(playerClass)
             mxVideoStd.setSource(
-                MXPlaySource(Uri.parse(ldjVideos.random()), titles.random()), seekTo = 0
+                MXPlaySource(Uri.parse(source.url), source.name), seekTo = 0
             )
             mxVideoStd.startPlay()
         }

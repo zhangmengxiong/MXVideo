@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.BatteryManager
 import android.util.AttributeSet
 import android.widget.ImageView
@@ -74,6 +76,11 @@ internal class MXBatteryImageView @JvmOverloads constructor(
             else -> {
                 R.drawable.mx_icon_battery_v5
             }
+        }
+        imageTintList = if (isCharging) {
+            ColorStateList.valueOf(Color.GREEN)
+        } else {
+            ColorStateList.valueOf(resources.getColor(R.color.mx_player_color_main))
         }
         setImageResource(img)
     }

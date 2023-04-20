@@ -1,22 +1,26 @@
 package com.mx.mxvideo_demo.player.exo
 
-import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.upstream.RawResourceDataSource.RawResourceDataSourceException
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import android.content.Context
+import android.net.Uri
 import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
-import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource
-import com.google.android.exoplayer2.source.rtsp.RtspMediaSource
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.ext.rtmp.RtmpDataSource
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.dash.DashMediaSource
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
-import com.google.android.exoplayer2.ext.rtmp.RtmpDataSource
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
-import android.annotation.SuppressLint
-import android.content.Context
-import android.net.Uri
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.upstream.*
+import com.google.android.exoplayer2.source.rtsp.RtspMediaSource
+import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource
+import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
+import com.google.android.exoplayer2.upstream.DataSource
+import com.google.android.exoplayer2.upstream.DataSpec
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
+import com.google.android.exoplayer2.upstream.DefaultDataSource
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
+import com.google.android.exoplayer2.upstream.RawResourceDataSource
+import com.google.android.exoplayer2.upstream.RawResourceDataSource.RawResourceDataSourceException
 import com.google.android.exoplayer2.util.Util
 
 internal object ExoSourceBuild {

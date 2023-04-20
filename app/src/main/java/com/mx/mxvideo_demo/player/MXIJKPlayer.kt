@@ -190,9 +190,11 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
             IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> {
                 notifyStartPlay()
             }
+
             IMediaPlayer.MEDIA_INFO_BUFFERING_START -> {
                 notifyBuffering(true)
             }
+
             IMediaPlayer.MEDIA_INFO_BUFFERING_END -> {
                 notifyBuffering(false)
             }
@@ -200,8 +202,11 @@ class MXIJKPlayer : IMXPlayer(), IMediaPlayer.OnPreparedListener,
         return true
     }
 
-    override fun onVideoSizeChanged(p0: IMediaPlayer?, p1: Int, p2: Int, p3: Int, p4: Int) {
-        if (!active) return
-        notifyVideoSize(p1, p2)
+    override fun onVideoSizeChanged(mp: IMediaPlayer?, p1: Int, p2: Int, p3: Int, p4: Int) {
+        if (!active || mp == null) return
+        val ratio = p3.toFloat() / p4.toFloat()
+        val width = mp.videoWidth
+        val height = (mp.videoHeight / ratio).toInt()
+        notifyVideoSize(width, height)
     }
 }

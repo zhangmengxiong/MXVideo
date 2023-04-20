@@ -24,10 +24,11 @@ internal class MXTicket {
 
     private val ticketRun = object : Runnable {
         override fun run() {
-            if (!isTicketStart) return
+            val runnable = runnable
+            if (!isTicketStart || runnable == null) return
             try {
-                runnable?.run()
-            } catch (e: Exception) {
+                runnable.run()
+            } catch (_: Exception) {
             } finally {
                 mHandler.postDelayed(this, 500)
             }

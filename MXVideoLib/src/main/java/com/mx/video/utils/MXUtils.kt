@@ -15,7 +15,8 @@ import android.view.WindowManager
 import com.mx.video.BuildConfig
 import com.mx.video.beans.MXOrientation
 import java.text.DecimalFormat
-import java.util.*
+import java.util.Formatter
+import java.util.Locale
 
 internal object MXUtils {
     private val activityFlagMap = HashMap<String, Int?>()
@@ -47,6 +48,7 @@ internal object MXUtils {
      * 清空所有播放进度
      */
     fun clearProgress() {
+        if (_appContext == null) return
         historyDb.cleanAll()
     }
 
@@ -54,6 +56,7 @@ internal object MXUtils {
      * 保存播放度条
      */
     fun saveProgress(uri: Uri, time: Int) {
+        if (_appContext == null) return
         historyDb.addPlayTime(uri.toString(), time)
     }
 
@@ -61,6 +64,7 @@ internal object MXUtils {
      * 获取播放进度
      */
     fun getProgress(uri: Uri?): Int {
+        if (_appContext == null) return 0
         if (uri == null) return 0
         return historyDb.getPlayTime(uri.toString())
     }
@@ -82,9 +86,11 @@ internal object MXUtils {
             byte < 1024L -> {
                 "$byte Byte/s"
             }
+
             byte < 1024L * 1024 -> {
                 "${byte / 1024} Kb/s"
             }
+
             else -> {
                 DecimalFormat("#.0").format(byte / (1024f * 1024)) + " Mb/s"
             }

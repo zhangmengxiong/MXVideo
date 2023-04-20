@@ -5,8 +5,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
-import com.mx.mxvideo_demo.*
+import com.mx.dialog.MXDialog
+import com.mx.mxvideo_demo.R
+import com.mx.mxvideo_demo.SourceItem
 import com.mx.mxvideo_demo.player.MXAliPlayer
 import com.mx.mxvideo_demo.player.MXIJKPlayer
 import com.mx.mxvideo_demo.player.exo.MXExoPlayer
@@ -17,89 +20,75 @@ import com.mx.video.beans.MXScale
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
 import kotlinx.android.synthetic.main.activity_normal.*
-import java.util.*
+import java.util.Formatter
+import java.util.Locale
 
 class NormalActivity : AppCompatActivity() {
     private var playerClass: Class<out IMXPlayer>? = null
+    private var currentSource: SourceItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_normal)
 
-        Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
+        sourceBtn.setOnClickListener {
+            val list = SourceItem.all()
+            MXDialog.select(this, list.mapIndexed { index, item ->
+                "$index： ${item.type} - ${item.name} - ${item.url}"
+            }) { index ->
+                val item = list.getOrNull(index) ?: return@select
+                currentSource = item
+                sourceBtn.text = "${item.type} - ${item.name} - ${item.url}"
+            }
+        }
+        Glide.with(this).load(SourceItem.random16x9().img).into(mxVideoStd.getPosterImageView())
+
+
         mxVideoStd.setOnEmptyPlayListener {
+            val source = SourceItem.all().first()
             mxVideoStd.setSource(
                 MXPlaySource(
-                    Uri.parse("http://ynjt.obs.cn-north-4.myhuaweicloud.com:80/video/Record/tuiliu.danengshou.com/live/continuous_record/mp4/1650505735583_2022-04-21-01-49-40/2022-04-21-01-49-40.mp4"),
-                    titles.random(),
+                    Uri.parse(source.url),
+                    source.name,
                     isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
                 ), seekTo = 0
             )
             mxVideoStd.startPlay()
         }
-        randPlay.setOnClickListener {
-            Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
+        startPlayBtn.setOnClickListener {
+            val source = currentSource ?: SourceItem.random16x9()
+            Glide.with(this).load(source.img).into(mxVideoStd.getPosterImageView())
+            mxVideoStd.setPlayer(playerClass)
             mxVideoStd.setSource(
                 MXPlaySource(
-                    Uri.parse(ldjVideos.random()),
-                    titles.random(),
+                    Uri.parse(source.url),
+                    source.name,
                     isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
                 ), seekTo = 0
             )
             mxVideoStd.startPlay()
         }
-        randTo10SecPlay.setOnClickListener {
-            Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
-            mxVideoStd.setSource(
-                MXPlaySource(
-                    Uri.parse(ldjVideos.random()),
-                    titles.random(),
-                    isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
-                ), seekTo = 60
-            )
-            mxVideoStd.startPlay()
-        }
+
         preloadPlay.setOnClickListener {
-            Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
+            val source = currentSource ?: SourceItem.random16x9()
+            Glide.with(this).load(source.img).into(mxVideoStd.getPosterImageView())
+
+            mxVideoStd.setPlayer(playerClass)
             mxVideoStd.setSource(
                 MXPlaySource(
-                    Uri.parse(ldjVideos.random()),
-                    titles.random(),
+                    Uri.parse(source.url),
+                    source.name,
                     isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
                 ), seekTo = 0
             )
             mxVideoStd.startPreload()
         }
-        livePlay.setOnClickListener {
-            Glide.with(this).load(thumbnails.random()).into(mxVideoStd.getPosterImageView())
-            mxVideoStd.setSource(
-                MXPlaySource(
-                    Uri.parse("http://1011.hlsplay.aodianyun.com/demo/game.flv"),
-                    titles.random(), isLiveSource = true,
-                    isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
-                ), seekTo = 0
-            )
-            mxVideoStd.startPlay()
-        }
+
         screenCaptureBtn.setOnClickListener {
             if (mxVideoStd.isPlaying()) {
                 val bitmap: Bitmap? = mxVideoStd.getTextureView()?.bitmap
                 screenCapImg.setImageBitmap(bitmap)
-            }
-        }
-        fun stringForTime(time: Int): String {
-            if (time <= 0 || time >= 24 * 60 * 60 * 1000) {
-                return "00:00"
-            }
-            val seconds = (time % 60)
-            val minutes = (time / 60 % 60)
-            val hours = (time / 3600)
-            val stringBuilder = StringBuilder()
-            val mFormatter = Formatter(stringBuilder, Locale.getDefault())
-            return if (hours > 0) {
-                mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString()
-            } else {
-                mFormatter.format("%02d:%02d", minutes, seconds).toString()
+                screenCapImg.isVisible = true
             }
         }
         mxVideoStd.setOnPlayTicketListener { position, duration ->
@@ -115,18 +104,23 @@ class NormalActivity : AppCompatActivity() {
         videoSourceRG.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.source16x9 -> {
+                    val source = SourceItem.random16x9()
                     mxVideoStd.setSource(
-                        MXPlaySource(Uri.parse(VIDEO_16x9), titles.random())
+                        MXPlaySource(Uri.parse(source.url), source.name)
                     )
                 }
+
                 R.id.source4x3 -> {
+                    val source = SourceItem.random4x3()
                     mxVideoStd.setSource(
-                        MXPlaySource(Uri.parse(VIDEO_4x3), titles.random())
+                        MXPlaySource(Uri.parse(source.url), source.name)
                     )
                 }
+
                 R.id.source9x16 -> {
+                    val source = SourceItem.random9x16()
                     mxVideoStd.setSource(
-                        MXPlaySource(Uri.parse(VIDEO_9x16), titles.random())
+                        MXPlaySource(Uri.parse(source.url), source.name)
                     )
                 }
             }
@@ -277,6 +271,22 @@ class NormalActivity : AppCompatActivity() {
             mxVideoStd.getConfig().replayLiveSourceWhenError.set(checkedId == R.id.liveRetryTrue)
         }
         liveRetryFalse.performClick()
+    }
+
+    private fun stringForTime(time: Int): String {
+        if (time <= 0 || time >= 24 * 60 * 60 * 1000) {
+            return "00:00"
+        }
+        val seconds = (time % 60)
+        val minutes = (time / 60 % 60)
+        val hours = (time / 3600)
+        val stringBuilder = StringBuilder()
+        val mFormatter = Formatter(stringBuilder, Locale.getDefault())
+        return if (hours > 0) {
+            mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString()
+        } else {
+            mFormatter.format("%02d:%02d", minutes, seconds).toString()
+        }
     }
 
     override fun onStart() {

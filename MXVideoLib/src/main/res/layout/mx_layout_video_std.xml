@@ -161,8 +161,7 @@
                 android:focusable="false"
                 android:focusableInTouchMode="false"
                 android:scaleType="centerCrop"
-                android:soundEffectsEnabled="false"
-                android:tint="@color/mx_player_color_main" />
+                android:soundEffectsEnabled="false"  />
 
             <com.mx.video.views.MXTimeTextView
                 android:id="@+id/mxSystemTimeTxv"

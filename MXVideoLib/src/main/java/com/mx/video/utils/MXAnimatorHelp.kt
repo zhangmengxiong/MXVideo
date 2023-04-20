@@ -10,7 +10,7 @@ import com.mx.video.beans.MXViewAnimator
 internal object MXAnimatorHelp {
     private val ANIMATOR_TAG = R.id.mxPlayerRootLay
     fun show(view: View, duration: Long) {
-        (view.getTag(ANIMATOR_TAG) as AnimatorSet?)?.end()
+        (view.getTag(ANIMATOR_TAG) as AnimatorSet?)?.cancel()
 
         view.visibility = View.VISIBLE
         val set = AnimatorSet()
@@ -30,17 +30,17 @@ internal object MXAnimatorHelp {
         val height = view.height * prop.hideToTranslation
         val translate = ObjectAnimator.ofFloat(view, "translationY", view.translationY, height)
         set.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animation: Animator?) {
+            override fun onAnimationStart(animation: Animator) {
             }
 
-            override fun onAnimationEnd(animation: Animator?) {
+            override fun onAnimationEnd(animation: Animator) {
                 view.visibility = View.GONE
             }
 
-            override fun onAnimationCancel(animation: Animator?) {
+            override fun onAnimationCancel(animation: Animator) {
             }
 
-            override fun onAnimationRepeat(animation: Animator?) {
+            override fun onAnimationRepeat(animation: Animator) {
             }
         })
         set.duration = duration

@@ -4,7 +4,13 @@ import android.content.Context
 import android.graphics.SurfaceTexture
 import android.os.Looper
 import android.view.Surface
-import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.DefaultLoadControl
+import com.google.android.exoplayer2.DefaultRenderersFactory
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.PlaybackException
+import com.google.android.exoplayer2.PlaybackParameters
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
@@ -30,7 +36,7 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
 
             val build = AudioAttributes.Builder()
             build.setUsage(C.USAGE_MEDIA)
-            build.setContentType(C.CONTENT_TYPE_MUSIC)
+            build.setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
             player.setAudioAttributes(build.build(), false)
 
             player.addListener(this)
@@ -135,13 +141,16 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
                     notifyBuffering(true)
                     isBuffering = true
                 }
+
                 Player.STATE_READY -> {
                     notifyPrepared()
                     notifyBuffering(false)
                 }
+
                 Player.STATE_ENDED -> {
                     notifyPlayerCompletion()
                 }
+
                 else -> {}
             }
         }
@@ -167,6 +176,8 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
 
     override fun onVideoSizeChanged(videoSize: VideoSize) {
         if (!active) return
-        notifyVideoSize(videoSize.width, videoSize.height)
+        val width = videoSize.width
+        val height = (videoSize.height / videoSize.pixelWidthHeightRatio).toInt()
+        notifyVideoSize(width, height)
     }
 }

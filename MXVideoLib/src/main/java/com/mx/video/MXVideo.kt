@@ -9,7 +9,14 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.mx.video.base.IMXPlayerCallback
 import com.mx.video.base.IMXVideo
-import com.mx.video.beans.*
+import com.mx.video.beans.MXConfig
+import com.mx.video.beans.MXOrientation
+import com.mx.video.beans.MXPlaySource
+import com.mx.video.beans.MXScale
+import com.mx.video.beans.MXScreen
+import com.mx.video.beans.MXSensorMode
+import com.mx.video.beans.MXSize
+import com.mx.video.beans.MXState
 import com.mx.video.listener.MXSensorListener
 import com.mx.video.listener.MXVideoListener
 import com.mx.video.player.IMXPlayer
@@ -182,6 +189,7 @@ abstract class MXVideo @JvmOverloads constructor(
                     requestActivityOrientation()
                     postInvalidate()
                 }
+
                 MXScreen.NORMAL -> {
                     val parentItem = parentMap.remove(config.viewIndexId) ?: return@addObserver
                     windows.removeView(this)
@@ -215,6 +223,7 @@ abstract class MXVideo @JvmOverloads constructor(
             MXSensorMode.SENSOR_AUTO -> {
                 orientation
             }
+
             MXSensorMode.SENSOR_FIT_VIDEO -> {
                 if (orientation.isHorizontal()) {
                     if (size.width >= size.height) {
@@ -230,6 +239,7 @@ abstract class MXVideo @JvmOverloads constructor(
                     }
                 }
             }
+
             MXSensorMode.SENSOR_NO -> {
                 if (size.width >= size.height) {
                     MXOrientation.DEGREE_270
@@ -553,12 +563,11 @@ abstract class MXVideo @JvmOverloads constructor(
 
     override fun onPlayerVideoSizeChanged(width: Int, height: Int) {
         if (width <= 0 || height <= 0) return
+        MXUtils.log("MXVideo: onPlayerVideoSizeChanged() $width x $height")
         val size = config.videoSize.get()
         if (width == size.width && height == size.height) return
 
-        MXUtils.log("MXVideo: onPlayerVideoSizeChanged() $width x $height")
         config.videoSize.set(MXSize(width, height))
-
         if (config.screen.get() == MXScreen.FULL) {
             requestActivityOrientation()
         }
