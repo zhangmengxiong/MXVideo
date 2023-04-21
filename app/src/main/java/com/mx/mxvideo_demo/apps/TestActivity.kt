@@ -26,7 +26,8 @@ class TestActivity : AppCompatActivity() {
             Glide.with(this).load(source.img).into(mxVideoStd.getPosterImageView())
             mxVideoStd.setPlayer(playerClass)
             mxVideoStd.setSource(
-                MXPlaySource(Uri.parse(source.url), source.name), seekTo = 0
+                MXPlaySource(Uri.parse(source.url), source.name, isLiveSource = source.live()),
+                seekTo = 0
             )
             mxVideoStd.startPlay()
         }

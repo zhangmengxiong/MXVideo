@@ -28,6 +28,9 @@ allprojects {
 }
 
 task clean(type: Delete) {
+    for (final def project in rootProject.subprojects) {
+        delete project.buildDir
+    }
     delete rootProject.buildDir
 }
 

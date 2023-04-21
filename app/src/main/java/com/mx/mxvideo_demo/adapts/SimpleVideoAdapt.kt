@@ -33,7 +33,7 @@ class SimpleVideoAdapt : MXBaseSimpleAdapt<SourceItem>() {
         mxVideoStd.getConfig().autoFullScreenBySensor.set(false)
         mxVideoStd.getConfig().fullScreenSensorMode.set(MXSensorMode.SENSOR_AUTO)
         mxVideoStd.setSource(
-            MXPlaySource(Uri.parse(record.url), record.name)
+            MXPlaySource(Uri.parse(record.url), record.name, isLiveSource = record.live())
         )
         mxVideoStd.setOnPlayTicketListener { position, duration ->
             println("播放进度：$position / $duration")

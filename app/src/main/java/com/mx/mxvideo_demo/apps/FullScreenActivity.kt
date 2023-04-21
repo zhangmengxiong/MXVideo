@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.activity_full.mxVideoStd
 import kotlinx.android.synthetic.main.activity_full.statusTxv
 
 class FullScreenActivity : AppCompatActivity() {
-    val source = SourceItem.random16x9()
+    private val source = SourceItem.random16x9()
     override fun onCreate(savedInstanceState: Bundle?) {
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         window.setFlags(
@@ -47,15 +47,15 @@ class FullScreenActivity : AppCompatActivity() {
 
         // 屏蔽全屏按钮
         mxVideoStd.getConfig().showFullScreenButton.set(false)
+        mxVideoStd.getConfig().autoFullScreenBySensor.set(false)
         mxVideoStd.getConfig().gotoNormalScreenWhenComplete.set(false)
         mxVideoStd.getConfig().gotoNormalScreenWhenError.set(false)
         mxVideoStd.getConfig().fullScreenSensorMode.set(MXSensorMode.SENSOR_AUTO)
-        mxVideoStd.getConfig().autoFullScreenBySensor.set(true)
-        mxVideoStd.setPlayer(MXIJKPlayer::class.java)
+//        mxVideoStd.setPlayer(MXIJKPlayer::class.java)
         mxVideoStd.setSource(
             MXPlaySource(
                 Uri.parse(source.url),
-                source.name
+                source.name, isLiveSource = source.live()
             ), seekTo = 0
         )
         mxVideoStd.startPlay()

@@ -30,7 +30,7 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
     private val position = MXValueObservable(Pair(-1, -1))
 
     // 播放状态，相关View是否显示
-    internal val showWhenPlaying = MXValueObservable(false)
+    private val showWhenPlaying = MXValueObservable(false)
 
     private val timeTicket = MXTicket()
     private val touchHelp = MXTouchHelp(viewSet.context)
@@ -348,23 +348,37 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
      * 状态处理
      */
     private fun processState(state: MXState) {
-        if (state == MXState.PLAYING) {
-            viewSet.mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
-            showWhenPlaying.set(false)
-            config.isPreloading.set(false)
-        }
+        when (state) {
+            MXState.PREPARING, MXState.PREPARED -> { // 屏幕常亮
+                viewSet.mxSeekProgress.setOnSeekBarChangeListener(null)
+                position.set(0 to 0)
+                timeTicket.start()
+                speedHelp.start()
+                MXUtils.findWindows(viewSet.context)
+                    ?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            }
 
-        if (state == MXState.PREPARING) {// 屏幕常亮
-            position.set(0 to 0)
-            timeTicket.start()
-            speedHelp.start()
-            MXUtils.findWindows(viewSet.context)
-                ?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        } else if (state == MXState.ERROR || state == MXState.COMPLETE) { //取消屏幕常亮
-            timeTicket.stop()
-            speedHelp.stop()
-            MXUtils.findWindows(viewSet.context)
-                ?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            MXState.PLAYING -> {
+                viewSet.mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
+                timeTicket.start()
+                speedHelp.start()
+                showWhenPlaying.set(false)
+                config.isPreloading.set(false)
+            }
+
+            MXState.PAUSE -> {
+                viewSet.mxSeekProgress.setOnSeekBarChangeListener(onSeekBarListener)
+                timeTicket.start()
+                speedHelp.start()
+            }
+
+            else -> { //取消屏幕常亮
+                viewSet.mxSeekProgress.setOnSeekBarChangeListener(null)
+                timeTicket.stop()
+                speedHelp.stop()
+                MXUtils.findWindows(viewSet.context)
+                    ?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            }
         }
 
         config.videoListeners.toList().forEach { listener ->
@@ -447,6 +461,7 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
      * 释放资源，释放后无法再次播放
      */
     fun release() {
+        MXUtils.log("MXViewProvider release()")
         for (field in this::class.java.declaredFields) {
             val any = field.get(this)
             if (any is MXValueObservable<*>) {

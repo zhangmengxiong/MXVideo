@@ -343,6 +343,7 @@ abstract class MXVideo @JvmOverloads constructor(
     }
 
     override fun setDimensionRatio(ratio: Double) {
+        if (config.dimensionRatio.get() == ratio) return
         MXUtils.log("MXVideo: setDimensionRatio($ratio)")
         config.dimensionRatio.set(ratio)
         requestLayout()

@@ -33,9 +33,10 @@ class NormalActivity : AppCompatActivity() {
 
         sourceBtn.setOnClickListener {
             val list = SourceItem.all()
+            val currentIndex = list.indexOf(currentSource)
             MXDialog.select(this, list.mapIndexed { index, item ->
                 "$index： ${item.type} - ${item.name} - ${item.url}"
-            }) { index ->
+            }, selectIndex = currentIndex) { index ->
                 val item = list.getOrNull(index) ?: return@select
                 currentSource = item
                 sourceBtn.text = "${item.type} - ${item.name} - ${item.url}"
@@ -50,6 +51,7 @@ class NormalActivity : AppCompatActivity() {
                 MXPlaySource(
                     Uri.parse(source.url),
                     source.name,
+                    isLiveSource = source.live(),
                     isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
                 ), seekTo = 0
             )
@@ -62,7 +64,7 @@ class NormalActivity : AppCompatActivity() {
             mxVideoStd.setSource(
                 MXPlaySource(
                     Uri.parse(source.url),
-                    source.name,
+                    source.name, isLiveSource = source.live(),
                     isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
                 ), seekTo = 0
             )
@@ -77,7 +79,7 @@ class NormalActivity : AppCompatActivity() {
             mxVideoStd.setSource(
                 MXPlaySource(
                     Uri.parse(source.url),
-                    source.name,
+                    source.name, isLiveSource = source.live(),
                     isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
                 ), seekTo = 0
             )
@@ -106,21 +108,33 @@ class NormalActivity : AppCompatActivity() {
                 R.id.source16x9 -> {
                     val source = SourceItem.random16x9()
                     mxVideoStd.setSource(
-                        MXPlaySource(Uri.parse(source.url), source.name)
+                        MXPlaySource(
+                            Uri.parse(source.url),
+                            source.name,
+                            isLiveSource = source.live()
+                        )
                     )
                 }
 
                 R.id.source4x3 -> {
                     val source = SourceItem.random4x3()
                     mxVideoStd.setSource(
-                        MXPlaySource(Uri.parse(source.url), source.name)
+                        MXPlaySource(
+                            Uri.parse(source.url),
+                            source.name,
+                            isLiveSource = source.live()
+                        )
                     )
                 }
 
                 R.id.source9x16 -> {
                     val source = SourceItem.random9x16()
                     mxVideoStd.setSource(
-                        MXPlaySource(Uri.parse(source.url), source.name)
+                        MXPlaySource(
+                            Uri.parse(source.url),
+                            source.name,
+                            isLiveSource = source.live()
+                        )
                     )
                 }
             }

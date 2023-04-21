@@ -9,6 +9,8 @@ class SourceItem {
     val url: String = ""
     val img: String = ""
 
+    fun live() = (type == "live")
+
     companion object {
         private val list = ArrayList<SourceItem>()
         fun init(context: Context) {
@@ -19,6 +21,7 @@ class SourceItem {
                 list.add(mapper.treeToValue(node, SourceItem::class.java))
             }
         }
+
         fun all() = list.toList()
 
         fun randomLive(): SourceItem {

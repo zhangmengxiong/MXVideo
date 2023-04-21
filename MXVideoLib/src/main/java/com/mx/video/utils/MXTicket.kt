@@ -12,6 +12,7 @@ internal class MXTicket {
     }
 
     fun start() {
+        if (isTicketStart) return
         isTicketStart = true
         mHandler.removeCallbacksAndMessages(null)
         mHandler.post(ticketRun)
@@ -24,10 +25,9 @@ internal class MXTicket {
 
     private val ticketRun = object : Runnable {
         override fun run() {
-            val runnable = runnable
-            if (!isTicketStart || runnable == null) return
+            if (!isTicketStart) return
             try {
-                runnable.run()
+                runnable?.run()
             } catch (_: Exception) {
             } finally {
                 mHandler.postDelayed(this, 500)
@@ -36,6 +36,7 @@ internal class MXTicket {
     }
 
     fun release() {
+        MXUtils.log("MXTicket release()")
         isTicketStart = false
         runnable = null
         mHandler.removeCallbacksAndMessages(null)
