@@ -31,8 +31,8 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
     val mxLoading: View by lazy {
         rootView.findViewById(R.id.mxLoading) ?: View(context)
     }
-    val mxLoadingTxv: TextView by lazy {
-        rootView.findViewById(R.id.mxLoadingTxv) ?: TextView(context)
+    val mxNetSpeedTxv: TextView by lazy {
+        rootView.findViewById(R.id.mxNetSpeedTxv) ?: TextView(context)
     }
     val mxBottomSeekProgress: ProgressBar by lazy {
         rootView.findViewById(R.id.mxBottomSeekProgress) ?: ProgressBar(context)
@@ -176,17 +176,17 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
         val state = config.state.get()
         if (config.loading.get() && state in arrayOf(MXState.PLAYING, MXState.PAUSE)) {
             setViewShow(mxLoading, true)
-            setViewShow(mxLoadingTxv, true)
+            setViewShow(mxNetSpeedTxv, true)
             return
         }
         if (!config.isPreloading.get() && state in arrayOf(MXState.PREPARING, MXState.PREPARED)) {
             setViewShow(mxLoading, true)
-            setViewShow(mxLoadingTxv, true)
+            setViewShow(mxNetSpeedTxv, true)
             return
         }
 
         setViewShow(mxLoading, false)
-        setViewShow(mxLoadingTxv, false)
+        setViewShow(mxNetSpeedTxv, false)
     }
 
     fun processPlaceImg() {

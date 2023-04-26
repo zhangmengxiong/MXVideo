@@ -5,7 +5,7 @@
     <item name="mxBottomSeekProgress" type="id" />
     <item name="mxPlaceImg" type="id" />
     <item name="mxLoading" type="id" />
-    <item name="mxLoadingTxv" type="id" />
+    <item name="mxNetSpeedTxv" type="id" />
     <item name="mxPlayPauseBtn" type="id" />
     <item name="mxTopLay" type="id" />
     <item name="mxReturnBtn" type="id" />

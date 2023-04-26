@@ -68,14 +68,15 @@ internal object ExoSourceBuild {
             ).createMediaSource(mediaItem)
         }
         return when (contentType) {
-            C.TYPE_SS -> SsMediaSource.Factory(
+            C.CONTENT_TYPE_SS -> SsMediaSource.Factory(
                 DefaultSsChunkSource.Factory(getDataSourceFactory(context, preview, headData)),
                 DefaultDataSource.Factory(
                     context,
                     getHttpDataSourceFactory(context, preview, headData)
                 )
             ).createMediaSource(mediaItem)
-            C.TYPE_RTSP -> {
+
+            C.CONTENT_TYPE_RTSP -> {
                 val rtspFactory = RtspMediaSource.Factory()
                 if (uerAgent != null) {
                     rtspFactory.setUserAgent(uerAgent)
@@ -86,18 +87,21 @@ internal object ExoSourceBuild {
                 rtspFactory.setForceUseRtpTcp(isForceRtspTcp)
                 rtspFactory.createMediaSource(mediaItem)
             }
-            C.TYPE_DASH -> DashMediaSource.Factory(
+
+            C.CONTENT_TYPE_DASH -> DashMediaSource.Factory(
                 DefaultDashChunkSource.Factory(getDataSourceFactory(context, preview, headData)),
                 DefaultDataSource.Factory(
                     context,
                     getHttpDataSourceFactory(context, preview, headData)
                 )
             ).createMediaSource(mediaItem)
-            C.TYPE_HLS -> {
+
+            C.CONTENT_TYPE_HLS -> {
                 HlsMediaSource.Factory(
                     getDataSourceFactory(context, preview, headData)
                 ).setAllowChunklessPreparation(true).createMediaSource(mediaItem)
             }
+
             TYPE_RTMP -> {
                 val rtmpDataSourceFactory = RtmpDataSource.Factory()
                 ProgressiveMediaSource.Factory(
@@ -106,10 +110,12 @@ internal object ExoSourceBuild {
                 )
                     .createMediaSource(mediaItem)
             }
-            C.TYPE_OTHER -> ProgressiveMediaSource.Factory(
+
+            C.CONTENT_TYPE_OTHER -> ProgressiveMediaSource.Factory(
                 getDataSourceFactory(context, preview, headData), DefaultExtractorsFactory()
             )
                 .createMediaSource(mediaItem)
+
             else -> ProgressiveMediaSource.Factory(
                 getDataSourceFactory(context, preview, headData), DefaultExtractorsFactory()
             ).createMediaSource(mediaItem)

@@ -64,7 +64,7 @@
         android:visibility="gone" />
 
     <TextView
-        android:id="@+id/mxLoadingTxv"
+        android:id="@+id/mxNetSpeedTxv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/mxLoading"

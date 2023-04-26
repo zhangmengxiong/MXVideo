@@ -5,6 +5,7 @@ import android.view.WindowManager
 import com.mx.video.R
 import com.mx.video.base.IMXVideo
 import com.mx.video.beans.MXConfig
+import com.mx.video.beans.MXPair
 import com.mx.video.beans.MXScreen
 import com.mx.video.beans.MXState
 import com.mx.video.listener.MXBrightnessTouchListener
@@ -27,7 +28,7 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
      * first = 当前播放进度 秒
      * second = 视频总长度 秒
      */
-    private val position = MXValueObservable(Pair(-1, -1))
+    private val position = MXValueObservable(MXPair(-1, -1))
 
     // 播放状态，相关View是否显示
     private val showWhenPlaying = MXValueObservable(false)
@@ -252,7 +253,8 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
             override fun onDoubleClick() {
                 val state = config.state.get()
                 val source = config.source.get() ?: return
-                if (state == MXState.PLAYING && config.canPauseByUser.get() && !source.isLiveSource) {
+                if (source.isLiveSource) return
+                if (state == MXState.PLAYING && config.canPauseByUser.get()) {
                     mxVideo.pausePlay()
                 } else if (state == MXState.PAUSE) {
                     mxVideo.continuePlay()
@@ -270,9 +272,9 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
         // 网速刷新
         speedHelp.setOnSpeedUpdate { speed ->
             if (config.canShowNetSpeed.get()) {
-                viewSet.mxLoadingTxv.text = speed
+                viewSet.mxNetSpeedTxv.text = speed
             } else {
-                viewSet.mxLoadingTxv.text = null
+                viewSet.mxNetSpeedTxv.text = null
             }
         }
 
@@ -282,7 +284,7 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
             if (state in arrayOf(MXState.PREPARED, MXState.PLAYING, MXState.PAUSE)) {
                 val duration = mxVideo.getDuration()
                 val position = mxVideo.getPosition()
-                this.position.set(position to duration)
+                this.position.set(MXPair(position, duration))
             }
         }
 
@@ -351,7 +353,7 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
         when (state) {
             MXState.PREPARING, MXState.PREPARED -> { // 屏幕常亮
                 viewSet.mxSeekProgress.setOnSeekBarChangeListener(null)
-                position.set(0 to 0)
+                position.set(MXPair(0, 0))
                 timeTicket.start()
                 speedHelp.start()
                 MXUtils.findWindows(viewSet.context)

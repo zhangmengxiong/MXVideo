@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.TextureView
 import com.mx.video.beans.MXConfig
 import com.mx.video.beans.MXOrientation
+import com.mx.video.beans.MXPair
 import com.mx.video.beans.MXScale
 import com.mx.video.beans.MXSize
 import com.mx.video.utils.MXValueObservable
@@ -136,16 +137,16 @@ class MXTextureView @JvmOverloads constructor(
     private fun getScaleCenterCrop(
         scale: MXScale, videoRatio: Float,
         w: Float, h: Float
-    ): Pair<Float, Float> {
+    ): MXPair<Float, Float> {
         return when (scale) {
             MXScale.FILL_PARENT -> {
-                Pair(w, h)
+                MXPair(w, h)
             }
             MXScale.CENTER_CROP -> {
                 if (videoRatio > w / h) {
-                    Pair(w, w / videoRatio)
+                    MXPair(w, w / videoRatio)
                 } else {
-                    Pair(videoRatio * h, h)
+                    MXPair(videoRatio * h, h)
                 }
             }
         }

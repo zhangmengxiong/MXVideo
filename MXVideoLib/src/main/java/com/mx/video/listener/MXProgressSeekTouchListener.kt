@@ -1,13 +1,14 @@
 package com.mx.video.listener
 
 import com.mx.video.beans.MXConfig
+import com.mx.video.beans.MXPair
 import com.mx.video.beans.MXState
 import com.mx.video.utils.MXValueObservable
 import kotlin.math.min
 
 internal abstract class MXProgressSeekTouchListener(
     private val config: MXConfig,
-    private val position: MXValueObservable<Pair<Int, Int>>
+    private val position: MXValueObservable<MXPair<Int, Int>>
 ) : MXBaseTouchListener {
     override fun touchStart() {
         if (!config.sourceCanSeek() || config.state.get() != MXState.PLAYING) return
