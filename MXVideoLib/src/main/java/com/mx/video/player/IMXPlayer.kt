@@ -190,12 +190,12 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     /**
      * 获取当前播放时间，单位：秒
      */
-    abstract fun getPosition(): Int
+    abstract fun getPosition(): Float
 
     /**
      * 返回播放总时长，单位：秒
      */
-    abstract fun getDuration(): Int
+    abstract fun getDuration(): Float
 
     /**
      * 设置播放器音量百分比
@@ -217,12 +217,13 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     /**
      * 播放错误
      */
-    protected fun notifyError(message: String?) {
+    protected fun notifyError(message: String) {
         if (!active) return
         val callback = playerCallback ?: return
+        val source = mPlaySource ?: return
         mxHandler.postInMainThread {
             release()
-            callback.onPlayerError(message)
+            callback.onPlayerError(source, message)
         }
     }
 

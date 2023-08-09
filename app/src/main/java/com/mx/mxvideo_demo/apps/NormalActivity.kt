@@ -22,6 +22,7 @@ import com.mx.video.player.MXSystemPlayer
 import kotlinx.android.synthetic.main.activity_normal.*
 import java.util.Formatter
 import java.util.Locale
+import kotlin.math.roundToInt
 
 class NormalActivity : AppCompatActivity() {
     private var playerClass: Class<out IMXPlayer>? = null
@@ -94,7 +95,7 @@ class NormalActivity : AppCompatActivity() {
             }
         }
         mxVideoStd.setOnPlayTicketListener { position, duration ->
-            timeTxv.text = "${stringForTime(position)} / ${stringForTime(duration)}"
+            timeTxv.text = "${stringForTime(position.roundToInt())} / ${stringForTime(duration.roundToInt())}"
         }
         mxVideoStd.setOnVideoSizeListener { width, height ->
             sizeVideoTxv.text = "$width x $height"

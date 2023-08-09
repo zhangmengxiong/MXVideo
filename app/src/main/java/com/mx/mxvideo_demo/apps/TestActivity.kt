@@ -7,10 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.mx.mxvideo_demo.R
 import com.mx.mxvideo_demo.SourceItem
+import com.mx.mxvideo_demo.player.exo.MXExoPlayer
 import com.mx.video.MXVideoStd
 import com.mx.video.beans.MXPlaySource
 import com.mx.video.beans.MXScreen
 import com.mx.video.player.IMXPlayer
+import com.mx.video.player.MXSystemPlayer
 import kotlinx.android.synthetic.main.activity_test.startFullPlay
 
 class TestActivity : AppCompatActivity() {
@@ -21,12 +23,19 @@ class TestActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_test)
 
+        mxVideoStd.setOnErrorListener { source, message ->
+            println("播放錯誤：$message --> $source")
+        }
         mxVideoStd.setOnEmptyPlayListener {
             val source = SourceItem.random16x9()
             Glide.with(this).load(source.img).into(mxVideoStd.getPosterImageView())
             mxVideoStd.setPlayer(playerClass)
             mxVideoStd.setSource(
-                MXPlaySource(Uri.parse(source.url), source.name, isLiveSource = source.live()),
+                MXPlaySource(
+                    Uri.parse("https://media6.smartstudy.com/ae/07/3997/2/dest.m3u8"),
+                    source.name,
+                    isLiveSource = source.live()
+                ),
                 seekTo = 0
             )
             mxVideoStd.startPlay()
@@ -38,6 +47,23 @@ class TestActivity : AppCompatActivity() {
                 mxVideoStd.switchToScreen(MXScreen.NORMAL)
                 mxVideoStd.stopPlay()
             }, 10L * 1000)
+        }
+
+        var preTime = 0L
+        var prePosition = 0f
+        mxVideoStd.setOnPlayTicketListener { position, duration ->
+            val positionDiff = position - prePosition
+            val now = System.currentTimeMillis()
+            if (prePosition <= 0) {
+                preTime = now
+                prePosition = position
+                return@setOnPlayTicketListener
+            }
+            if (positionDiff < 5) return@setOnPlayTicketListener
+            val diff = (now - preTime) / 1000f
+            println("TIME -> diff = $diff  positionDiff=$positionDiff  position=$position / $duration ")
+            preTime = now
+            prePosition = position
         }
     }
 

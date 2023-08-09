@@ -3,6 +3,7 @@ package com.mx.video
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.Toast
+import com.mx.video.beans.MXPlaySource
 import com.mx.video.beans.MXState
 import com.mx.video.listener.MXVideoListener
 import com.mx.video.views.MXViewSet
@@ -11,17 +12,17 @@ open class MXVideoStd @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : MXVideo(context, attrs, defStyleAttr) {
     override fun getLayoutId(): Int {
-        return R.layout.mx_layout_video_std
+        return R.layout.mx_video_layout_std
     }
 
     private var onStateListener: ((MXState) -> Unit)? = null
     private var onPrepareStartListener: (() -> Unit)? = null
     private var onPreparedListener: (() -> Unit)? = null
     private var onCompleteListener: (() -> Unit)? = null
-    private var onErrorListener: (() -> Unit)? = null
+    private var onErrorListener: ((source: MXPlaySource, message: String) -> Unit)? = null
     private var onEmptyPlayListener: (() -> Unit)? = null
 
-    private var onPlayTicketListener: ((position: Int, duration: Int) -> Unit)? = null
+    private var onPlayTicketListener: ((position: Float, duration: Float) -> Unit)? = null
     private var onVideoSizeListener: ((width: Int, height: Int) -> Unit)? = null
     private var onBufferListener: ((inBuffer: Boolean) -> Unit)? = null
 
@@ -33,20 +34,24 @@ open class MXVideoStd @JvmOverloads constructor(
                     MXState.PREPARING -> {
                         onPrepareStartListener?.invoke()
                     }
+
                     MXState.PREPARED -> {
                         onPreparedListener?.invoke()
                     }
+
                     MXState.COMPLETE -> {
                         onCompleteListener?.invoke()
                     }
-                    MXState.ERROR -> {
-                        onErrorListener?.invoke()
-                    }
+
                     else -> {}
                 }
             }
 
-            override fun onPlayTicket(position: Int, duration: Int) {
+            override fun onError(source: MXPlaySource, message: String) {
+                onErrorListener?.invoke(source, message)
+            }
+
+            override fun onPlayTicket(position: Float, duration: Float) {
                 onPlayTicketListener?.invoke(position, duration)
             }
 
@@ -60,7 +65,7 @@ open class MXVideoStd @JvmOverloads constructor(
                 } else {
                     Toast.makeText(
                         this@MXVideoStd.context,
-                        R.string.mx_play_source_not_set,
+                        R.string.mx_video_source_not_set,
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -103,7 +108,7 @@ open class MXVideoStd @JvmOverloads constructor(
     /**
      * 回调：视频播放错误
      */
-    fun setOnErrorListener(listener: (() -> Unit)?) {
+    fun setOnErrorListener(listener: ((source: MXPlaySource, message: String) -> Unit)?) {
         onErrorListener = listener
     }
 
@@ -124,7 +129,7 @@ open class MXVideoStd @JvmOverloads constructor(
     /**
      * 回调：视频播放时间变更
      */
-    fun setOnPlayTicketListener(listener: ((position: Int, duration: Int) -> Unit)?) {
+    fun setOnPlayTicketListener(listener: ((position: Float, duration: Float) -> Unit)?) {
         onPlayTicketListener = listener
     }
 

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="mx_player_size_icon_width">56dp</dimen>
-    <dimen name="mx_player_size_bottom_layout_height">48dp</dimen>
-    <dimen name="mx_player_size_top_layout_height">48dp</dimen>
-    <dimen name="mx_player_size_battery_width">22dp</dimen>
-    <dimen name="mx_player_size_battery_height">10dp</dimen>
+    <dimen name="mx_video_size_icon_width">56dp</dimen>
+    <dimen name="mx_video_size_bottom_layout_height">48dp</dimen>
+    <dimen name="mx_video_size_top_layout_height">48dp</dimen>
+    <dimen name="mx_video_size_battery_width">22dp</dimen>
+    <dimen name="mx_video_size_battery_height">10dp</dimen>
 </resources>

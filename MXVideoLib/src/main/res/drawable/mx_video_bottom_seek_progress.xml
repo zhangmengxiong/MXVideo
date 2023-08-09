@@ -2,7 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@android:id/background">
         <shape>
-            <solid android:color="@color/mx_player_color_main_tint" />
+            <solid android:color="@color/mx_video_color_main_tint" />
             <size android:height="4dp" />
             <corners android:radius="2dp" />
         </shape>
@@ -10,7 +10,7 @@
     <item android:id="@android:id/secondaryProgress">
         <clip>
             <shape>
-                <solid android:color="@color/mx_player_color_main" />
+                <solid android:color="@color/mx_video_color_main" />
                 <size android:height="4dp" />
                 <corners android:radius="2dp" />
             </shape>
@@ -19,7 +19,7 @@
     <item android:id="@android:id/progress">
         <clip>
             <shape>
-                <solid android:color="@color/mx_player_color_progress" />
+                <solid android:color="@color/mx_video_color_progress" />
                 <size android:height="4dp" />
                 <corners android:radius="2dp" />
             </shape>

@@ -3,14 +3,14 @@
     <item android:state_enabled="false">
         <shape android:shape="rectangle">
             <corners android:radius="4dp" />
-            <solid android:color="@color/mx_player_color_main_tint" />
+            <solid android:color="@color/mx_video_color_main_tint" />
             <size android:width="10dp" android:height="15dp" />
         </shape>
     </item>
     <item>
         <shape android:shape="rectangle">
             <corners android:radius="4dp" />
-            <solid android:color="@color/mx_player_color_main" />
+            <solid android:color="@color/mx_video_color_main" />
             <size android:width="10dp" android:height="15dp" />
         </shape>
     </item>

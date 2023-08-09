@@ -302,7 +302,7 @@ abstract class MXVideo @JvmOverloads constructor(
     override fun setSource(source: MXPlaySource?, seekTo: Int) {
         stopPlay()
 
-        MXUtils.log("MXVideo: setSource()")
+        MXUtils.log("MXVideo: setSource() -> $source")
         isStopState = null
         config.source.set(source)
         config.seekWhenPlay.set(seekTo)
@@ -318,7 +318,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 设置方向
      */
     override fun setTextureOrientation(orientation: MXOrientation) {
-        MXUtils.log("MXVideo: setTextureOrientation()")
+        MXUtils.log("MXVideo: setTextureOrientation(${orientation.name})")
         config.orientation.set(orientation)
         requestLayout()
     }
@@ -327,7 +327,7 @@ abstract class MXVideo @JvmOverloads constructor(
      * 跳转
      */
     override fun seekTo(seek: Int) {
-        MXUtils.log("MXVideo: seekTo() ${MXUtils.stringForTime(seek)}")
+        MXUtils.log("MXVideo: seekTo(${MXUtils.stringForTime(seek)})")
         val player = mxPlayer
         if (player != null && config.state.get() in arrayOf(MXState.PLAYING, MXState.PAUSE)) {
             player.seekTo(seek)
@@ -459,12 +459,12 @@ abstract class MXVideo @JvmOverloads constructor(
         ))
     }
 
-    override fun getDuration(): Int {
-        return mxPlayer?.getDuration() ?: 0
+    override fun getDuration(): Float {
+        return mxPlayer?.getDuration() ?: 0f
     }
 
-    override fun getPosition(): Int {
-        return mxPlayer?.getPosition() ?: 0
+    override fun getPosition(): Float {
+        return mxPlayer?.getPosition() ?: 0f
     }
 
     override fun switchToScreen(screen: MXScreen): Boolean {
@@ -525,7 +525,7 @@ abstract class MXVideo @JvmOverloads constructor(
     override fun onPlayerSeekComplete() {
     }
 
-    override fun onPlayerError(error: String?) {
+    override fun onPlayerError(source: MXPlaySource, error: String) {
         if (config.source.get()?.isLiveSource == true
             && config.replayLiveSourceWhenError.get()
             && (config.state.get() in arrayOf(
@@ -552,6 +552,9 @@ abstract class MXVideo @JvmOverloads constructor(
         MXUtils.log("MXVideo: onPlayerError($error)")
 
         config.state.set(MXState.ERROR)
+        config.videoListeners.toList().forEach { listener ->
+            listener.onError(source, error)
+        }
         if (config.gotoNormalScreenWhenError.get() && config.screen.get() == MXScreen.FULL) {
             switchToScreen(MXScreen.NORMAL)
         }
@@ -635,12 +638,12 @@ abstract class MXVideo @JvmOverloads constructor(
         }
         if (!MXUtils.isWifiConnected(context) && config.showTipIfNotWifi.get() && !hasWifiDialogShow) {
             AlertDialog.Builder(context).apply {
-                setMessage(R.string.mx_play_wifi_notify)
-                setPositiveButton(context.getString(R.string.mx_play_wifi_dialog_continue)) { _, _ ->
+                setMessage(R.string.mx_video_wifi_notify)
+                setPositiveButton(context.getString(R.string.mx_video_wifi_dialog_continue)) { _, _ ->
                     hasWifiDialogShow = true
                     startRun.invoke()
                 }
-                setNegativeButton(context.getString(R.string.mx_play_wifi_dialog_cancel), null)
+                setNegativeButton(context.getString(R.string.mx_video_wifi_dialog_cancel), null)
             }.create().show()
             return
         } else {

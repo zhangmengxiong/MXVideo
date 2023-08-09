@@ -19,6 +19,7 @@ import com.mx.video.utils.MXTicket
 import com.mx.video.utils.MXUtils
 import com.mx.video.utils.MXValueObservable
 import com.mx.video.utils.touch.MXTouchHelp
+import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -28,7 +29,7 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
      * first = 当前播放进度 秒
      * second = 视频总长度 秒
      */
-    private val position = MXValueObservable(MXPair(-1, -1))
+    private val position = MXValueObservable(MXPair(-1f, -1f))
 
     // 播放状态，相关View是否显示
     private val showWhenPlaying = MXValueObservable(false)
@@ -45,16 +46,19 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
 
             if (screen == MXScreen.FULL) {
                 viewSet.setViewShow(viewSet.mxReturnBtn, true)
-                viewSet.mxFullscreenBtn.setImageResource(R.drawable.mx_icon_small_screen)
+                viewSet.mxFullscreenBtn.setImageResource(R.drawable.mx_video_icon_small_screen)
             } else {
                 viewSet.setViewShow(viewSet.mxReturnBtn, false)
-                viewSet.mxFullscreenBtn.setImageResource(R.drawable.mx_icon_full_screen)
+                viewSet.mxFullscreenBtn.setImageResource(R.drawable.mx_video_icon_full_screen)
             }
 
             config.playerViewSize.notifyChange()
             config.videoListeners.toList().forEach { listener ->
                 listener.onScreenChange(screen, viewSet)
             }
+        }
+        config.ticketDiff.addObserver { time ->
+            timeTicket.setDiffTime(time)
         }
 
         showWhenPlaying.addObserver { show ->
@@ -109,7 +113,7 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
             val playWidth = if (fullScreen) {
                 (min(size.width, size.height) / 5.5f).roundToInt()
             } else {
-                viewSet.context.resources.getDimensionPixelOffset(R.dimen.mx_player_size_icon_width)
+                viewSet.context.resources.getDimensionPixelOffset(R.dimen.mx_video_size_icon_width)
             }
             viewSet.setViewSize(viewSet.mxPlayPauseBtn, playWidth)
             viewSet.setViewSize(viewSet.mxReplayImg, playWidth)
@@ -172,8 +176,8 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
         // 播放进度更新时，设置页面状态+事件分发
         position.addObserver { pair ->
             val source = config.source.get() ?: return@addObserver
-            val position = pair.first
-            val duration = pair.second
+            val position = pair.first.toInt()
+            val duration = pair.second.toInt()
             viewSet.mxSeekProgress.max = duration
             viewSet.mxSeekProgress.progress = position
             viewSet.mxBottomSeekProgress.max = duration
@@ -186,7 +190,7 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
             }
 
             config.videoListeners.toList().forEach { listener ->
-                listener.onPlayTicket(position, duration)
+                listener.onPlayTicket(pair.first, pair.second)
             }
         }
 
@@ -282,9 +286,13 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
         timeTicket.setTicketRun {
             val state = config.state.get()
             if (state in arrayOf(MXState.PREPARED, MXState.PLAYING, MXState.PAUSE)) {
-                val duration = mxVideo.getDuration()
+                val oldP = position.get().first
+                val oldD = position.get().second
                 val position = mxVideo.getPosition()
-                this.position.set(MXPair(position, duration))
+                val duration = mxVideo.getDuration()
+                if (oldD != duration || abs(oldP - position) >= 1f) {
+                    this.position.set(MXPair(position, duration))
+                }
             }
         }
 
@@ -310,8 +318,8 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
         viewSet.mxRetryLay.setOnClickListener {
             // 播放错误重试，需要还原播放时间
             val source = config.source.get() ?: return@setOnClickListener
-            val curPosition = position.get().first
-            val curDuration = position.get().second
+            val curPosition = position.get().first.toInt()
+            val curDuration = position.get().second.toInt()
             if (curPosition > 0 && curDuration > 0 // 有旧的观看进度
                 && config.seekWhenPlay.get() < 0  // 没有跳转值
                 && !source.isLiveSource // 非直播源
@@ -353,7 +361,7 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
         when (state) {
             MXState.PREPARING, MXState.PREPARED -> { // 屏幕常亮
                 viewSet.mxSeekProgress.setOnSeekBarChangeListener(null)
-                position.set(MXPair(0, 0))
+                position.set(MXPair(0f, 0f))
                 timeTicket.start()
                 speedHelp.start()
                 MXUtils.findWindows(viewSet.context)
@@ -431,7 +439,7 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
     private val volumeSeekTouchListener = object : MXVolumeTouchListener(viewSet.context) {
         override fun onSeekStart() {
             viewSet.setViewShow(viewSet.mxVolumeLightLay, true)
-            viewSet.mxVolumeLightTypeTxv.setText(R.string.mx_play_volume)
+            viewSet.mxVolumeLightTypeTxv.setText(R.string.mx_video_volume)
         }
 
         override fun onSeekChange(volume: Int, maxVolume: Int) {
@@ -446,7 +454,7 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
     private val brightnessSeekTouchListener = object : MXBrightnessTouchListener(viewSet.context) {
         override fun onSeekStart() {
             viewSet.setViewShow(viewSet.mxVolumeLightLay, true)
-            viewSet.mxVolumeLightTypeTxv.setText(R.string.mx_play_brightness)
+            viewSet.mxVolumeLightTypeTxv.setText(R.string.mx_video_brightness)
         }
 
         override fun onSeekChange(brightness: Int, maxBrightness: Int) {

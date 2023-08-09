@@ -1,5 +1,7 @@
 package com.mx.video.base
 
+import com.mx.video.beans.MXPlaySource
+
 interface IMXPlayerCallback {
     /**
      * 播放器回调：准备完成
@@ -29,7 +31,7 @@ interface IMXPlayerCallback {
     /**
      * 播放器回调：播放错误
      */
-    fun onPlayerError(error: String?)
+    fun onPlayerError(source: MXPlaySource, error: String)
 
     /**
      * 播放器回调：缓冲状态

@@ -2,37 +2,40 @@ package com.mx.video.utils
 
 import android.os.Handler
 import android.os.Looper
+import kotlin.concurrent.thread
 
 internal class MXTicket {
     private val mHandler = Handler(Looper.getMainLooper())
+    private var diff: Long = 200L
     private var isTicketStart = false
     private var runnable: Runnable? = null
+
     fun setTicketRun(runnable: Runnable) {
         this.runnable = runnable
+    }
+
+    fun setDiffTime(time: Long) {
+        if (time < 50) return
+        diff = time
     }
 
     fun start() {
         if (isTicketStart) return
         isTicketStart = true
-        mHandler.removeCallbacksAndMessages(null)
-        mHandler.post(ticketRun)
+
+        thread {
+            while (isTicketStart) {
+                try {
+                    runnable?.run()
+                    Thread.sleep(diff)
+                } catch (_: Exception) {
+                }
+            }
+        }
     }
 
     fun stop() {
         isTicketStart = false
-        mHandler.removeCallbacksAndMessages(null)
-    }
-
-    private val ticketRun = object : Runnable {
-        override fun run() {
-            if (!isTicketStart) return
-            try {
-                runnable?.run()
-            } catch (_: Exception) {
-            } finally {
-                mHandler.postDelayed(this, 500)
-            }
-        }
     }
 
     fun release() {

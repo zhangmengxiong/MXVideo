@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="mx_play_error">视频加载失败</string>
-    <string name="mx_play_retry">点击重试</string>
-    <string name="mx_play_complete_replay">播放完成</string>
-    <string name="mx_play_wifi_notify">您当前正在使用移动网络，继续播放将消耗流量</string>
-    <string name="mx_play_wifi_dialog_continue">继续播放</string>
-    <string name="mx_play_wifi_dialog_cancel">取消</string>
-    <string name="mx_play_source_not_set">请设置播放地址！</string>
-    <string name="mx_play_volume">音量</string>
-    <string name="mx_play_brightness">亮度</string>
+    <string name="mx_video_error">视频加载失败</string>
+    <string name="mx_video_retry">点击重试</string>
+    <string name="mx_video_complete_replay">播放完成</string>
+    <string name="mx_video_wifi_notify">您当前正在使用移动网络，继续播放将消耗流量</string>
+    <string name="mx_video_wifi_dialog_continue">继续播放</string>
+    <string name="mx_video_wifi_dialog_cancel">取消</string>
+    <string name="mx_video_source_not_set">请设置播放地址！</string>
+    <string name="mx_video_volume">音量</string>
+    <string name="mx_video_brightness">亮度</string>
 </resources>

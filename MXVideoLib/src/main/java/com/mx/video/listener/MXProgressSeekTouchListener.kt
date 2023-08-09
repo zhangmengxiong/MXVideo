@@ -8,7 +8,7 @@ import kotlin.math.min
 
 internal abstract class MXProgressSeekTouchListener(
     private val config: MXConfig,
-    private val position: MXValueObservable<MXPair<Int, Int>>
+    private val position: MXValueObservable<MXPair<Float, Float>>
 ) : MXBaseTouchListener {
     override fun touchStart() {
         if (!config.sourceCanSeek() || config.state.get() != MXState.PLAYING) return
@@ -17,8 +17,8 @@ internal abstract class MXProgressSeekTouchListener(
 
     override fun touchMove(percent: Float) {
         if (!config.sourceCanSeek() || config.state.get() != MXState.PLAYING) return
-        val duration = position.get().second
-        var position = position.get().first + (min(120, duration) * percent).toInt()
+        val duration = position.get().second.toInt()
+        var position = position.get().first.toInt() + (min(120, duration) * percent).toInt()
         if (position < 0) position = 0
         if (position > duration) position = duration
         onSeekChange(position, duration)
@@ -26,8 +26,8 @@ internal abstract class MXProgressSeekTouchListener(
 
     override fun touchEnd(percent: Float) {
         if (!config.sourceCanSeek() || config.state.get() != MXState.PLAYING) return
-        val duration = position.get().second
-        var position = position.get().first + (min(120, duration) * percent).toInt()
+        val duration = position.get().second.toInt()
+        var position = position.get().first.toInt() + (min(120, duration) * percent).toInt()
         if (position < 0) position = 0
         if (position > duration) position = duration
 

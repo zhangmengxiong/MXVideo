@@ -12,7 +12,6 @@ import com.aliyun.player.bean.InfoCode
 import com.aliyun.player.source.UrlSource
 import com.mx.video.beans.MXPlaySource
 import com.mx.video.player.IMXPlayer
-import kotlin.math.roundToInt
 
 
 class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletionListener,
@@ -76,7 +75,7 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
         val source = source ?: return
         if (!active || source.isLiveSource) return
         val duration = getDuration()
-        if (duration != 0 && time >= duration) {
+        if (duration != 0f && time >= duration) {
             // 如果直接跳转到结束位置，则直接complete
             notifyPlayerCompletion()
             return
@@ -84,7 +83,7 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
 
         postInThread {
             mediaPlayer?.seekTo(time * 1000L, IPlayer.SeekMode.Accurate)
-            currentPosition = time
+            currentPosition = time.toFloat()
         }
     }
 
@@ -100,17 +99,17 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
         }
     }
 
-    private var currentPosition = 0
-    override fun getPosition(): Int {
-        if (!active) return 0
+    private var currentPosition = 0f
+    override fun getPosition(): Float {
+        if (!active) return 0f
         return currentPosition
     }
 
-    override fun getDuration(): Int {
-        if (!active) return 0
+    override fun getDuration(): Float {
+        if (!active) return 0f
         var duration = mediaPlayer?.duration ?: 0
         if (duration < 0) duration = 0
-        return (duration / 1000).toInt()
+        return duration / 1000f
     }
 
     override fun setVolumePercent(leftVolume: Float, rightVolume: Float) {
@@ -140,12 +139,12 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
 
     override fun onError(info: ErrorInfo?) {
         if (!active) return
-        notifyError("what = ${info.toString()}")
+        notifyError("code = ${info?.code?.name}  msg = ${info?.msg}  extra = ${info?.extra}")
     }
 
     override fun onInfo(infoBean: InfoBean) {
         if (infoBean.code == InfoCode.CurrentPosition) {
-            currentPosition = (infoBean.extraValue / 1000f).roundToInt()
+            currentPosition = infoBean.extraValue / 1000f
         }
     }
 

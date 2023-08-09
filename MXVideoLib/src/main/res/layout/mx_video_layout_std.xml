@@ -37,7 +37,7 @@
         android:focusableInTouchMode="false"
         android:max="100"
         android:progress="50"
-        android:progressDrawable="@drawable/mx_bottom_progressbar"
+        android:progressDrawable="@drawable/mx_video_bottom_progressbar"
         android:soundEffectsEnabled="false"
         android:visibility="gone" />
 
@@ -53,13 +53,13 @@
 
     <ProgressBar
         android:id="@+id/mxLoading"
-        android:layout_width="@dimen/mx_player_size_icon_width"
-        android:layout_height="@dimen/mx_player_size_icon_width"
+        android:layout_width="@dimen/mx_video_size_icon_width"
+        android:layout_height="@dimen/mx_video_size_icon_width"
         android:layout_centerInParent="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:indeterminateDrawable="@drawable/mx_progress_loading"
-        android:indeterminateTint="@color/mx_player_color_main"
+        android:indeterminateDrawable="@drawable/mx_video_progress_loading"
+        android:indeterminateTint="@color/mx_video_color_main"
         android:soundEffectsEnabled="false"
         android:visibility="gone" />
 
@@ -74,35 +74,35 @@
         android:focusableInTouchMode="false"
         android:paddingHorizontal="5dp"
         android:paddingVertical="3dp"
-        android:shadowColor="@color/mx_player_color_background"
+        android:shadowColor="@color/mx_video_color_background"
         android:shadowDx="0"
         android:shadowDy="0"
         android:shadowRadius="3"
         android:soundEffectsEnabled="false"
         android:text="0 Kb/s"
-        android:textColor="@color/mx_player_color_main"
+        android:textColor="@color/mx_video_color_main"
         android:textSize="14sp"
         android:visibility="gone" />
 
     <ImageView
         android:id="@+id/mxPlayPauseBtn"
-        android:layout_width="@dimen/mx_player_size_icon_width"
-        android:layout_height="@dimen/mx_player_size_icon_width"
+        android:layout_width="@dimen/mx_video_size_icon_width"
+        android:layout_height="@dimen/mx_video_size_icon_width"
         android:layout_centerInParent="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:scaleType="centerCrop"
         android:soundEffectsEnabled="false"
-        android:src="@drawable/mx_icon_player_play" />
+        android:src="@drawable/mx_video_icon_player_play" />
 
 
     <LinearLayout
         android:id="@+id/mxTopLay"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/mx_player_size_top_layout_height"
+        android:layout_height="@dimen/mx_video_size_top_layout_height"
         android:layout_alignParentTop="true"
-        android:background="@drawable/mx_bg_top"
-        android:backgroundTint="@color/mx_player_color_background"
+        android:background="@drawable/mx_video_bg_top"
+        android:backgroundTint="@color/mx_video_color_background"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:gravity="center_vertical"
@@ -112,7 +112,7 @@
 
         <ImageView
             android:id="@+id/mxReturnBtn"
-            android:layout_width="@dimen/mx_player_size_top_layout_height"
+            android:layout_width="@dimen/mx_video_size_top_layout_height"
             android:layout_height="fill_parent"
             android:focusable="false"
             android:focusableInTouchMode="false"
@@ -120,8 +120,8 @@
             android:paddingVertical="15dp"
             android:scaleType="centerCrop"
             android:soundEffectsEnabled="false"
-            android:src="@drawable/mx_icon_return"
-            android:tint="@color/mx_player_color_main"
+            android:src="@drawable/mx_video_icon_return"
+            android:tint="@color/mx_video_color_main"
             android:visibility="gone" />
 
         <TextView
@@ -135,13 +135,13 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:padding="5dp"
-            android:shadowColor="@color/mx_player_color_background"
+            android:shadowColor="@color/mx_video_color_background"
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="3"
             android:singleLine="true"
             android:soundEffectsEnabled="false"
-            android:textColor="@color/mx_player_color_main"
+            android:textColor="@color/mx_video_color_main"
             android:textSize="14sp" />
 
         <LinearLayout
@@ -156,8 +156,8 @@
 
             <com.mx.video.views.MXBatteryImageView
                 android:id="@+id/mxBatteryImg"
-                android:layout_width="@dimen/mx_player_size_battery_width"
-                android:layout_height="@dimen/mx_player_size_battery_height"
+                android:layout_width="@dimen/mx_video_size_battery_width"
+                android:layout_height="@dimen/mx_video_size_battery_height"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
                 android:scaleType="centerCrop"
@@ -171,13 +171,13 @@
                 android:focusableInTouchMode="false"
                 android:paddingHorizontal="3dp"
                 android:paddingVertical="1dp"
-                android:shadowColor="@color/mx_player_color_background"
+                android:shadowColor="@color/mx_video_color_background"
                 android:shadowDx="0"
                 android:shadowDy="0"
                 android:shadowRadius="3"
                 android:singleLine="true"
                 android:soundEffectsEnabled="false"
-                android:textColor="@color/mx_player_color_main"
+                android:textColor="@color/mx_video_color_main"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -186,10 +186,10 @@
     <LinearLayout
         android:id="@+id/mxBottomLay"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/mx_player_size_bottom_layout_height"
+        android:layout_height="@dimen/mx_video_size_bottom_layout_height"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/mx_bg_bottom"
-        android:backgroundTint="@color/mx_player_color_background"
+        android:background="@drawable/mx_video_bg_bottom"
+        android:backgroundTint="@color/mx_video_color_background"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:gravity="center_vertical"
@@ -205,13 +205,13 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:padding="3dp"
-            android:shadowColor="@color/mx_player_color_background"
+            android:shadowColor="@color/mx_video_color_background"
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="3"
             android:soundEffectsEnabled="false"
             android:text="00:00"
-            android:textColor="@color/mx_player_color_main"
+            android:textColor="@color/mx_video_color_main"
             android:textStyle="bold" />
 
         <SeekBar
@@ -231,9 +231,9 @@
             android:paddingRight="5dp"
             android:paddingBottom="7dp"
             android:progress="0"
-            android:progressDrawable="@drawable/mx_bottom_seek_progress"
+            android:progressDrawable="@drawable/mx_video_bottom_seek_progress"
             android:soundEffectsEnabled="false"
-            android:thumb="@drawable/mx_bottom_seek_thumb"
+            android:thumb="@drawable/mx_video_bottom_seek_thumb"
             android:thumbOffset="5dp" />
 
         <TextView
@@ -244,18 +244,18 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:padding="3dp"
-            android:shadowColor="@color/mx_player_color_background"
+            android:shadowColor="@color/mx_video_color_background"
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="3"
             android:soundEffectsEnabled="false"
             android:text="00:00"
-            android:textColor="@color/mx_player_color_main"
+            android:textColor="@color/mx_video_color_main"
             android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/mxFullscreenBtn"
-            android:layout_width="@dimen/mx_player_size_bottom_layout_height"
+            android:layout_width="@dimen/mx_video_size_bottom_layout_height"
             android:layout_height="fill_parent"
             android:focusable="false"
             android:focusableInTouchMode="false"
@@ -263,8 +263,8 @@
             android:paddingRight="14dp"
             android:scaleType="centerInside"
             android:soundEffectsEnabled="false"
-            android:src="@drawable/mx_icon_full_screen"
-            android:tint="@color/mx_player_color_main" />
+            android:src="@drawable/mx_video_icon_full_screen"
+            android:tint="@color/mx_video_color_main" />
     </LinearLayout>
 
     <LinearLayout
@@ -287,31 +287,31 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:padding="5dp"
-            android:shadowColor="@color/mx_player_color_background"
+            android:shadowColor="@color/mx_video_color_background"
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="3"
             android:soundEffectsEnabled="false"
-            android:text="@string/mx_play_error"
-            android:textColor="@color/mx_player_color_main"
+            android:text="@string/mx_video_error"
+            android:textColor="@color/mx_video_color_main"
             android:textSize="14sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:background="@drawable/mx_bg_btn_retry"
+            android:background="@drawable/mx_video_bg_btn_retry"
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:paddingHorizontal="12dp"
             android:paddingVertical="5dp"
-            android:shadowColor="@color/mx_player_color_background"
+            android:shadowColor="@color/mx_video_color_background"
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="3"
             android:soundEffectsEnabled="false"
-            android:text="@string/mx_play_retry"
-            android:textColor="@color/mx_player_color_main"
+            android:text="@string/mx_video_retry"
+            android:textColor="@color/mx_video_color_main"
             android:textSize="14sp" />
     </LinearLayout>
 
@@ -331,12 +331,12 @@
 
         <ImageView
             android:id="@+id/mxReplayImg"
-            android:layout_width="@dimen/mx_player_size_icon_width"
-            android:layout_height="@dimen/mx_player_size_icon_width"
+            android:layout_width="@dimen/mx_video_size_icon_width"
+            android:layout_height="@dimen/mx_video_size_icon_width"
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:soundEffectsEnabled="false"
-            android:src="@drawable/mx_icon_replay" />
+            android:src="@drawable/mx_video_icon_replay" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -345,13 +345,13 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:padding="5dp"
-            android:shadowColor="@color/mx_player_color_background"
+            android:shadowColor="@color/mx_video_color_background"
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="3"
             android:soundEffectsEnabled="false"
-            android:text="@string/mx_play_complete_replay"
-            android:textColor="@color/mx_player_color_main"
+            android:text="@string/mx_video_complete_replay"
+            android:textColor="@color/mx_video_color_main"
             android:textSize="14sp" />
     </LinearLayout>
 
@@ -360,7 +360,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@drawable/mx_bg_float_layout"
+        android:background="@drawable/mx_video_bg_float_layout"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:gravity="center"
@@ -376,7 +376,7 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:text="00:00"
-            android:textColor="@color/mx_player_color_main"
+            android:textColor="@color/mx_video_color_main"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -387,7 +387,7 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:text="/"
-            android:textColor="@color/mx_player_color_main_tint"
+            android:textColor="@color/mx_video_color_main_tint"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -398,7 +398,7 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:text="00:00"
-            android:textColor="@color/mx_player_color_main_tint"
+            android:textColor="@color/mx_video_color_main_tint"
             android:textSize="17sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -408,7 +408,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@drawable/mx_bg_float_layout"
+        android:background="@drawable/mx_video_bg_float_layout"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:gravity="center"
@@ -423,8 +423,8 @@
             android:layout_height="wrap_content"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:text="@string/mx_play_volume"
-            android:textColor="@color/mx_player_color_main_tint"
+            android:text="@string/mx_video_volume"
+            android:textColor="@color/mx_video_color_main_tint"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -434,7 +434,7 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:text="："
-            android:textColor="@color/mx_player_color_main_tint"
+            android:textColor="@color/mx_video_color_main_tint"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -445,7 +445,7 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:text="50%"
-            android:textColor="@color/mx_player_color_main"
+            android:textColor="@color/mx_video_color_main"
             android:textSize="17sp"
             android:textStyle="bold" />
     </LinearLayout>

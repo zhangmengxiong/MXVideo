@@ -6,7 +6,7 @@
 
 最新版本：[![](https://jitpack.io/v/com.gitee.zhangmengxiong/MXVideo.svg)](https://jitpack.io/#com.gitee.zhangmengxiong/MXVideo)
 ```groovy
-    implementation 'com.gitee.zhangmengxiong:MXVideo:1.8.2'
+    implementation 'com.gitee.zhangmengxiong:MXVideo:1.8.3'
 ```
 
 ![Normal](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/1.png)

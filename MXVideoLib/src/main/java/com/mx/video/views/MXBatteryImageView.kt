@@ -15,12 +15,12 @@ internal class MXBatteryImageView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ImageView(context, attrs, defStyleAttr) {
     private val levelImage = arrayOf(
-        R.drawable.mx_icon_battery_v1,
-        R.drawable.mx_icon_battery_v2,
-        R.drawable.mx_icon_battery_v3,
-        R.drawable.mx_icon_battery_v4,
-        R.drawable.mx_icon_battery_v5,
-        R.drawable.mx_icon_battery_charge
+        R.drawable.mx_video_icon_battery_v1,
+        R.drawable.mx_video_icon_battery_v2,
+        R.drawable.mx_video_icon_battery_v3,
+        R.drawable.mx_video_icon_battery_v4,
+        R.drawable.mx_video_icon_battery_v5,
+        R.drawable.mx_video_icon_battery_charge
     )
 
     init {
@@ -59,28 +59,28 @@ internal class MXBatteryImageView @JvmOverloads constructor(
     private fun setLevel(percent: Int, isCharging: Boolean) {
         val img = when {
             isCharging -> {
-                R.drawable.mx_icon_battery_charge
+                R.drawable.mx_video_icon_battery_charge
             }
             percent in 0..15 -> {
-                R.drawable.mx_icon_battery_v1
+                R.drawable.mx_video_icon_battery_v1
             }
             percent in 15..40 -> {
-                R.drawable.mx_icon_battery_v2
+                R.drawable.mx_video_icon_battery_v2
             }
             percent in 40..65 -> {
-                R.drawable.mx_icon_battery_v3
+                R.drawable.mx_video_icon_battery_v3
             }
             percent in 65..95 -> {
-                R.drawable.mx_icon_battery_v4
+                R.drawable.mx_video_icon_battery_v4
             }
             else -> {
-                R.drawable.mx_icon_battery_v5
+                R.drawable.mx_video_icon_battery_v5
             }
         }
         imageTintList = if (isCharging) {
             ColorStateList.valueOf(Color.GREEN)
         } else {
-            ColorStateList.valueOf(resources.getColor(R.color.mx_player_color_main))
+            ColorStateList.valueOf(resources.getColor(R.color.mx_video_color_main))
         }
         setImageResource(img)
     }

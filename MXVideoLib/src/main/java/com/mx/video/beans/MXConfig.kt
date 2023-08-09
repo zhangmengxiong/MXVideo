@@ -165,6 +165,11 @@ class MXConfig : Serializable {
     val animatorDuration = MXValueObservable(200L)
 
     /**
+     * 计时器间隔 单位：毫秒
+     */
+    val ticketDiff = MXValueObservable(99L)
+
+    /**
      * 是否可以快进快退
      */
     internal fun sourceCanSeek(): Boolean {
@@ -197,6 +202,7 @@ class MXConfig : Serializable {
         playerViewSize.set(target.playerViewSize.get().clone())
         hidePlayBtnWhenNoSource.set(target.hidePlayBtnWhenNoSource.get())
         animatorDuration.set(target.animatorDuration.get())
+        ticketDiff.set(target.ticketDiff.get())
     }
 
     internal fun release() {

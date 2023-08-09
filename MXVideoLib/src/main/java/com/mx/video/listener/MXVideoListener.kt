@@ -1,5 +1,7 @@
 package com.mx.video.listener
 
+import android.net.Uri
+import com.mx.video.beans.MXPlaySource
 import com.mx.video.beans.MXScreen
 import com.mx.video.beans.MXState
 import com.mx.video.views.MXViewSet
@@ -15,7 +17,7 @@ open class MXVideoListener {
      * @param position 当前播放位置 秒
      * @param duration 总时长 秒
      */
-    open fun onPlayTicket(position: Int, duration: Int) = Unit
+    open fun onPlayTicket(position: Float, duration: Float) = Unit
 
     /**
      * 全屏/小屏 状态监听
@@ -31,6 +33,11 @@ open class MXVideoListener {
      * 加载缓冲监听
      */
     open fun onBuffering(inBuffer: Boolean) = Unit
+
+    /**
+     * 错误回调
+     */
+    open fun onError(source: MXPlaySource, message: String) = Unit
 
     /**
      * 没有播放源时，点击播放回调

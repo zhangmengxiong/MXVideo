@@ -202,14 +202,14 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
         // 预加载
         if (config.isPreloading.get() && state in arrayOf(MXState.PREPARING, MXState.PREPARED)) {
             setViewShow(mxPlayPauseBtn, true)
-            mxPlayPauseBtn.setImageResource(R.drawable.mx_icon_player_play)
+            mxPlayPauseBtn.setImageResource(R.drawable.mx_video_icon_player_play)
             return
         }
 
         if (state in arrayOf(MXState.IDLE, MXState.NORMAL, MXState.PREPARED, MXState.PAUSE)) {
-            mxPlayPauseBtn.setImageResource(R.drawable.mx_icon_player_play)
+            mxPlayPauseBtn.setImageResource(R.drawable.mx_video_icon_player_play)
         } else {
-            mxPlayPauseBtn.setImageResource(R.drawable.mx_icon_player_pause)
+            mxPlayPauseBtn.setImageResource(R.drawable.mx_video_icon_player_pause)
         }
 
         // 下面几种情况下，显示播放按钮

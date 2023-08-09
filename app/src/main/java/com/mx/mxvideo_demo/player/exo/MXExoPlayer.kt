@@ -77,7 +77,7 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
         if (!active || source.isLiveSource) return
         postInMainThread {
             val duration = getDuration()
-            if (duration != 0 && time >= duration) {
+            if (duration > 0f && time >= duration) {
                 // 如果直接跳转到结束位置，则直接complete
                 notifyPlayerCompletion()
             } else {
@@ -99,16 +99,16 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
         }
     }
 
-    override fun getPosition(): Int {
-        if (!active) return 0
-        return mediaPlayer?.currentPosition?.div(1000)?.toInt() ?: 0
+    override fun getPosition(): Float {
+        if (!active) return 0f
+        return mediaPlayer?.currentPosition?.div(1000f) ?: 0f
     }
 
-    override fun getDuration(): Int {
-        if (!active) return 0
+    override fun getDuration(): Float {
+        if (!active) return 0f
         var duration = mediaPlayer?.duration ?: 0
         if (duration < 0) duration = 0
-        return (duration / 1000).toInt()
+        return duration / 1000f
     }
 
     override fun setVolumePercent(leftVolume: Float, rightVolume: Float) {
@@ -171,7 +171,7 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
 
     override fun onPlayerError(error: PlaybackException) {
         if (!active) return
-        notifyError(error.message)
+        notifyError(error.message ?: error.localizedMessage)
     }
 
     override fun onVideoSizeChanged(videoSize: VideoSize) {

@@ -100,13 +100,13 @@ interface IMXVideo {
      * 获取视频总时长
      * 单位：秒
      */
-    fun getDuration(): Int
+    fun getDuration(): Float
 
     /**
      * 获取当前播放进度
      * 单位：秒
      */
-    fun getPosition(): Int
+    fun getPosition(): Float
 
     /**
      * 切换播放器是否全屏
