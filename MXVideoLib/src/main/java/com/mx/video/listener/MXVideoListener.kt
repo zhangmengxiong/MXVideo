@@ -17,7 +17,7 @@ open class MXVideoListener {
      * @param position 当前播放位置 秒
      * @param duration 总时长 秒
      */
-    open fun onPlayTicket(position: Float, duration: Float) = Unit
+    open fun onPlayTicket(position: Int, duration: Int) = Unit
 
     /**
      * 全屏/小屏 状态监听

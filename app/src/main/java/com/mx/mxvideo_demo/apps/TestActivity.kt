@@ -50,7 +50,7 @@ class TestActivity : AppCompatActivity() {
         }
 
         var preTime = 0L
-        var prePosition = 0f
+        var prePosition = 0
         mxVideoStd.setOnPlayTicketListener { position, duration ->
             val positionDiff = position - prePosition
             val now = System.currentTimeMillis()
@@ -59,7 +59,7 @@ class TestActivity : AppCompatActivity() {
                 prePosition = position
                 return@setOnPlayTicketListener
             }
-            if (positionDiff < 5) return@setOnPlayTicketListener
+            if (positionDiff < 15) return@setOnPlayTicketListener
             val diff = (now - preTime) / 1000f
             println("TIME -> diff = $diff  positionDiff=$positionDiff  position=$position / $duration ")
             preTime = now

@@ -22,7 +22,7 @@ open class MXVideoStd @JvmOverloads constructor(
     private var onErrorListener: ((source: MXPlaySource, message: String) -> Unit)? = null
     private var onEmptyPlayListener: (() -> Unit)? = null
 
-    private var onPlayTicketListener: ((position: Float, duration: Float) -> Unit)? = null
+    private var onPlayTicketListener: ((position: Int, duration: Int) -> Unit)? = null
     private var onVideoSizeListener: ((width: Int, height: Int) -> Unit)? = null
     private var onBufferListener: ((inBuffer: Boolean) -> Unit)? = null
 
@@ -51,7 +51,7 @@ open class MXVideoStd @JvmOverloads constructor(
                 onErrorListener?.invoke(source, message)
             }
 
-            override fun onPlayTicket(position: Float, duration: Float) {
+            override fun onPlayTicket(position: Int, duration: Int) {
                 onPlayTicketListener?.invoke(position, duration)
             }
 
@@ -129,7 +129,7 @@ open class MXVideoStd @JvmOverloads constructor(
     /**
      * 回调：视频播放时间变更
      */
-    fun setOnPlayTicketListener(listener: ((position: Float, duration: Float) -> Unit)?) {
+    fun setOnPlayTicketListener(listener: ((position: Int, duration: Int) -> Unit)?) {
         onPlayTicketListener = listener
     }
 

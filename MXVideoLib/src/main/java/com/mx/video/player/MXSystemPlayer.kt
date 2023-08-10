@@ -14,9 +14,11 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     MediaPlayer.OnCompletionListener, MediaPlayer.OnBufferingUpdateListener,
     MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener,
     MediaPlayer.OnVideoSizeChangedListener {
-    var mediaPlayer: MediaPlayer? = null
+    private var mediaPlayer: MediaPlayer? = null
+    private var lastSeekTime = 0f
 
     override fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) {
+        lastSeekTime = 0f
         postInThread {
             val mediaPlayer = MediaPlayer()
             this.mediaPlayer = mediaPlayer
@@ -72,13 +74,13 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     override fun seekTo(time: Int) {
         val source = source ?: return
         if (!active || source.isLiveSource) return
-        val duration = getDuration()
-        if (duration != 0f && time >= duration) {
+        val duration = getDuration().toInt()
+        if (duration != 0 && time >= duration) {
             // 如果直接跳转到结束位置，则直接complete
             notifyPlayerCompletion()
             return
         }
-
+        lastSeekTime = time.toFloat()
         postInThread {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 mediaPlayer?.seekTo(time * 1000L, MediaPlayer.SEEK_CLOSEST)
@@ -92,17 +94,23 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     override fun release() {
         super.release() // 释放父类资源，必不可少
         val mediaPlayer = mediaPlayer
+        this.lastSeekTime = -1f
         this.mediaPlayer = null
         try {
             mediaPlayer?.setSurface(null)
             mediaPlayer?.release()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
         }
     }
 
     override fun getPosition(): Float {
         if (!active) return 0f
-        return mediaPlayer?.currentPosition?.div(1000f) ?: 0f
+        val position = mediaPlayer?.currentPosition?.div(1000f) ?: 0f
+        if (position.toInt() <= 0 && lastSeekTime > 0f) {
+            // 修复BUG：seek跳转进度条后，获取进度播放器会概率性返回0的问题！
+            return lastSeekTime
+        }
+        return position
     }
 
     override fun getDuration(): Float {
@@ -144,7 +152,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
     override fun onSeekComplete(mp: MediaPlayer?) {
         if (!active) return
-//        notifyBuffering(false)
+//        notifyBuffering(false) 
         notifySeekComplete()
     }
 
@@ -160,12 +168,15 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
             MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> {
                 notifyStartPlay()
             }
+
             MediaPlayer.MEDIA_INFO_BUFFERING_START -> {
                 notifyBuffering(true)
             }
+
             MediaPlayer.MEDIA_INFO_BUFFERING_END -> {
                 notifyBuffering(false)
             }
+
             else -> {
                 onPlayerInfo("what = $what    extra = $extra")
             }

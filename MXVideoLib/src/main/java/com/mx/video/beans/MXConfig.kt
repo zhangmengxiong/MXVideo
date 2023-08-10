@@ -167,7 +167,7 @@ class MXConfig : Serializable {
     /**
      * 计时器间隔 单位：毫秒
      */
-    val ticketDiff = MXValueObservable(99L)
+    val ticketDiff = MXValueObservable(500L)
 
     /**
      * 是否可以快进快退

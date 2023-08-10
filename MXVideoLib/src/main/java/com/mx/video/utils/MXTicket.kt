@@ -15,7 +15,6 @@ internal class MXTicket {
     }
 
     fun setDiffTime(time: Long) {
-        if (time < 50) return
         diff = time
     }
 
@@ -27,8 +26,10 @@ internal class MXTicket {
             while (isTicketStart) {
                 try {
                     runnable?.run()
-                    Thread.sleep(diff)
                 } catch (_: Exception) {
+                }
+                if (diff > 0) {
+                    Thread.sleep(diff)
                 }
             }
         }

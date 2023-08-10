@@ -188,9 +188,8 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
             if (duration > 0 && position > 0 && source.enableSaveProgress) {
                 MXUtils.saveProgress(source.playUri, position)
             }
-
             config.videoListeners.toList().forEach { listener ->
-                listener.onPlayTicket(pair.first, pair.second)
+                listener.onPlayTicket(position, duration)
             }
         }
 
@@ -290,8 +289,21 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
                 val oldD = position.get().second
                 val position = mxVideo.getPosition()
                 val duration = mxVideo.getDuration()
-                if (oldD != duration || abs(oldP - position) >= 1f) {
+
+                if (oldD.toInt() != duration.toInt()) {
+                    MXUtils.log("播放进度更新：$position / $duration")
                     this.position.set(MXPair(position, duration))
+                    return@setTicketRun
+                }
+                if (oldP.toInt() != position.toInt()) {
+                    MXUtils.log("播放进度更新：$position / $duration")
+                    this.position.set(MXPair(position, duration))
+                    return@setTicketRun
+                }
+                if (abs(oldP - position) >= 1f) {
+                    MXUtils.log("播放进度更新：$position / $duration")
+                    this.position.set(MXPair(position, duration))
+                    return@setTicketRun
                 }
             }
         }

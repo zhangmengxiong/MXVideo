@@ -95,7 +95,7 @@ class NormalActivity : AppCompatActivity() {
             }
         }
         mxVideoStd.setOnPlayTicketListener { position, duration ->
-            timeTxv.text = "${stringForTime(position.roundToInt())} / ${stringForTime(duration.roundToInt())}"
+            timeTxv.text = "${stringForTime(position)} / ${stringForTime(duration)}"
         }
         mxVideoStd.setOnVideoSizeListener { width, height ->
             sizeVideoTxv.text = "$width x $height"
