@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.mx.dialog.MXDialog
 import com.mx.mxvideo_demo.R
 import com.mx.mxvideo_demo.SourceItem
+import com.mx.mxvideo_demo.databinding.ActivityNormalBinding
 import com.mx.mxvideo_demo.player.MXAliPlayer
 import com.mx.mxvideo_demo.player.MXIJKPlayer
 import com.mx.mxvideo_demo.player.exo.MXExoPlayer
@@ -19,20 +20,19 @@ import com.mx.video.beans.MXPlaySource
 import com.mx.video.beans.MXScale
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
-import kotlinx.android.synthetic.main.activity_normal.*
 import java.util.Formatter
 import java.util.Locale
-import kotlin.math.roundToInt
 
 class NormalActivity : AppCompatActivity() {
+    private val binding by lazy { ActivityNormalBinding.inflate(layoutInflater) }
     private var playerClass: Class<out IMXPlayer>? = null
     private var currentSource: SourceItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_normal)
+        setContentView(binding.root)
 
-        sourceBtn.setOnClickListener {
+        binding.sourceBtn.setOnClickListener {
             val list = SourceItem.all()
             val currentIndex = list.indexOf(currentSource)
             MXDialog.select(this, list.mapIndexed { index, item ->
@@ -40,75 +40,76 @@ class NormalActivity : AppCompatActivity() {
             }, selectIndex = currentIndex) { index ->
                 val item = list.getOrNull(index) ?: return@select
                 currentSource = item
-                sourceBtn.text = "${item.type} - ${item.name} - ${item.url}"
+                binding.sourceBtn.text = "${item.type} - ${item.name} - ${item.url}"
             }
         }
-        Glide.with(this).load(SourceItem.random16x9().img).into(mxVideoStd.getPosterImageView())
+        Glide.with(this).load(SourceItem.random16x9().img)
+            .into(binding.mxVideoStd.getPosterImageView())
 
 
-        mxVideoStd.setOnEmptyPlayListener {
+        binding.mxVideoStd.setOnEmptyPlayListener {
             val source = SourceItem.all().first()
-            mxVideoStd.setSource(
+            binding.mxVideoStd.setSource(
                 MXPlaySource(
                     Uri.parse(source.url),
                     source.name,
                     isLiveSource = source.live(),
-                    isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
+                    isLooping = (binding.canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
                 ), seekTo = 0
             )
-            mxVideoStd.startPlay()
+            binding.mxVideoStd.startPlay()
         }
-        startPlayBtn.setOnClickListener {
+        binding.startPlayBtn.setOnClickListener {
             val source = currentSource ?: SourceItem.random16x9()
-            Glide.with(this).load(source.img).into(mxVideoStd.getPosterImageView())
-            mxVideoStd.setPlayer(playerClass)
-            mxVideoStd.setSource(
+            Glide.with(this).load(source.img).into(binding.mxVideoStd.getPosterImageView())
+            binding.mxVideoStd.setPlayer(playerClass)
+            binding.mxVideoStd.setSource(
                 MXPlaySource(
                     Uri.parse(source.url),
                     source.name, isLiveSource = source.live(),
-                    isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
+                    isLooping = (binding.canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
                 ), seekTo = 0
             )
-            mxVideoStd.startPlay()
+            binding.mxVideoStd.startPlay()
         }
 
-        preloadPlay.setOnClickListener {
+        binding.preloadPlay.setOnClickListener {
             val source = currentSource ?: SourceItem.random16x9()
-            Glide.with(this).load(source.img).into(mxVideoStd.getPosterImageView())
+            Glide.with(this).load(source.img).into(binding.mxVideoStd.getPosterImageView())
 
-            mxVideoStd.setPlayer(playerClass)
-            mxVideoStd.setSource(
+            binding.mxVideoStd.setPlayer(playerClass)
+            binding.mxVideoStd.setSource(
                 MXPlaySource(
                     Uri.parse(source.url),
                     source.name, isLiveSource = source.live(),
-                    isLooping = (canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
+                    isLooping = (binding.canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
                 ), seekTo = 0
             )
-            mxVideoStd.startPreload()
+            binding.mxVideoStd.startPreload()
         }
 
-        screenCaptureBtn.setOnClickListener {
-            if (mxVideoStd.isPlaying()) {
-                val bitmap: Bitmap? = mxVideoStd.getTextureView()?.bitmap
-                screenCapImg.setImageBitmap(bitmap)
-                screenCapImg.isVisible = true
+        binding.screenCaptureBtn.setOnClickListener {
+            if (binding.mxVideoStd.isPlaying()) {
+                val bitmap: Bitmap? = binding.mxVideoStd.getTextureView()?.bitmap
+                binding.screenCapImg.setImageBitmap(bitmap)
+                binding.screenCapImg.isVisible = true
             }
         }
-        mxVideoStd.setOnPlayTicketListener { position, duration ->
-            timeTxv.text = "${stringForTime(position)} / ${stringForTime(duration)}"
+        binding.mxVideoStd.setOnPlayTicketListener { position, duration ->
+            binding.timeTxv.text = "${stringForTime(position)} / ${stringForTime(duration)}"
         }
-        mxVideoStd.setOnVideoSizeListener { width, height ->
-            sizeVideoTxv.text = "$width x $height"
+        binding.mxVideoStd.setOnVideoSizeListener { width, height ->
+            binding.sizeVideoTxv.text = "$width x $height"
         }
-        mxVideoStd.setOnStateListener { state ->
-            statusTxv.text = state.name
+        binding.mxVideoStd.setOnStateListener { state ->
+            binding.statusTxv.text = state.name
         }
 
-        videoSourceRG.setOnCheckedChangeListener { group, checkedId ->
+        binding.videoSourceRG.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.source16x9 -> {
                     val source = SourceItem.random16x9()
-                    mxVideoStd.setSource(
+                    binding.mxVideoStd.setSource(
                         MXPlaySource(
                             Uri.parse(source.url),
                             source.name,
@@ -119,7 +120,7 @@ class NormalActivity : AppCompatActivity() {
 
                 R.id.source4x3 -> {
                     val source = SourceItem.random4x3()
-                    mxVideoStd.setSource(
+                    binding.mxVideoStd.setSource(
                         MXPlaySource(
                             Uri.parse(source.url),
                             source.name,
@@ -130,7 +131,7 @@ class NormalActivity : AppCompatActivity() {
 
                 R.id.source9x16 -> {
                     val source = SourceItem.random9x16()
-                    mxVideoStd.setSource(
+                    binding.mxVideoStd.setSource(
                         MXPlaySource(
                             Uri.parse(source.url),
                             source.name,
@@ -139,10 +140,10 @@ class NormalActivity : AppCompatActivity() {
                     )
                 }
             }
-            mxVideoStd.startPlay()
+            binding.mxVideoStd.startPlay()
         }
 
-        playerRG.setOnCheckedChangeListener { group, checkedId ->
+        binding.playerRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.playerIJK) {
                 playerClass = MXIJKPlayer::class.java
             } else if (checkedId == R.id.playerEXO) {
@@ -152,140 +153,140 @@ class NormalActivity : AppCompatActivity() {
             } else {
                 playerClass = MXSystemPlayer::class.java
             }
-            mxVideoStd.setPlayer(playerClass)
+            binding.mxVideoStd.setPlayer(playerClass)
         }
-        playerRG.getChildAt(0)?.performClick()
+        binding.playerRG.getChildAt(0)?.performClick()
 
-        hidePlayBtnWhenNoSourceRG.setOnCheckedChangeListener { group, checkedId ->
+        binding.hidePlayBtnWhenNoSourceRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.hidePlayBtnWhenNoSourceTrue) {
-                mxVideoStd.getConfig().hidePlayBtnWhenNoSource.set(true)
+                binding.mxVideoStd.getConfig().hidePlayBtnWhenNoSource.set(true)
             } else {
-                mxVideoStd.getConfig().hidePlayBtnWhenNoSource.set(false)
+                binding.mxVideoStd.getConfig().hidePlayBtnWhenNoSource.set(false)
             }
         }
-        hidePlayBtnWhenNoSourceRG.getChildAt(1)?.performClick()
+        binding.hidePlayBtnWhenNoSourceRG.getChildAt(1)?.performClick()
 
-        canLoopRG.getChildAt(1)?.performClick()
+        binding.canLoopRG.getChildAt(1)?.performClick()
 
-        fillTypeRG.setOnCheckedChangeListener { group, checkedId ->
+        binding.fillTypeRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.fill) {
-                mxVideoStd.setScaleType(MXScale.FILL_PARENT)
+                binding.mxVideoStd.setScaleType(MXScale.FILL_PARENT)
             } else {
-                mxVideoStd.setScaleType(MXScale.CENTER_CROP)
+                binding.mxVideoStd.setScaleType(MXScale.CENTER_CROP)
             }
         }
-        centerCrop.performClick()
+        binding.centerCrop.performClick()
 
-        canShowBottomSeekBar.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().canShowBottomSeekBar.set(checkedId == R.id.canShowBottomSeekBarTrue)
+        binding.canShowBottomSeekBar.setOnCheckedChangeListener { group, checkedId ->
+            binding.mxVideoStd.getConfig().canShowBottomSeekBar.set(checkedId == R.id.canShowBottomSeekBarTrue)
         }
-        canShowBottomSeekBarTrue.performClick()
+        binding.canShowBottomSeekBarTrue.performClick()
 
-        ratioRG.setOnCheckedChangeListener { group, checkedId ->
+        binding.ratioRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.ratio_16_9) {
                 val lp = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 )
-                mxVideoStd.layoutParams = lp
-                mxVideoStd.setDimensionRatio(16.0 / 9.0)
+                binding.mxVideoStd.layoutParams = lp
+                binding.mxVideoStd.setDimensionRatio(16.0 / 9.0)
             } else if (checkedId == R.id.ratio_4_3) {
                 val lp = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 )
-                mxVideoStd.layoutParams = lp
-                mxVideoStd.setDimensionRatio(4.0 / 3.0)
+                binding.mxVideoStd.layoutParams = lp
+                binding.mxVideoStd.setDimensionRatio(4.0 / 3.0)
             } else if (checkedId == R.id.ratio200dp) {
                 val lp = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     (resources.displayMetrics.density * 200).toInt()
                 )
-                mxVideoStd.layoutParams = lp
-                mxVideoStd.setDimensionRatio(0.0)
+                binding.mxVideoStd.layoutParams = lp
+                binding.mxVideoStd.setDimensionRatio(0.0)
             } else {
                 val lp = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 )
-                mxVideoStd.layoutParams = lp
-                mxVideoStd.setDimensionRatio(0.0)
+                binding.mxVideoStd.layoutParams = lp
+                binding.mxVideoStd.setDimensionRatio(0.0)
             }
         }
-        ratio_16_9.performClick()
+        binding.ratio169.performClick()
 
-        rotationRG.setOnCheckedChangeListener { group, checkedId ->
+        binding.rotationRG.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId == R.id.rotation0) {
-                mxVideoStd.setTextureOrientation(MXOrientation.DEGREE_0)
+                binding.mxVideoStd.setTextureOrientation(MXOrientation.DEGREE_0)
             } else if (checkedId == R.id.rotation90) {
-                mxVideoStd.setTextureOrientation(MXOrientation.DEGREE_90)
+                binding.mxVideoStd.setTextureOrientation(MXOrientation.DEGREE_90)
             } else if (checkedId == R.id.rotation180) {
-                mxVideoStd.setTextureOrientation(MXOrientation.DEGREE_180)
+                binding.mxVideoStd.setTextureOrientation(MXOrientation.DEGREE_180)
             } else if (checkedId == R.id.rotation270) {
-                mxVideoStd.setTextureOrientation(MXOrientation.DEGREE_270)
+                binding.mxVideoStd.setTextureOrientation(MXOrientation.DEGREE_270)
             }
         }
-        rotation0.performClick()
+        binding.rotation0.performClick()
 
-        canSeekRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().canSeekByUser.set(checkedId == R.id.canSeekTrue)
+        binding.canSeekRG.setOnCheckedChangeListener { group, checkedId ->
+            binding.mxVideoStd.getConfig().canSeekByUser.set(checkedId == R.id.canSeekTrue)
         }
-        canSeekTrue.performClick()
+        binding.canSeekTrue.performClick()
 
-        muteRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.setAudioMute(checkedId == R.id.muteTrue)
+        binding.muteRG.setOnCheckedChangeListener { group, checkedId ->
+            binding.mxVideoStd.setAudioMute(checkedId == R.id.muteTrue)
         }
-        muteFalse.performClick()
+        binding.muteFalse.performClick()
 
-        canFullRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().canFullScreen.set(checkedId == R.id.canFullTrue)
+        binding.canFullRG.setOnCheckedChangeListener { group, checkedId ->
+            binding.mxVideoStd.getConfig().canFullScreen.set(checkedId == R.id.canFullTrue)
         }
-        canFullTrue.performClick()
+        binding.canFullTrue.performClick()
 
-        canShowSystemTimeRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().canShowSystemTime.set(checkedId == R.id.canShowSystemTimeTrue)
+        binding.canShowSystemTimeRG.setOnCheckedChangeListener { group, checkedId ->
+            binding.mxVideoStd.getConfig().canShowSystemTime.set(checkedId == R.id.canShowSystemTimeTrue)
         }
-        canShowSystemTimeTrue.performClick()
+        binding.canShowSystemTimeTrue.performClick()
 
-        canShowBatteryImgRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().canShowBatteryImg.set(checkedId == R.id.canShowBatteryImgTrue)
+        binding.canShowBatteryImgRG.setOnCheckedChangeListener { group, checkedId ->
+            binding.mxVideoStd.getConfig().canShowBatteryImg.set(checkedId == R.id.canShowBatteryImgTrue)
         }
-        canShowBatteryImgTrue.performClick()
+        binding.canShowBatteryImgTrue.performClick()
 
-        showTipIfNotWifiRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().showTipIfNotWifi.set(checkedId == R.id.showTipIfNotWifiTrue)
+        binding.showTipIfNotWifiRG.setOnCheckedChangeListener { group, checkedId ->
+            binding.mxVideoStd.getConfig().showTipIfNotWifi.set(checkedId == R.id.showTipIfNotWifiTrue)
         }
-        showTipIfNotWifiFalse.performClick()
+        binding.showTipIfNotWifiFalse.performClick()
 
-        gotoNormalScreenWhenCompleteRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().gotoNormalScreenWhenComplete.set(checkedId == R.id.gotoNormalScreenWhenCompleteTrue)
+        binding.gotoNormalScreenWhenCompleteRG.setOnCheckedChangeListener { group, checkedId ->
+            binding.mxVideoStd.getConfig().gotoNormalScreenWhenComplete.set(checkedId == R.id.gotoNormalScreenWhenCompleteTrue)
         }
-        gotoNormalScreenWhenCompleteTrue.performClick()
+        binding.gotoNormalScreenWhenCompleteTrue.performClick()
 
-        mirrorRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().mirrorMode.set(checkedId == R.id.mirrorTrue)
+        binding.mirrorRG.setOnCheckedChangeListener { group, checkedId ->
+            binding.mxVideoStd.getConfig().mirrorMode.set(checkedId == R.id.mirrorTrue)
         }
-        mirrorFalse.performClick()
+        binding.mirrorFalse.performClick()
 
-        canShowSpeedRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().canShowNetSpeed.set(checkedId == R.id.canShowSpeedTrue)
+        binding.canShowSpeedRG.setOnCheckedChangeListener { group, checkedId ->
+            binding.mxVideoStd.getConfig().canShowNetSpeed.set(checkedId == R.id.canShowSpeedTrue)
         }
-        canShowSpeedTrue.performClick()
+        binding.canShowSpeedTrue.performClick()
 
-        gotoNormalScreenWhenErrorRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().gotoNormalScreenWhenError.set(checkedId == R.id.gotoNormalScreenWhenErrorTrue)
+        binding.gotoNormalScreenWhenErrorRG.setOnCheckedChangeListener { group, checkedId ->
+            binding.mxVideoStd.getConfig().gotoNormalScreenWhenError.set(checkedId == R.id.gotoNormalScreenWhenErrorTrue)
         }
-        gotoNormalScreenWhenErrorTrue.performClick()
+        binding.gotoNormalScreenWhenErrorTrue.performClick()
 
-        sensorRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().autoFullScreenBySensor.set(checkedId == R.id.sensorTrue)
+        binding.sensorRG.setOnCheckedChangeListener { group, checkedId ->
+            binding.mxVideoStd.getConfig().autoFullScreenBySensor.set(checkedId == R.id.sensorTrue)
         }
-        sensorFalse.performClick()
+        binding.sensorFalse.performClick()
 
-        liveRetryRG.setOnCheckedChangeListener { group, checkedId ->
-            mxVideoStd.getConfig().replayLiveSourceWhenError.set(checkedId == R.id.liveRetryTrue)
+        binding.liveRetryRG.setOnCheckedChangeListener { group, checkedId ->
+            binding.mxVideoStd.getConfig().replayLiveSourceWhenError.set(checkedId == R.id.liveRetryTrue)
         }
-        liveRetryFalse.performClick()
+        binding.liveRetryFalse.performClick()
     }
 
     private fun stringForTime(time: Int): String {
@@ -305,12 +306,12 @@ class NormalActivity : AppCompatActivity() {
     }
 
     override fun onStart() {
-        mxVideoStd.onStart()
+        binding.mxVideoStd.onStart()
         super.onStart()
     }
 
     override fun onStop() {
-        mxVideoStd.onStop()
+        binding.mxVideoStd.onStop()
         super.onStop()
     }
 

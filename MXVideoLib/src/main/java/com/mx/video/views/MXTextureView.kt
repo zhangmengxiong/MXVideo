@@ -9,24 +9,33 @@ import com.mx.video.beans.MXOrientation
 import com.mx.video.beans.MXPair
 import com.mx.video.beans.MXScale
 import com.mx.video.beans.MXSize
-import com.mx.video.utils.MXValueObservable
+import com.mx.video.beans.IMXObserver
+import com.mx.video.utils.MXObservable
 
 class MXTextureView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : TextureView(context, attrs, defStyleAttr) {
-    private val size = MXValueObservable(MXSize(0, 0))
+    private val size = MXObservable(MXSize(0, 0))
 
-    private val sizeObserver = { _: MXSize ->
-        resetTransform()
+    private val sizeObserver = object : IMXObserver<MXSize> {
+        override suspend fun update(value: MXSize) {
+            resetTransform()
+        }
     }
-    private val scaleObserver = { _: MXScale ->
-        resetTransform()
+    private val scaleObserver = object : IMXObserver<MXScale> {
+        override suspend fun update(value: MXScale) {
+            resetTransform()
+        }
     }
-    private val orientationObserver = { _: MXOrientation ->
-        resetTransform()
+    private val orientationObserver = object : IMXObserver<MXOrientation> {
+        override suspend fun update(value: MXOrientation) {
+            resetTransform()
+        }
     }
-    private val mirrorObserver = { _: Boolean ->
-        resetTransform()
+    private val mirrorObserver = object : IMXObserver<Boolean> {
+        override suspend fun update(value: Boolean) {
+            resetTransform()
+        }
     }
 
     init {
@@ -142,6 +151,7 @@ class MXTextureView @JvmOverloads constructor(
             MXScale.FILL_PARENT -> {
                 MXPair(w, h)
             }
+
             MXScale.CENTER_CROP -> {
                 if (videoRatio > w / h) {
                     MXPair(w, w / videoRatio)

@@ -6,7 +6,7 @@
 
 最新版本：[![](https://jitpack.io/v/zhangmengxiong/MXVideo.svg)](https://jitpack.io/#zhangmengxiong/MXVideo)
 ```groovy
-    implementation 'com.github.zhangmengxiong:MXVideo:1.8.5'
+    implementation 'com.github.zhangmengxiong:MXVideo:1.8.7'
 ```
 
 ![Normal](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/1.png)
@@ -311,6 +311,12 @@ if (mxVideoStd.isPlaying()) {
     val bitmap: Bitmap? = mxVideoStd.getTextureView()?.bitmap
     screenCapImg.setImageBitmap(bitmap)
 }
+```
+
+- 非全屏时，设置支持滑动快进快退/音量调节/亮度调节功能
+```kotlin
+// 默认非全屏时不支持滑动相关操作
+config.enableTouchWhenNormalScreen.set(true)
 ```
 
 

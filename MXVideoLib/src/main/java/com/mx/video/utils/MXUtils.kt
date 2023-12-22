@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
-import com.mx.video.BuildConfig
 import com.mx.video.beans.MXOrientation
 import java.text.DecimalFormat
 import java.util.Formatter
@@ -33,7 +32,7 @@ internal object MXUtils {
         }
     }
 
-    private var isDebug = BuildConfig.DEBUG
+    private var isDebug = false
     fun setDebug(debug: Boolean) {
         isDebug = debug
     }

@@ -1,6 +1,5 @@
 package com.mx.video.listener
 
-import android.net.Uri
 import com.mx.video.beans.MXPlaySource
 import com.mx.video.beans.MXScreen
 import com.mx.video.beans.MXState

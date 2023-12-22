@@ -3,12 +3,14 @@ package com.mx.video.player
 import android.content.Context
 import android.graphics.SurfaceTexture
 import android.media.AudioAttributes
-import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.PlaybackParams
 import android.os.Build
 import android.view.Surface
 import com.mx.video.beans.MXPlaySource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     MediaPlayer.OnCompletionListener, MediaPlayer.OnBufferingUpdateListener,
@@ -17,20 +19,17 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     private var mediaPlayer: MediaPlayer? = null
     private var lastSeekTime = 0f
 
-    override fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) {
-        lastSeekTime = 0f
-        postInThread {
-            val mediaPlayer = MediaPlayer()
-            this.mediaPlayer = mediaPlayer
+    override suspend fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) =
+        withContext(Dispatchers.IO) {
+            lastSeekTime = 0f
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                val build = AudioAttributes.Builder()
-                build.setUsage(AudioAttributes.USAGE_MEDIA)
-                build.setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                mediaPlayer.setAudioAttributes(build.build())
-            } else {
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
-            }
+            val mediaPlayer = MediaPlayer()
+            this@MXSystemPlayer.mediaPlayer = mediaPlayer
+
+            val build = AudioAttributes.Builder()
+            build.setUsage(AudioAttributes.USAGE_MEDIA)
+            build.setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+            mediaPlayer.setAudioAttributes(build.build())
             mediaPlayer.isLooping = false
             mediaPlayer.setOnPreparedListener(this@MXSystemPlayer)
             mediaPlayer.setOnCompletionListener(this@MXSystemPlayer)
@@ -44,62 +43,60 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
             mediaPlayer.setDataSource(context, source.playUri, source.headerMap)
             mediaPlayer.prepareAsync()
         }
-    }
 
     override fun enablePreload(): Boolean {
         return true
     }
 
-    override fun start() {
+    override suspend fun start() {
         if (!active) return
-        postInThread { mediaPlayer?.start() }
+        scope?.launch(Dispatchers.IO) {
+            mediaPlayer?.start()
+        }
         notifyStartPlay()
         postBuffering()
     }
 
-    override fun pause() {
+    override suspend fun pause() {
         if (!active) return
-        postInThread { mediaPlayer?.pause() }
+        scope?.launch(Dispatchers.IO) {
+            mediaPlayer?.pause()
+        }
     }
 
     override fun isPlaying(): Boolean {
         if (!active) return false
-        if (mediaPlayer?.isPlaying == true) {
-            return true
-        }
-        return false
+        return (mediaPlayer?.isPlaying == true)
     }
 
     // 这里不需要处理未播放状态的快进快退，MXVideo会判断。
     override fun seekTo(time: Int) {
         val source = source ?: return
         if (!active || source.isLiveSource) return
-        val duration = getDuration().toInt()
-        if (duration != 0 && time >= duration) {
-            // 如果直接跳转到结束位置，则直接complete
-            notifyPlayerCompletion()
-            return
-        }
-        lastSeekTime = time.toFloat()
-        postInThread {
+        scope?.launch(Dispatchers.IO) {
+            val duration = getDuration().toInt()
+            if (duration != 0 && time >= duration) {
+                // 如果直接跳转到结束位置，则直接complete
+                notifyPlayerCompletion()
+                return@launch
+            }
+            lastSeekTime = time.toFloat()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 mediaPlayer?.seekTo(time * 1000L, MediaPlayer.SEEK_CLOSEST)
             } else {
                 mediaPlayer?.seekTo(time * 1000)
             }
-//            notifyBuffering(true)
         }
     }
 
-    override fun release() {
+    override suspend fun release() {
         super.release() // 释放父类资源，必不可少
-        val mediaPlayer = mediaPlayer
         this.lastSeekTime = -1f
+        val mediaPlayer = mediaPlayer ?: return
         this.mediaPlayer = null
-        try {
-            mediaPlayer?.setSurface(null)
-            mediaPlayer?.release()
-        } catch (_: Exception) {
+        mediaPlayer.setSurface(null)
+        withContext(Dispatchers.IO) {
+            mediaPlayer.release()
         }
     }
 
@@ -136,56 +133,50 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun onPrepared(mp: MediaPlayer?) {
-        if (!active) return
-        notifyPrepared()
+        scope?.launch { notifyPrepared() }
     }
 
     override fun onCompletion(mp: MediaPlayer?) {
-        if (!active) return
-        notifyPlayerCompletion()
+        scope?.launch { notifyPlayerCompletion() }
     }
 
     override fun onBufferingUpdate(mp: MediaPlayer?, percent: Int) {
-        if (!active) return
-        notifyBufferingUpdate(percent)
+        scope?.launch { notifyBufferingUpdate(percent) }
     }
 
     override fun onSeekComplete(mp: MediaPlayer?) {
-        if (!active) return
-//        notifyBuffering(false) 
-        notifySeekComplete()
+        scope?.launch { notifySeekComplete() }
     }
 
     override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
-        if (!active) return true
-        notifyError("what = $what  extra = $extra")
+        scope?.launch { notifyError("what = $what  extra = $extra") }
         return true
     }
 
     override fun onInfo(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
-        if (!active) return true
-        when (what) {
-            MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> {
-                notifyStartPlay()
-            }
+        scope?.launch {
+            when (what) {
+                MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> {
+                    notifyStartPlay()
+                }
 
-            MediaPlayer.MEDIA_INFO_BUFFERING_START -> {
-                notifyBuffering(true)
-            }
+                MediaPlayer.MEDIA_INFO_BUFFERING_START -> {
+                    notifyBuffering(true)
+                }
 
-            MediaPlayer.MEDIA_INFO_BUFFERING_END -> {
-                notifyBuffering(false)
-            }
+                MediaPlayer.MEDIA_INFO_BUFFERING_END -> {
+                    notifyBuffering(false)
+                }
 
-            else -> {
-                onPlayerInfo("what = $what    extra = $extra")
+                else -> {
+                    onPlayerInfo("what = $what    extra = $extra")
+                }
             }
         }
         return true
     }
 
     override fun onVideoSizeChanged(mp: MediaPlayer?, width: Int, height: Int) {
-        if (!active) return
-        notifyVideoSize(width, height)
+        scope?.launch { notifyVideoSize(width, height) }
     }
 }

@@ -17,12 +17,15 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.video.VideoSize
 import com.mx.video.beans.MXPlaySource
 import com.mx.video.player.IMXPlayer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
     private var mediaPlayer: ExoPlayer? = null
 
-    override fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) {
-        postInMainThread {
+    override suspend fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) =
+        withContext(Dispatchers.Main) {
             isBuffering = false
             isPreparedCall = false
             isStartPlayCall = false
@@ -31,7 +34,7 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
                 .setLooper(Looper.getMainLooper())
                 .setTrackSelector(DefaultTrackSelector(context))
                 .setLoadControl(DefaultLoadControl()).build()
-            this.mediaPlayer = player
+            this@MXExoPlayer.mediaPlayer = player
             val currUrl = source.playUri.toString()
 
             val build = AudioAttributes.Builder()
@@ -39,8 +42,8 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
             build.setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
             player.setAudioAttributes(build.build(), false)
 
-            player.addListener(this)
-            player.addAnalyticsListener(this)
+            player.addListener(this@MXExoPlayer)
+            player.addAnalyticsListener(this@MXExoPlayer)
             player.repeatMode = Player.REPEAT_MODE_OFF
             player.setMediaSource(
                 ExoSourceBuild.build(context, source.headerMap, currUrl, false)
@@ -49,19 +52,19 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
             player.setVideoSurface(Surface(surface))
             player.prepare()
         }
-    }
 
     override fun enablePreload(): Boolean {
         return true
     }
 
-    override fun start() {
-        postInMainThread { mediaPlayer?.play() }
+    override suspend fun start() {
+        if (!active) return
+        withContext(Dispatchers.Main) { mediaPlayer?.play() }
         notifyStartPlay()
         postBuffering()
     }
 
-    override fun pause() {
+    override suspend fun pause() {
         if (!active) return
         mediaPlayer?.pause()
     }
@@ -75,7 +78,7 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
     override fun seekTo(time: Int) {
         val source = source ?: return
         if (!active || source.isLiveSource) return
-        postInMainThread {
+        scope?.launch {
             val duration = getDuration()
             if (duration > 0f && time >= duration) {
                 // 如果直接跳转到结束位置，则直接complete
@@ -86,7 +89,7 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
         }
     }
 
-    override fun release() {
+    override suspend fun release() {
         super.release() // 释放父类资源，必不可少
 
         val mediaPlayer = mediaPlayer
@@ -95,7 +98,7 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
         try {
             mediaPlayer?.setVideoSurface(null)
             mediaPlayer?.release()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
         }
     }
 
@@ -135,27 +138,29 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
     override fun onPlayWhenReadyChanged(playWhenReady: Boolean, playbackState: Int) {
         //重新播放状态顺序为：STATE_IDLE -》STATE_BUFFERING -》STATE_READY
         //缓冲时顺序为：STATE_BUFFERING -》STATE_READY
-        if (isLastReportedPlayWhenReady != playWhenReady || lastReportedPlaybackState != playbackState) {
-            when (playbackState) {
-                Player.STATE_BUFFERING -> {
-                    notifyBuffering(true)
-                    isBuffering = true
-                }
+        scope?.launch {
+            if (isLastReportedPlayWhenReady != playWhenReady || lastReportedPlaybackState != playbackState) {
+                when (playbackState) {
+                    Player.STATE_BUFFERING -> {
+                        notifyBuffering(true)
+                        isBuffering = true
+                    }
 
-                Player.STATE_READY -> {
-                    notifyPrepared()
-                    notifyBuffering(false)
-                }
+                    Player.STATE_READY -> {
+                        notifyPrepared()
+                        notifyBuffering(false)
+                    }
 
-                Player.STATE_ENDED -> {
-                    notifyPlayerCompletion()
-                }
+                    Player.STATE_ENDED -> {
+                        notifyPlayerCompletion()
+                    }
 
-                else -> {}
+                    else -> {}
+                }
             }
+            isLastReportedPlayWhenReady = playWhenReady
+            lastReportedPlaybackState = playbackState
         }
-        isLastReportedPlayWhenReady = playWhenReady
-        lastReportedPlaybackState = playbackState
     }
 
     override fun onPositionDiscontinuity(
@@ -165,19 +170,19 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
     ) {
         if (!active) return
         if (reason == Player.DISCONTINUITY_REASON_SEEK) {
-            notifySeekComplete()
+            scope?.launch { notifySeekComplete() }
         }
     }
 
     override fun onPlayerError(error: PlaybackException) {
         if (!active) return
-        notifyError(error.message ?: error.localizedMessage)
+        scope?.launch { notifyError(error.message ?: error.localizedMessage) }
     }
 
     override fun onVideoSizeChanged(videoSize: VideoSize) {
         if (!active) return
         val width = videoSize.width
         val height = (videoSize.height / videoSize.pixelWidthHeightRatio).toInt()
-        notifyVideoSize(width, height)
+        scope?.launch { notifyVideoSize(width, height) }
     }
 }

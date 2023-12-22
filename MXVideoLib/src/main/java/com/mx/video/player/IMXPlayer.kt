@@ -7,6 +7,11 @@ import com.mx.video.base.IMXPlayerCallback
 import com.mx.video.beans.MXPlaySource
 import com.mx.video.utils.MXUtils
 import com.mx.video.views.MXTextureView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -37,7 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     private val isActive = AtomicBoolean(false)
-    private val mxHandler = MXThreadHandler()
+    protected var scope: CoroutineScope? = null
     private var isBuffering = false
     private var isPrepared = false
     private var isStartPlay = false
@@ -55,30 +60,6 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
      */
     val active: Boolean
         get() = isActive.get()
-
-    /**
-     * 在主线程中运行
-     * @param run 运行回调
-     */
-    fun postInMainThread(run: () -> Unit) {
-        mxHandler.postInMainThread {
-            if (active) {
-                run.invoke()
-            }
-        }
-    }
-
-    /**
-     * 在Thread中运行
-     * @param run 运行回调
-     */
-    fun postInThread(run: () -> Unit) {
-        mxHandler.postInThread {
-            if (active) {
-                run.invoke()
-            }
-        }
-    }
 
     fun log(any: Any) {
         MXUtils.log(any)
@@ -100,19 +81,19 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         this.isStartPlay = false
         this.hasPrepareCall = false
 
-        mxHandler.start()
+        scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         isActive.set(true)
         mTextureView?.surfaceTextureListener = this
-        requestPrepare()
+        scope?.launch { requestPrepare() }
     }
 
     private var hasPrepareCall = false
-    private fun requestPrepare() {
-        if (!active) return
-        if (hasPrepareCall) return
-        val context = mContext ?: return
-        val source = mPlaySource ?: return
-        val surface = mSurfaceTexture ?: return
+    private suspend fun requestPrepare() = withContext(Dispatchers.Main) {
+        if (!active) return@withContext
+        if (hasPrepareCall) return@withContext
+        val context = mContext ?: return@withContext
+        val source = mPlaySource ?: return@withContext
+        val surface = mSurfaceTexture ?: return@withContext
         playerCallback?.onPlayerInfo(" --> prepare <--")
         prepare(context, source, surface)
         hasPrepareCall = true
@@ -123,7 +104,7 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         val texture = mSurfaceTexture
         if (texture == null) {
             mSurfaceTexture = surface
-            requestPrepare()
+            scope?.launch { requestPrepare() }
         } else {
             mTextureView?.setSurfaceTexture(texture)
         }
@@ -143,17 +124,17 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     /**
      * 开始加载视频
      */
-    abstract fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture)
+    abstract suspend fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture)
 
     /**
      * 当播放器prepare后调用，开始播放
      */
-    abstract fun start()
+    abstract suspend fun start()
 
     /**
      * 暂停
      */
-    abstract fun pause()
+    abstract suspend fun pause()
 
     /**
      * 是否正在播放中
@@ -168,9 +149,9 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     /**
      * 释放资源
      */
-    open fun release() {
+    open suspend fun release() {
         isActive.set(false)
-        mxHandler.stop()
+        scope = null
         playerCallback?.onPlayerInfo(" --> release <--")
 
         isBuffering = false
@@ -217,123 +198,103 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     /**
      * 播放错误
      */
-    protected fun notifyError(message: String) {
-        if (!active) return
-        val callback = playerCallback ?: return
-        val source = mPlaySource ?: return
-        mxHandler.postInMainThread {
-            release()
-            callback.onPlayerError(source, message)
-        }
+    protected suspend fun notifyError(message: String) = withContext(Dispatchers.Main) {
+        if (!active) return@withContext
+        val callback = playerCallback ?: return@withContext
+        val source = mPlaySource ?: return@withContext
+        release()
+        callback.onPlayerError(source, message)
     }
 
     /**
      * 视频宽高
      */
-    protected fun notifyVideoSize(width: Int, height: Int) {
-        if (!active) return
-        val callback = playerCallback ?: return
-        mxHandler.postInMainThread {
-            callback.onPlayerVideoSizeChanged(width, height)
-        }
+    protected suspend fun notifyVideoSize(width: Int, height: Int) = withContext(Dispatchers.Main) {
+        if (!active) return@withContext
+        val callback = playerCallback ?: return@withContext
+        callback.onPlayerVideoSizeChanged(width, height)
     }
 
     /**
      * seek完成回调
      */
-    protected fun notifySeekComplete() {
-        if (!active) return
-        val callback = playerCallback ?: return
-        mxHandler.postInMainThread {
-            callback.onPlayerSeekComplete()
-        }
+    protected suspend fun notifySeekComplete() = withContext(Dispatchers.Main) {
+        if (!active) return@withContext
+        val callback = playerCallback ?: return@withContext
+        callback.onPlayerSeekComplete()
     }
 
     /**
      * 播放完成
      */
-    protected fun notifyPlayerCompletion() {
-        if (!active) return
-        val callback = playerCallback ?: return
-        mxHandler.postInMainThread {
-            release()
-            callback.onPlayerCompletion()
-        }
+    protected suspend fun notifyPlayerCompletion() = withContext(Dispatchers.Main) {
+        if (!active) return@withContext
+        val callback = playerCallback ?: return@withContext
+        release()
+        callback.onPlayerCompletion()
     }
 
     /**
      * 缓冲进度更新
      */
-    protected fun notifyBufferingUpdate(percent: Int) {
-        if (!active) return
-        val callback = playerCallback ?: return
-        mxHandler.postInMainThread {
-            callback.onPlayerBufferProgress(percent)
-        }
+    protected suspend fun notifyBufferingUpdate(percent: Int) = withContext(Dispatchers.Main) {
+        if (!active) return@withContext
+        val callback = playerCallback ?: return@withContext
+        callback.onPlayerBufferProgress(percent)
     }
 
     /**
      * 缓冲状态更新
      * @param start true=正在缓冲，false=缓冲完成
      */
-    protected fun notifyBuffering(start: Boolean) {
-        if (!active) return
-        if (!isPrepared || !isStartPlay) return
-        if (isBuffering == start) return
-        val callback = playerCallback ?: return
+    protected suspend fun notifyBuffering(start: Boolean) = withContext(Dispatchers.Main) {
+        if (!active) return@withContext
+        if (!isPrepared || !isStartPlay) return@withContext
+        if (isBuffering == start) return@withContext
+        val callback = playerCallback ?: return@withContext
         isBuffering = start
-        mxHandler.postInMainThread {
-            callback.onPlayerBuffering(start)
-        }
+        callback.onPlayerBuffering(start)
     }
 
     /**
      * 重新设置加载中状态
      */
-    protected fun postBuffering() {
-        if (!active) return
-        val callback = playerCallback ?: return
-        mxHandler.postInMainThread {
-            callback.onPlayerBuffering(isBuffering)
-        }
+    protected suspend fun postBuffering() = withContext(Dispatchers.Main) {
+        if (!active) return@withContext
+        val callback = playerCallback ?: return@withContext
+        callback.onPlayerBuffering(isBuffering)
     }
 
     /**
      * 播放器准备完成，可以调用#start()方法播放
      */
-    protected fun notifyPrepared() {
-        if (!active) return
-        if (isPrepared) return
-        val callback = playerCallback ?: return
+    protected suspend fun notifyPrepared() = withContext(Dispatchers.Main) {
+        if (!active) return@withContext
+        if (isPrepared) return@withContext
+        val callback = playerCallback ?: return@withContext
 
         isPrepared = true
-        mxHandler.postInMainThread {
-            callback.onPlayerPrepared()
-        }
+        callback.onPlayerPrepared()
     }
 
     /**
      * 播放正式开始！
      */
-    protected fun notifyStartPlay() {
-        if (!active) return
-        if (!isPrepared) return
-        if (isStartPlay) return
-        val callback = playerCallback ?: return
+    protected suspend fun notifyStartPlay() = withContext(Dispatchers.Main) {
+        if (!active) return@withContext
+        if (!isPrepared) return@withContext
+        if (isStartPlay) return@withContext
+        val callback = playerCallback ?: return@withContext
         isStartPlay = true
-        mxHandler.postInMainThread {
-            callback.onPlayerStartPlay()
-        }
+        callback.onPlayerStartPlay()
     }
 
     /**
      * 播放信息输出
      */
-    protected fun onPlayerInfo(message: String?) {
-        if (!active) return
-        val callback = playerCallback ?: return
-        mxHandler.postInMainThread {
-            callback.onPlayerInfo(message)
-        }
+    protected suspend fun onPlayerInfo(message: String?) = withContext(Dispatchers.Main) {
+        if (!active) return@withContext
+        val callback = playerCallback ?: return@withContext
+        callback.onPlayerInfo(message)
     }
 }

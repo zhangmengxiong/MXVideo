@@ -5,20 +5,21 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.mx.mxvideo_demo.R
 import com.mx.mxvideo_demo.SourceItem
 import com.mx.mxvideo_demo.adapts.SimpleVideoAdapt
+import com.mx.mxvideo_demo.databinding.ActivityRecycleViewBinding
 import com.mx.video.MXVideo
-import kotlinx.android.synthetic.main.activity_recycle_view.recycleView
 
 class RecycleViewActivity : AppCompatActivity() {
+    private val binding by lazy { ActivityRecycleViewBinding.inflate(layoutInflater) }
     private val adapt = SimpleVideoAdapt()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_recycle_view)
+        setContentView(binding.root)
 
-        recycleView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        recycleView.addItemDecoration(object : RecyclerView.ItemDecoration() {
+        binding.recycleView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.recycleView.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(outRect: Rect, itemPosition: Int, parent: RecyclerView) {
                 if (itemPosition > 0) {
                     outRect.top = 10
@@ -26,7 +27,7 @@ class RecycleViewActivity : AppCompatActivity() {
             }
         })
         adapt.list.addAll(SourceItem.all())
-        recycleView.adapter = adapt
+        binding.recycleView.adapter = adapt
     }
 
     override fun onBackPressed() {

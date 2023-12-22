@@ -10,13 +10,14 @@ import com.mx.mxvideo_demo.apps.FullScreenActivity
 import com.mx.mxvideo_demo.apps.NormalActivity
 import com.mx.mxvideo_demo.apps.RecycleViewActivity
 import com.mx.mxvideo_demo.apps.TestActivity
+import com.mx.mxvideo_demo.databinding.ActivityMainBinding
 import com.mx.video.MXVideo
-import kotlinx.android.synthetic.main.activity_main.recycleView
 
 class MainActivity : AppCompatActivity() {
+    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
         SourceItem.init(this)
         val adapt = HomeAdapt(
             arrayListOf(
@@ -30,8 +31,10 @@ class MainActivity : AppCompatActivity() {
                 },
             )
         )
-        recycleView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        recycleView.adapter = adapt
+        binding.recycleView.layoutManager = LinearLayoutManager(
+            this, LinearLayoutManager.VERTICAL, false
+        )
+        binding.recycleView.adapter = adapt
         adapt.setItemClick { index, record ->
             if (record.action != null) {
                 record.action.invoke()

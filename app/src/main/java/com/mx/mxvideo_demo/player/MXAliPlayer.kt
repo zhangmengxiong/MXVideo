@@ -12,18 +12,21 @@ import com.aliyun.player.bean.InfoCode
 import com.aliyun.player.source.UrlSource
 import com.mx.video.beans.MXPlaySource
 import com.mx.video.player.IMXPlayer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletionListener,
     IPlayer.OnSeekCompleteListener, IPlayer.OnErrorListener, IPlayer.OnInfoListener,
     IPlayer.OnVideoSizeChangedListener, IPlayer.OnLoadingStatusListener,
     IPlayer.OnStateChangedListener {
-    var mediaPlayer: AliPlayer? = null
+    private var mediaPlayer: AliPlayer? = null
 
-    override fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) {
-        postInThread {
+    override suspend fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) =
+        withContext(Dispatchers.IO) {
             val mediaPlayer = AliPlayerFactory.createAliPlayer(context)
-            this.mediaPlayer = mediaPlayer
+            this@MXAliPlayer.mediaPlayer = mediaPlayer
 
             mediaPlayer.setOnPreparedListener(this@MXAliPlayer)
             mediaPlayer.setOnCompletionListener(this@MXAliPlayer)
@@ -46,22 +49,23 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
             mediaPlayer.setSurface(Surface(surface))
             mediaPlayer.prepare()
         }
-    }
 
     override fun enablePreload(): Boolean {
         return true
     }
 
-    override fun start() {
+    override suspend fun start() {
         if (!active) return
-        postInThread { mediaPlayer?.start() }
+        withContext(Dispatchers.IO) {
+            mediaPlayer?.start()
+        }
         notifyStartPlay()
         postBuffering()
     }
 
-    override fun pause() {
+    override suspend fun pause() {
         if (!active) return
-        postInThread { mediaPlayer?.pause() }
+        withContext(Dispatchers.IO) { mediaPlayer?.pause() }
     }
 
     private var currentState = IPlayer.idle
@@ -74,20 +78,20 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
     override fun seekTo(time: Int) {
         val source = source ?: return
         if (!active || source.isLiveSource) return
-        val duration = getDuration()
-        if (duration != 0f && time >= duration) {
-            // 如果直接跳转到结束位置，则直接complete
-            notifyPlayerCompletion()
-            return
-        }
 
-        postInThread {
+        scope?.launch(Dispatchers.IO) {
+            val duration = getDuration()
+            if (duration != 0f && time >= duration) {
+                // 如果直接跳转到结束位置，则直接complete
+                notifyPlayerCompletion()
+                return@launch
+            }
             mediaPlayer?.seekTo(time * 1000L, IPlayer.SeekMode.Accurate)
             currentPosition = time.toFloat()
         }
     }
 
-    override fun release() {
+    override suspend fun release() {
         super.release() // 释放父类资源，必不可少
 
         val mediaPlayer = mediaPlayer
@@ -95,7 +99,7 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
         try {
             mediaPlayer?.setSurface(null)
             mediaPlayer?.release()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
         }
     }
 
@@ -123,23 +127,19 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
     }
 
     override fun onPrepared() {
-        if (!active) return
-        notifyPrepared()
+        scope?.launch { notifyPrepared() }
     }
 
     override fun onCompletion() {
-        if (!active) return
-        notifyPlayerCompletion()
+        scope?.launch { notifyPlayerCompletion() }
     }
 
     override fun onSeekComplete() {
-        if (!active) return
-        notifySeekComplete()
+        scope?.launch { notifySeekComplete() }
     }
 
     override fun onError(info: ErrorInfo?) {
-        if (!active) return
-        notifyError("code = ${info?.code?.name}  msg = ${info?.msg}  extra = ${info?.extra}")
+        scope?.launch { notifyError("code = ${info?.code?.name}  msg = ${info?.msg}  extra = ${info?.extra}") }
     }
 
     override fun onInfo(infoBean: InfoBean) {
@@ -149,21 +149,19 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
     }
 
     override fun onVideoSizeChanged(width: Int, height: Int) {
-        if (!active) return
-        notifyVideoSize(width, height)
+        scope?.launch { notifyVideoSize(width, height) }
     }
 
     override fun onLoadingBegin() {
-        notifyBuffering(true)
+        scope?.launch { notifyBuffering(true) }
     }
 
     override fun onLoadingProgress(progress: Int, netSpeed: Float) {
-        if (!active) return
-        notifyBufferingUpdate(progress)
+        scope?.launch { notifyBufferingUpdate(progress) }
     }
 
     override fun onLoadingEnd() {
-        notifyBuffering(false)
+        scope?.launch { notifyBuffering(false) }
     }
 
     override fun onStateChanged(newState: Int) {

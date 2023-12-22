@@ -1,36 +1,39 @@
 package com.mx.video.utils
 
-import android.os.Handler
-import android.os.Looper
-import kotlin.concurrent.thread
+import com.mx.video.beans.ITicketCallback
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlin.math.max
 
 internal class MXTicket {
-    private val mHandler = Handler(Looper.getMainLooper())
-    private var diff: Long = 500L
-    private var isTicketStart = false
-    private var runnable: Runnable? = null
+    private var scope: CoroutineScope? = null
+    private var isStartTicket = false
+    private var diff: Long = 200L
+    private var ticketRun: ITicketCallback? = null
 
-    fun setTicketRun(runnable: Runnable) {
-        this.runnable = runnable
+    fun setTicketRun(runnable: ITicketCallback) {
+        this.ticketRun = runnable
     }
 
     fun setDiffTime(time: Long) {
-        diff = time
+        diff = max(time, 100)
     }
 
     fun start() {
+        isStartTicket = true
         synchronized(this) {
-            if (isTicketStart) return
-            isTicketStart = true
-            thread {
-                while (isTicketStart) {
-                    runnable?.let {
-                        mHandler.post(it)
+            scope?.cancel()
+            scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+            scope?.launch(Dispatchers.IO) {
+                while (isActive && isStartTicket) {
+                    launch(Dispatchers.Main) {
+                        ticketRun?.ticket()
                     }
-
-                    if (diff > 0) {
-                        Thread.sleep(diff)
-                    }
+                    Thread.sleep(diff)
                 }
             }
         }
@@ -38,14 +41,17 @@ internal class MXTicket {
 
     fun stop() {
         synchronized(this) {
-            isTicketStart = false
+            isStartTicket = false
+            scope?.cancel()
+            scope = null
         }
     }
 
     fun release() {
         MXUtils.log("MXTicket release()")
-        isTicketStart = false
-        runnable = null
-        mHandler.removeCallbacksAndMessages(null)
+        isStartTicket = false
+        ticketRun = null
+        scope?.cancel()
+        scope = null
     }
 }
