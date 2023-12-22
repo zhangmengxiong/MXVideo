@@ -50,7 +50,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
     override suspend fun start() {
         if (!active) return
-        scope?.launch(Dispatchers.IO) {
+        withContext(Dispatchers.IO) {
             mediaPlayer?.start()
         }
         notifyStartPlay()
@@ -59,7 +59,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
 
     override suspend fun pause() {
         if (!active) return
-        scope?.launch(Dispatchers.IO) {
+        withContext(Dispatchers.IO) {
             mediaPlayer?.pause()
         }
     }
