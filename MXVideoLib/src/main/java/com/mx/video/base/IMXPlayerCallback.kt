@@ -48,5 +48,5 @@ interface IMXPlayerCallback {
     /**
      * 播放器回调：日志输出
      */
-    suspend fun onPlayerInfo(message: String?)
+    fun onPlayerInfo(message: String?)
 }

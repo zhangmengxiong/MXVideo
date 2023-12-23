@@ -88,12 +88,12 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     }
 
     private var hasPrepareCall = false
-    private suspend fun requestPrepare() = withContext(Dispatchers.Main) {
-        if (!active) return@withContext
-        if (hasPrepareCall) return@withContext
-        val context = mContext ?: return@withContext
-        val source = mPlaySource ?: return@withContext
-        val surface = mSurfaceTexture ?: return@withContext
+    private suspend fun requestPrepare() {
+        if (!active) return
+        if (hasPrepareCall) return
+        val context = mContext ?: return
+        val source = mPlaySource ?: return
+        val surface = mSurfaceTexture ?: return
         playerCallback?.onPlayerInfo(" --> prepare <--")
         prepare(context, source, surface)
         hasPrepareCall = true
@@ -104,9 +104,13 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         val texture = mSurfaceTexture
         if (texture == null) {
             mSurfaceTexture = surface
-            scope?.launch { requestPrepare() }
+            scope?.launch {
+                requestPrepare()
+                playerCallback?.onPlayerInfo(" --> onSurfaceTextureAvailable / null <--")
+            }
         } else {
             mTextureView?.setSurfaceTexture(texture)
+            playerCallback?.onPlayerInfo(" --> onSurfaceTextureAvailable / NotNull <--")
         }
     }
 

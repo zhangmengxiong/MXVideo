@@ -16,24 +16,17 @@ class MXObservable<T>(defaultValue: T) {
     private var _value: T = defaultValue
 
     fun set(value: T) {
-        scope.launch { updateValue(value) }
+        if (value == _value) return
+        _value = value
+        scope.launch { notifyChangeSync() }
     }
 
     fun get() = _value
 
     internal suspend fun updateValue(value: T) {
         if (value == _value) return
-
-        val list = synchronized(lock) {
-            if (value == _value) return
-            _value = value
-            return@synchronized observerList.toMutableList()
-        }
-        if (!active.get()) return
-        if (list.isEmpty()) return
-        withContext(Dispatchers.Main) {
-            list.forEach { it.update(value) }
-        }
+        _value = value
+        notifyChangeSync()
     }
 
     internal fun notifyChange() {

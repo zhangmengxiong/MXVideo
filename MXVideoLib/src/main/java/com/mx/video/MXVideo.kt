@@ -421,30 +421,28 @@ abstract class MXVideo @JvmOverloads constructor(
 
     override fun stopPlay() {
         val player = mxPlayer
-        scope.launch {
-            mxPlayer = null
-            isStopState = null
+        mxPlayer = null
+        isStopState = null
 
-            if (player != null) {
-                MXUtils.log("MXVideo: stopPlay()")
-                player.release()
-            }
-
-            viewSet.detachTextureView()
-
-            if (PLAYING_VIDEO == this) {
-                PLAYING_VIDEO = null
-            }
-
-            sensorHelp.deleteListener(sensorListener)
-
-            if (config.source.get() == null) {
-                config.state.updateValue(MXState.IDLE)
-            } else {
-                config.state.updateValue(MXState.NORMAL)
-            }
-            config.loading.updateValue(false)
+        if (player != null) {
+            MXUtils.log("MXVideo: stopPlay()")
+            scope.launch { player.release() }
         }
+
+        viewSet.detachTextureView()
+
+        if (PLAYING_VIDEO == this) {
+            PLAYING_VIDEO = null
+        }
+
+        sensorHelp.deleteListener(sensorListener)
+
+        if (config.source.get() == null) {
+            config.state.set(MXState.IDLE)
+        } else {
+            config.state.set(MXState.NORMAL)
+        }
+        config.loading.set(false)
     }
 
     override fun pausePlay() {
@@ -597,7 +595,7 @@ abstract class MXVideo @JvmOverloads constructor(
             postInvalidate()
         }
 
-    override suspend fun onPlayerInfo(message: String?) {
+    override fun onPlayerInfo(message: String?) {
         MXUtils.log("MXVideo: onPlayerInfo($message)")
     }
 
