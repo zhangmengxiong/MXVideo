@@ -9,6 +9,7 @@ import android.os.Build
 import android.view.Surface
 import com.mx.video.beans.MXPlaySource
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -19,8 +20,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     private var mediaPlayer: MediaPlayer? = null
     private var lastSeekTime = 0f
 
-    override suspend fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) =
-        withContext(Dispatchers.IO) {
+    override suspend fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) {
             lastSeekTime = 0f
 
             val mediaPlayer = MediaPlayer()
@@ -41,7 +41,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
             mediaPlayer.setOnVideoSizeChangedListener(this@MXSystemPlayer)
             mediaPlayer.setSurface(Surface(surface))
             mediaPlayer.setDataSource(context, source.playUri, source.headerMap)
-            mediaPlayer.prepareAsync()
+            withContext(Dispatchers.IO) { mediaPlayer.prepareAsync() }
         }
 
     override fun enablePreload(): Boolean {
@@ -97,6 +97,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
         mediaPlayer.setSurface(null)
         withContext(Dispatchers.IO) {
             mediaPlayer.release()
+            delay(1000)
         }
     }
 

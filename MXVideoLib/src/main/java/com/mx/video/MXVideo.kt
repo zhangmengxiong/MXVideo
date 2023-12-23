@@ -597,7 +597,7 @@ abstract class MXVideo @JvmOverloads constructor(
             postInvalidate()
         }
 
-    override suspend fun onPlayerInfo(message: String?) {
+    override fun onPlayerInfo(message: String?) {
         MXUtils.log("MXVideo: onPlayerInfo($message)")
     }
 
