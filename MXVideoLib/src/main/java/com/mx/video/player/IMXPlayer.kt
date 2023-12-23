@@ -8,11 +8,14 @@ import com.mx.video.beans.MXPlaySource
 import com.mx.video.utils.MXUtils
 import com.mx.video.views.MXTextureView
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * API调用流程：
@@ -42,7 +45,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     private val isActive = AtomicBoolean(false)
-    protected var scope: CoroutineScope? = null
+    private var scope: CoroutineScope? = null
     private var isBuffering = false
     private var isPrepared = false
     private var isStartPlay = false
@@ -61,8 +64,12 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     val active: Boolean
         get() = isActive.get()
 
-    fun log(any: Any) {
-        MXUtils.log(any)
+    fun launch(
+        context: CoroutineContext = Dispatchers.Main,
+        block: (suspend CoroutineScope.() -> Unit)
+    ) {
+        if (!active) return
+        scope?.launch(context = context, block = block)
     }
 
     internal fun startPlay(

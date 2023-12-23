@@ -21,28 +21,28 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     private var lastSeekTime = 0f
 
     override suspend fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) {
-            lastSeekTime = 0f
+        lastSeekTime = 0f
 
-            val mediaPlayer = MediaPlayer()
-            this@MXSystemPlayer.mediaPlayer = mediaPlayer
+        val mediaPlayer = MediaPlayer()
+        this@MXSystemPlayer.mediaPlayer = mediaPlayer
 
-            val build = AudioAttributes.Builder()
-            build.setUsage(AudioAttributes.USAGE_MEDIA)
-            build.setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-            mediaPlayer.setAudioAttributes(build.build())
-            mediaPlayer.isLooping = false
-            mediaPlayer.setOnPreparedListener(this@MXSystemPlayer)
-            mediaPlayer.setOnCompletionListener(this@MXSystemPlayer)
-            mediaPlayer.setOnBufferingUpdateListener(this@MXSystemPlayer)
-            mediaPlayer.setScreenOnWhilePlaying(true)
-            mediaPlayer.setOnSeekCompleteListener(this@MXSystemPlayer)
-            mediaPlayer.setOnErrorListener(this@MXSystemPlayer)
-            mediaPlayer.setOnInfoListener(this@MXSystemPlayer)
-            mediaPlayer.setOnVideoSizeChangedListener(this@MXSystemPlayer)
-            mediaPlayer.setSurface(Surface(surface))
-            mediaPlayer.setDataSource(context, source.playUri, source.headerMap)
-            withContext(Dispatchers.IO) { mediaPlayer.prepareAsync() }
-        }
+        val build = AudioAttributes.Builder()
+        build.setUsage(AudioAttributes.USAGE_MEDIA)
+        build.setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+        mediaPlayer.setAudioAttributes(build.build())
+        mediaPlayer.isLooping = false
+        mediaPlayer.setOnPreparedListener(this@MXSystemPlayer)
+        mediaPlayer.setOnCompletionListener(this@MXSystemPlayer)
+        mediaPlayer.setOnBufferingUpdateListener(this@MXSystemPlayer)
+        mediaPlayer.setScreenOnWhilePlaying(true)
+        mediaPlayer.setOnSeekCompleteListener(this@MXSystemPlayer)
+        mediaPlayer.setOnErrorListener(this@MXSystemPlayer)
+        mediaPlayer.setOnInfoListener(this@MXSystemPlayer)
+        mediaPlayer.setOnVideoSizeChangedListener(this@MXSystemPlayer)
+        mediaPlayer.setSurface(Surface(surface))
+        mediaPlayer.setDataSource(context, source.playUri, source.headerMap)
+        withContext(Dispatchers.IO) { mediaPlayer.prepareAsync() }
+    }
 
     override fun enablePreload(): Boolean {
         return true
@@ -73,7 +73,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     override fun seekTo(time: Int) {
         val source = source ?: return
         if (!active || source.isLiveSource) return
-        scope?.launch(Dispatchers.IO) {
+        launch(Dispatchers.IO) {
             val duration = getDuration().toInt()
             if (duration != 0 && time >= duration) {
                 // 如果直接跳转到结束位置，则直接complete
@@ -97,7 +97,6 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
         mediaPlayer.setSurface(null)
         withContext(Dispatchers.IO) {
             mediaPlayer.release()
-            delay(100)
         }
     }
 
@@ -134,28 +133,28 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun onPrepared(mp: MediaPlayer?) {
-        scope?.launch { notifyPrepared() }
+        launch { notifyPrepared() }
     }
 
     override fun onCompletion(mp: MediaPlayer?) {
-        scope?.launch { notifyPlayerCompletion() }
+        launch { notifyPlayerCompletion() }
     }
 
     override fun onBufferingUpdate(mp: MediaPlayer?, percent: Int) {
-        scope?.launch { notifyBufferingUpdate(percent) }
+        launch { notifyBufferingUpdate(percent) }
     }
 
     override fun onSeekComplete(mp: MediaPlayer?) {
-        scope?.launch { notifySeekComplete() }
+        launch { notifySeekComplete() }
     }
 
     override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
-        scope?.launch { notifyError("what = $what  extra = $extra") }
+        launch { notifyError("what = $what  extra = $extra") }
         return true
     }
 
     override fun onInfo(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
-        scope?.launch {
+        launch {
             when (what) {
                 MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> {
                     notifyStartPlay()
@@ -178,6 +177,6 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     override fun onVideoSizeChanged(mp: MediaPlayer?, width: Int, height: Int) {
-        scope?.launch { notifyVideoSize(width, height) }
+        launch { notifyVideoSize(width, height) }
     }
 }

@@ -24,34 +24,33 @@ import kotlinx.coroutines.withContext
 class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
     private var mediaPlayer: ExoPlayer? = null
 
-    override suspend fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) =
-        withContext(Dispatchers.Main) {
-            isBuffering = false
-            isPreparedCall = false
-            isStartPlayCall = false
+    override suspend fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) {
+        isBuffering = false
+        isPreparedCall = false
+        isStartPlayCall = false
 
-            val player = ExoPlayer.Builder(context, DefaultRenderersFactory(context))
-                .setLooper(Looper.getMainLooper())
-                .setTrackSelector(DefaultTrackSelector(context))
-                .setLoadControl(DefaultLoadControl()).build()
-            this@MXExoPlayer.mediaPlayer = player
-            val currUrl = source.playUri.toString()
+        val player = ExoPlayer.Builder(context, DefaultRenderersFactory(context))
+            .setLooper(Looper.getMainLooper())
+            .setTrackSelector(DefaultTrackSelector(context))
+            .setLoadControl(DefaultLoadControl()).build()
+        this@MXExoPlayer.mediaPlayer = player
+        val currUrl = source.playUri.toString()
 
-            val build = AudioAttributes.Builder()
-            build.setUsage(C.USAGE_MEDIA)
-            build.setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
-            player.setAudioAttributes(build.build(), false)
+        val build = AudioAttributes.Builder()
+        build.setUsage(C.USAGE_MEDIA)
+        build.setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+        player.setAudioAttributes(build.build(), false)
 
-            player.addListener(this@MXExoPlayer)
-            player.addAnalyticsListener(this@MXExoPlayer)
-            player.repeatMode = Player.REPEAT_MODE_OFF
-            player.setMediaSource(
-                ExoSourceBuild.build(context, source.headerMap, currUrl, false)
-            )
-            player.playWhenReady = false
-            player.setVideoSurface(Surface(surface))
-            player.prepare()
-        }
+        player.addListener(this@MXExoPlayer)
+        player.addAnalyticsListener(this@MXExoPlayer)
+        player.repeatMode = Player.REPEAT_MODE_OFF
+        player.setMediaSource(
+            ExoSourceBuild.build(context, source.headerMap, currUrl, false)
+        )
+        player.playWhenReady = false
+        player.setVideoSurface(Surface(surface))
+        player.prepare()
+    }
 
     override fun enablePreload(): Boolean {
         return true
@@ -78,7 +77,7 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
     override fun seekTo(time: Int) {
         val source = source ?: return
         if (!active || source.isLiveSource) return
-        scope?.launch {
+        launch {
             val duration = getDuration()
             if (duration > 0f && time >= duration) {
                 // 如果直接跳转到结束位置，则直接complete
@@ -138,7 +137,7 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
     override fun onPlayWhenReadyChanged(playWhenReady: Boolean, playbackState: Int) {
         //重新播放状态顺序为：STATE_IDLE -》STATE_BUFFERING -》STATE_READY
         //缓冲时顺序为：STATE_BUFFERING -》STATE_READY
-        scope?.launch {
+        launch {
             if (isLastReportedPlayWhenReady != playWhenReady || lastReportedPlaybackState != playbackState) {
                 when (playbackState) {
                     Player.STATE_BUFFERING -> {
@@ -170,19 +169,19 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
     ) {
         if (!active) return
         if (reason == Player.DISCONTINUITY_REASON_SEEK) {
-            scope?.launch { notifySeekComplete() }
+            launch { notifySeekComplete() }
         }
     }
 
     override fun onPlayerError(error: PlaybackException) {
         if (!active) return
-        scope?.launch { notifyError(error.message ?: error.localizedMessage) }
+        launch { notifyError(error.message ?: error.localizedMessage) }
     }
 
     override fun onVideoSizeChanged(videoSize: VideoSize) {
         if (!active) return
         val width = videoSize.width
         val height = (videoSize.height / videoSize.pixelWidthHeightRatio).toInt()
-        scope?.launch { notifyVideoSize(width, height) }
+        launch { notifyVideoSize(width, height) }
     }
 }
