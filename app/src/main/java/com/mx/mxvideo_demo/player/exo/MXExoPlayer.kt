@@ -49,7 +49,7 @@ class MXExoPlayer : IMXPlayer(), Player.Listener, AnalyticsListener {
         )
         player.playWhenReady = false
         player.setVideoSurface(Surface(surface))
-        player.prepare()
+        withContext(Dispatchers.Main) { player.prepare() }
     }
 
     override fun enablePreload(): Boolean {
