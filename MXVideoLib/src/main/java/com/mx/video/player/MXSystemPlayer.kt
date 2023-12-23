@@ -97,7 +97,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
         mediaPlayer.setSurface(null)
         withContext(Dispatchers.IO) {
             mediaPlayer.release()
-            delay(1000)
+            delay(100)
         }
     }
 
