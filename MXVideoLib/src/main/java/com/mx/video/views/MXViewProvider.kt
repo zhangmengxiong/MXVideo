@@ -67,6 +67,11 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
                 timeTicket.setDiffTime(value)
             }
         })
+        config.playSpeed.addObserver(object : IMXObserver<Float> {
+            override suspend fun update(value: Float) {
+                timeTicket.setPlaySpeed(value)
+            }
+        })
 
         showWhenPlaying.addObserver(object : IMXObserver<Boolean> {
             override suspend fun update(value: Boolean) {

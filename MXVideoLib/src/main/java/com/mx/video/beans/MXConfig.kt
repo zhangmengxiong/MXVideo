@@ -172,7 +172,12 @@ class MXConfig : Serializable {
     /**
      * 计时器间隔 单位：毫秒
      */
-    val ticketDiff = MXObservable(500L)
+    val ticketDiff = MXObservable(1000L)
+
+    /**
+     * 播放倍数
+     */
+    val playSpeed = MXObservable(1f)
 
     /**
      * 是否可以快进快退
@@ -207,7 +212,9 @@ class MXConfig : Serializable {
         playerViewSize.set(target.playerViewSize.get().clone())
         hidePlayBtnWhenNoSource.set(target.hidePlayBtnWhenNoSource.get())
         animatorDuration.set(target.animatorDuration.get())
+        enableTouchWhenNormalScreen.set(target.enableTouchWhenNormalScreen.get())
         ticketDiff.set(target.ticketDiff.get())
+        playSpeed.set(target.playSpeed.get())
     }
 
     internal fun release() {

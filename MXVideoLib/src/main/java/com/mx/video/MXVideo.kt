@@ -228,6 +228,12 @@ abstract class MXVideo @JvmOverloads constructor(
                 }
             }
         })
+        config.playSpeed.addObserver(object : IMXObserver<Float> {
+            override suspend fun update(value: Float) {
+                val player = mxPlayer ?: return
+                player.setSpeed(value)
+            }
+        })
     }
 
     private val playerCallback = object : IMXPlayerCallback {
@@ -249,6 +255,7 @@ abstract class MXVideo @JvmOverloads constructor(
             if (config.state.get() in arrayOf(MXState.PREPARED, MXState.PREPARING)) {
                 config.state.updateValue(MXState.PLAYING)
             }
+            config.playSpeed.notifyChange()
         }
 
         override suspend fun onPlayerCompletion() = withContext(Dispatchers.Main) {

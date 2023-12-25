@@ -12,15 +12,23 @@ import kotlin.math.max
 internal class MXTicket {
     private var scope: CoroutineScope? = null
     private var isStartTicket = false
-    private var diff: Long = 200L
+    private var diffTime: Long = 1000L
+    private var playSpeed = 1f
     private var ticketRun: ITicketCallback? = null
+    private var diffMiles = 200L
 
     fun setTicketRun(runnable: ITicketCallback) {
         this.ticketRun = runnable
     }
 
     fun setDiffTime(time: Long) {
-        diff = max(time, 100)
+        diffTime = time
+        diffMiles = max((time / playSpeed).toLong(), 100L)
+    }
+
+    fun setPlaySpeed(speed: Float) {
+        playSpeed = if (speed <= 0) 1f else speed
+        diffMiles = max((diffTime / playSpeed).toLong(), 100L)
     }
 
     fun start() {
@@ -33,7 +41,7 @@ internal class MXTicket {
                     launch(Dispatchers.Main) {
                         ticketRun?.ticket()
                     }
-                    Thread.sleep(diff)
+                    Thread.sleep(diffMiles)
                 }
             }
         }
