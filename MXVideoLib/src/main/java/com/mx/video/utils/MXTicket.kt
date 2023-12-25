@@ -23,12 +23,12 @@ internal class MXTicket {
 
     fun setDiffTime(time: Long) {
         diffTime = time
-        diffMiles = max((time / playSpeed).toLong(), 100L)
+        diffMiles = max((time / (2.0 * playSpeed)).toLong(), 100L)
     }
 
     fun setPlaySpeed(speed: Float) {
         playSpeed = if (speed <= 0) 1f else speed
-        diffMiles = max((diffTime / playSpeed).toLong(), 100L)
+        diffMiles = max((diffTime / (2.0 * playSpeed)).toLong(), 100L)
     }
 
     fun start() {
@@ -37,11 +37,12 @@ internal class MXTicket {
             scope?.cancel()
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
             scope?.launch(Dispatchers.IO) {
-                while (isActive && isStartTicket) {
+                while (true) {
+                    if (!isActive || !isStartTicket) return@launch
                     launch(Dispatchers.Main) {
-                        ticketRun?.ticket()
+                        if (isStartTicket) ticketRun?.ticket()
                     }
-                    Thread.sleep(diffMiles)
+                    Thread.sleep(diffTime)
                 }
             }
         }
