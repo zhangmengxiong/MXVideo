@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.widget.LinearLayout
+import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
@@ -242,6 +243,13 @@ class NormalActivity : AppCompatActivity() {
             binding.mxVideoStd.getConfig().canFullScreen.set(checkedId == R.id.canFullTrue)
         }
         binding.canFullTrue.performClick()
+
+        binding.playSpeedRG.setOnCheckedChangeListener { group, checkedId ->
+            val speed =
+                group.findViewById<RadioButton>(checkedId)?.tag?.toString()?.toFloatOrNull() ?: 1f
+            binding.mxVideoStd.getConfig().playSpeed.set(speed)
+        }
+        binding.playSpeed10.performClick()
 
         binding.canShowSystemTimeRG.setOnCheckedChangeListener { group, checkedId ->
             binding.mxVideoStd.getConfig().canShowSystemTime.set(checkedId == R.id.canShowSystemTimeTrue)

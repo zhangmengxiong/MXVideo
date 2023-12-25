@@ -23,32 +23,31 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
     IPlayer.OnStateChangedListener {
     private var mediaPlayer: AliPlayer? = null
 
-    override suspend fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) =
-        withContext(Dispatchers.IO) {
-            val mediaPlayer = AliPlayerFactory.createAliPlayer(context)
-            this@MXAliPlayer.mediaPlayer = mediaPlayer
+    override suspend fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) {
+        val mediaPlayer = AliPlayerFactory.createAliPlayer(context)
+        this@MXAliPlayer.mediaPlayer = mediaPlayer
 
-            mediaPlayer.setOnPreparedListener(this@MXAliPlayer)
-            mediaPlayer.setOnCompletionListener(this@MXAliPlayer)
-            mediaPlayer.setOnSeekCompleteListener(this@MXAliPlayer)
-            mediaPlayer.setOnErrorListener(this@MXAliPlayer)
-            mediaPlayer.setOnInfoListener(this@MXAliPlayer)
-            mediaPlayer.setOnVideoSizeChangedListener(this@MXAliPlayer)
-            mediaPlayer.setOnLoadingStatusListener(this@MXAliPlayer)
-            mediaPlayer.setOnStateChangedListener(this@MXAliPlayer)
+        mediaPlayer.setOnPreparedListener(this@MXAliPlayer)
+        mediaPlayer.setOnCompletionListener(this@MXAliPlayer)
+        mediaPlayer.setOnSeekCompleteListener(this@MXAliPlayer)
+        mediaPlayer.setOnErrorListener(this@MXAliPlayer)
+        mediaPlayer.setOnInfoListener(this@MXAliPlayer)
+        mediaPlayer.setOnVideoSizeChangedListener(this@MXAliPlayer)
+        mediaPlayer.setOnLoadingStatusListener(this@MXAliPlayer)
+        mediaPlayer.setOnStateChangedListener(this@MXAliPlayer)
 
-            mediaPlayer.isLoop = false
-            mediaPlayer.isAutoPlay = false
-            mediaPlayer.scaleMode = IPlayer.ScaleMode.SCALE_TO_FILL
-            mediaPlayer.rotateMode = IPlayer.RotateMode.ROTATE_0
-            mediaPlayer.mirrorMode = IPlayer.MirrorMode.MIRROR_MODE_NONE
+        mediaPlayer.isLoop = false
+        mediaPlayer.isAutoPlay = false
+        mediaPlayer.scaleMode = IPlayer.ScaleMode.SCALE_TO_FILL
+        mediaPlayer.rotateMode = IPlayer.RotateMode.ROTATE_0
+        mediaPlayer.mirrorMode = IPlayer.MirrorMode.MIRROR_MODE_NONE
 
-            mediaPlayer.setDataSource(UrlSource().apply {
-                this.uri = source.playUri.toString()
-            })
-            mediaPlayer.setSurface(Surface(surface))
-            mediaPlayer.prepare()
-        }
+        mediaPlayer.setDataSource(UrlSource().apply {
+            this.uri = source.playUri.toString()
+        })
+        mediaPlayer.setSurface(Surface(surface))
+        withContext(Dispatchers.IO) { mediaPlayer.prepare() }
+    }
 
     override fun enablePreload(): Boolean {
         return true
@@ -79,7 +78,7 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
         val source = source ?: return
         if (!active || source.isLiveSource) return
 
-        scope?.launch(Dispatchers.IO) {
+        launch(Dispatchers.IO) {
             val duration = getDuration()
             if (duration != 0f && time >= duration) {
                 // 如果直接跳转到结束位置，则直接complete
@@ -127,19 +126,19 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
     }
 
     override fun onPrepared() {
-        scope?.launch { notifyPrepared() }
+        launch { notifyPrepared() }
     }
 
     override fun onCompletion() {
-        scope?.launch { notifyPlayerCompletion() }
+        launch { notifyPlayerCompletion() }
     }
 
     override fun onSeekComplete() {
-        scope?.launch { notifySeekComplete() }
+        launch { notifySeekComplete() }
     }
 
     override fun onError(info: ErrorInfo?) {
-        scope?.launch { notifyError("code = ${info?.code?.name}  msg = ${info?.msg}  extra = ${info?.extra}") }
+        launch { notifyError("code = ${info?.code?.name}  msg = ${info?.msg}  extra = ${info?.extra}") }
     }
 
     override fun onInfo(infoBean: InfoBean) {
@@ -149,19 +148,19 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
     }
 
     override fun onVideoSizeChanged(width: Int, height: Int) {
-        scope?.launch { notifyVideoSize(width, height) }
+        launch { notifyVideoSize(width, height) }
     }
 
     override fun onLoadingBegin() {
-        scope?.launch { notifyBuffering(true) }
+        launch { notifyBuffering(true) }
     }
 
     override fun onLoadingProgress(progress: Int, netSpeed: Float) {
-        scope?.launch { notifyBufferingUpdate(progress) }
+        launch { notifyBufferingUpdate(progress) }
     }
 
     override fun onLoadingEnd() {
-        scope?.launch { notifyBuffering(false) }
+        launch { notifyBuffering(false) }
     }
 
     override fun onStateChanged(newState: Int) {

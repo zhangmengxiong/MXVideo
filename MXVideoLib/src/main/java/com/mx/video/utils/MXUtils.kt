@@ -39,7 +39,7 @@ internal object MXUtils {
 
     fun log(any: Any) {
         if (isDebug) {
-            Log.v(MXUtils::class.java.simpleName, any.toString())
+            Log.v("MXVideo-log", any.toString())
         }
     }
 

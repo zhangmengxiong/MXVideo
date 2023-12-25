@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.mx.video.base.IMXPlayerCallback
 import com.mx.video.base.IMXVideo
+import com.mx.video.beans.IMXObserver
 import com.mx.video.beans.MXConfig
 import com.mx.video.beans.MXOrientation
 import com.mx.video.beans.MXPlaySource
@@ -21,7 +22,6 @@ import com.mx.video.listener.MXSensorListener
 import com.mx.video.listener.MXVideoListener
 import com.mx.video.player.IMXPlayer
 import com.mx.video.player.MXSystemPlayer
-import com.mx.video.beans.IMXObserver
 import com.mx.video.utils.MXSensorHelp
 import com.mx.video.utils.MXUtils
 import com.mx.video.views.MXTextureView
@@ -32,10 +32,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.roundToInt
 
 abstract class MXVideo @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr), IMXVideo, IMXPlayerCallback {
+) : FrameLayout(context, attrs, defStyleAttr), IMXVideo {
     companion object {
         fun init(context: Context) {
             MXUtils.init(context)
@@ -227,6 +228,116 @@ abstract class MXVideo @JvmOverloads constructor(
                 }
             }
         })
+        config.playSpeed.addObserver(object : IMXObserver<Float> {
+            override suspend fun update(value: Float) {
+                val player = mxPlayer ?: return
+                player.setSpeed(value)
+            }
+        })
+    }
+
+    private val playerCallback = object : IMXPlayerCallback {
+        override suspend fun onPlayerPrepared() = withContext(Dispatchers.Main) {
+            val player = mxPlayer ?: return@withContext
+            config.volumePercent.notifyChangeSync()
+            config.state.updateValue(MXState.PREPARED)
+            if (config.isPreloading.get()) {
+                MXUtils.log("MXVideo: onPlayerPrepared -> need click start button to play")
+            } else {
+                MXUtils.log("MXVideo: onPlayerPrepared -> start play")
+                player.start()
+                seekToWhenPlay()
+            }
+        }
+
+        override suspend fun onPlayerStartPlay() = withContext(Dispatchers.Main) {
+            MXUtils.log("MXVideo: onPlayerStartPlay()")
+            if (config.state.get() in arrayOf(MXState.PREPARED, MXState.PREPARING)) {
+                config.state.updateValue(MXState.PLAYING)
+            }
+            config.playSpeed.notifyChange()
+        }
+
+        override suspend fun onPlayerCompletion() = withContext(Dispatchers.Main) {
+            val source = config.source.get() ?: return@withContext
+            MXUtils.log("MXVideo: onPlayerCompletion()")
+            source.playUri.let { MXUtils.saveProgress(it, 0) }
+            mxPlayer?.release()
+            mxPlayer = null
+            if (source.isLooping) {
+                startVideo()
+            } else {
+                config.state.updateValue(MXState.COMPLETE)
+                if (config.gotoNormalScreenWhenComplete.get() && config.screen.get() == MXScreen.FULL) {
+                    switchToScreen(MXScreen.NORMAL)
+                }
+            }
+        }
+
+        override suspend fun onPlayerBufferProgress(percent: Int) {
+        }
+
+        override suspend fun onPlayerSeekComplete() {
+        }
+
+        override suspend fun onPlayerError(source: MXPlaySource, error: String) =
+            withContext(Dispatchers.Main) {
+                if (config.source.get()?.isLiveSource == true
+                    && config.replayLiveSourceWhenError.get()
+                    && (config.state.get() in arrayOf(
+                        MXState.PLAYING,
+                        MXState.PAUSE,
+                        MXState.PREPARING,
+                        MXState.PREPARED
+                    ))
+                ) {
+                    MXUtils.log("MXVideo: onPlayerError() ---> 直播重试")
+                    // 直播重试
+                    startPlay()
+                    return@withContext
+                }
+
+                if (config.isPreloading.get() && config.state.get() == MXState.PREPARING) {
+                    // 预加载失败，状态重置成NORMAL
+                    config.isPreloading.updateValue(false)
+                    stopPlay()
+
+                    MXUtils.log("MXVideo: onPlayerError() ---> 预加载失败，状态重置成NORMAL")
+                    return@withContext
+                }
+                MXUtils.log("MXVideo: onPlayerError($error)")
+
+                config.state.updateValue(MXState.ERROR)
+                config.videoListeners.toList().forEach { listener ->
+                    listener.onError(source, error)
+                }
+                if (config.gotoNormalScreenWhenError.get() && config.screen.get() == MXScreen.FULL) {
+                    switchToScreen(MXScreen.NORMAL)
+                }
+            }
+
+        override suspend fun onPlayerBuffering(start: Boolean) = withContext(Dispatchers.Main) {
+            MXUtils.log("MXVideo: onPlayerBuffering() $start")
+            config.loading.updateValue(start)
+        }
+
+        override suspend fun onPlayerVideoSizeChanged(width: Int, height: Int) =
+            withContext(Dispatchers.Main) {
+                if (width <= 0 || height <= 0) return@withContext
+                MXUtils.log("MXVideo: onPlayerVideoSizeChanged() $width x $height")
+                val size = config.videoSize.get()
+                if (width == size.width && height == size.height) return@withContext
+
+                config.videoSize.updateValue(MXSize(width, height))
+                if (config.screen.get() == MXScreen.FULL) {
+                    requestActivityOrientation()
+                }
+                postInvalidate()
+            }
+
+        override fun onPlayerInfo(message: String?) {
+            MXUtils.log("MXVideo: onPlayerInfo($message)")
+        }
     }
 
     private fun requestActivityOrientation() {
@@ -476,12 +587,12 @@ abstract class MXVideo @JvmOverloads constructor(
         ))
     }
 
-    override fun getDuration(): Float {
-        return mxPlayer?.getDuration() ?: 0f
+    override fun getDuration(): Int {
+        return mxPlayer?.getDuration()?.roundToInt() ?: 0
     }
 
-    override fun getPosition(): Float {
-        return mxPlayer?.getPosition() ?: 0f
+    override fun getPosition(): Int {
+        return mxPlayer?.getPosition()?.roundToInt() ?: 0
     }
 
     override fun switchToScreen(screen: MXScreen): Boolean {
@@ -496,107 +607,6 @@ abstract class MXVideo @JvmOverloads constructor(
 
     override fun currentScreen(): MXScreen {
         return config.screen.get()
-    }
-
-    override suspend fun onPlayerPrepared() = withContext(Dispatchers.Main) {
-        val player = mxPlayer ?: return@withContext
-        config.volumePercent.notifyChangeSync()
-        config.state.updateValue(MXState.PREPARED)
-        if (config.isPreloading.get()) {
-            MXUtils.log("MXVideo: onPlayerPrepared -> need click start button to play")
-        } else {
-            MXUtils.log("MXVideo: onPlayerPrepared -> start play")
-            player.start()
-            seekToWhenPlay()
-        }
-    }
-
-    override suspend fun onPlayerStartPlay() = withContext(Dispatchers.Main) {
-        MXUtils.log("MXVideo: onPlayerStartPlay()")
-        if (config.state.get() in arrayOf(MXState.PREPARED, MXState.PREPARING)) {
-            config.state.updateValue(MXState.PLAYING)
-        }
-    }
-
-    override suspend fun onPlayerCompletion() = withContext(Dispatchers.Main) {
-        val source = config.source.get() ?: return@withContext
-        MXUtils.log("MXVideo: onPlayerCompletion()")
-        source.playUri.let { MXUtils.saveProgress(it, 0) }
-        mxPlayer?.release()
-        mxPlayer = null
-        if (source.isLooping) {
-            startVideo()
-        } else {
-            config.state.updateValue(MXState.COMPLETE)
-            if (config.gotoNormalScreenWhenComplete.get() && config.screen.get() == MXScreen.FULL) {
-                switchToScreen(MXScreen.NORMAL)
-            }
-        }
-    }
-
-    override suspend fun onPlayerBufferProgress(percent: Int) {
-    }
-
-    override suspend fun onPlayerSeekComplete() {
-    }
-
-    override suspend fun onPlayerError(source: MXPlaySource, error: String) =
-        withContext(Dispatchers.Main) {
-            if (config.source.get()?.isLiveSource == true
-                && config.replayLiveSourceWhenError.get()
-                && (config.state.get() in arrayOf(
-                    MXState.PLAYING,
-                    MXState.PAUSE,
-                    MXState.PREPARING,
-                    MXState.PREPARED
-                ))
-            ) {
-                MXUtils.log("MXVideo: onPlayerError() ---> 直播重试")
-                // 直播重试
-                startPlay()
-                return@withContext
-            }
-
-            if (config.isPreloading.get() && config.state.get() == MXState.PREPARING) {
-                // 预加载失败，状态重置成NORMAL
-                config.isPreloading.updateValue(false)
-                stopPlay()
-
-                MXUtils.log("MXVideo: onPlayerError() ---> 预加载失败，状态重置成NORMAL")
-                return@withContext
-            }
-            MXUtils.log("MXVideo: onPlayerError($error)")
-
-            config.state.updateValue(MXState.ERROR)
-            config.videoListeners.toList().forEach { listener ->
-                listener.onError(source, error)
-            }
-            if (config.gotoNormalScreenWhenError.get() && config.screen.get() == MXScreen.FULL) {
-                switchToScreen(MXScreen.NORMAL)
-            }
-        }
-
-    override suspend fun onPlayerBuffering(start: Boolean) = withContext(Dispatchers.Main) {
-        MXUtils.log("MXVideo: onPlayerBuffering() $start")
-        config.loading.updateValue(start)
-    }
-
-    override suspend fun onPlayerVideoSizeChanged(width: Int, height: Int) =
-        withContext(Dispatchers.Main) {
-            if (width <= 0 || height <= 0) return@withContext
-            MXUtils.log("MXVideo: onPlayerVideoSizeChanged() $width x $height")
-            val size = config.videoSize.get()
-            if (width == size.width && height == size.height) return@withContext
-
-            config.videoSize.updateValue(MXSize(width, height))
-            if (config.screen.get() == MXScreen.FULL) {
-                requestActivityOrientation()
-            }
-            postInvalidate()
-        }
-
-    override fun onPlayerInfo(message: String?) {
-        MXUtils.log("MXVideo: onPlayerInfo($message)")
     }
 
     override fun onStart() {
@@ -646,7 +656,7 @@ abstract class MXVideo @JvmOverloads constructor(
         val startRun = {
             val player = createPlayer()
             val textureView = viewSet.attachTextureView()
-            player.startPlay(context, this, source, textureView)
+            player.startPlay(context, playerCallback, source, textureView)
 
             mxPlayer = player
             PLAYING_VIDEO = this

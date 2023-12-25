@@ -4,12 +4,12 @@ import android.content.Context
 import android.graphics.Matrix
 import android.util.AttributeSet
 import android.view.TextureView
+import com.mx.video.beans.IMXObserver
 import com.mx.video.beans.MXConfig
 import com.mx.video.beans.MXOrientation
 import com.mx.video.beans.MXPair
 import com.mx.video.beans.MXScale
 import com.mx.video.beans.MXSize
-import com.mx.video.beans.IMXObserver
 import com.mx.video.utils.MXObservable
 
 class MXTextureView @JvmOverloads constructor(

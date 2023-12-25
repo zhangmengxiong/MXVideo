@@ -67,6 +67,11 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
                 timeTicket.setDiffTime(value)
             }
         })
+        config.playSpeed.addObserver(object : IMXObserver<Float> {
+            override suspend fun update(value: Float) {
+                timeTicket.setPlaySpeed(value)
+            }
+        })
 
         showWhenPlaying.addObserver(object : IMXObserver<Boolean> {
             override suspend fun update(value: Boolean) {
@@ -327,10 +332,12 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
                 val oldPosition = position.get()
                 val oldP = oldPosition.first
                 val oldD = oldPosition.second
-                val curP = mxVideo.getPosition().roundToInt()
-                val curD = mxVideo.getDuration().roundToInt()
+                val curP = mxVideo.getPosition()
+                val curD = mxVideo.getDuration()
                 if (oldD != curD || oldP != curP) {
-                    MXUtils.log("播放进度更新：$curP / $curD")
+                    if (curP - oldP != 1) {
+                        MXUtils.log("播放进度更新：异常数据 $oldP -> $curP / $curD")
+                    }
                     position.updateValue(MXPair(curP, curD))
                 }
             }
