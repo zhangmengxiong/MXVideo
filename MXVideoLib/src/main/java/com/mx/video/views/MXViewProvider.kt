@@ -327,8 +327,8 @@ internal class MXViewProvider(val viewSet: MXViewSet, val mxVideo: IMXVideo, val
                 val oldPosition = position.get()
                 val oldP = oldPosition.first
                 val oldD = oldPosition.second
-                val curP = mxVideo.getPosition().roundToInt()
-                val curD = mxVideo.getDuration().roundToInt()
+                val curP = mxVideo.getPosition()
+                val curD = mxVideo.getDuration()
                 if (oldD != curD || oldP != curP) {
                     MXUtils.log("播放进度更新：$curP / $curD")
                     position.updateValue(MXPair(curP, curD))

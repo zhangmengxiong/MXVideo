@@ -5,17 +5,14 @@ import android.graphics.SurfaceTexture
 import android.view.TextureView
 import com.mx.video.base.IMXPlayerCallback
 import com.mx.video.beans.MXPlaySource
-import com.mx.video.utils.MXUtils
 import com.mx.video.views.MXTextureView
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * API调用流程：
@@ -113,11 +110,9 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
             mSurfaceTexture = surface
             scope?.launch {
                 requestPrepare()
-                playerCallback?.onPlayerInfo(" --> onSurfaceTextureAvailable / null <--")
             }
         } else {
             mTextureView?.setSurfaceTexture(texture)
-            playerCallback?.onPlayerInfo(" --> onSurfaceTextureAvailable / NotNull <--")
         }
     }
 

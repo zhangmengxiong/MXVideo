@@ -10,7 +10,6 @@ import android.view.Surface
 import com.mx.video.beans.MXPlaySource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
@@ -97,6 +96,7 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
         mediaPlayer.setSurface(null)
         withContext(Dispatchers.IO) {
             mediaPlayer.release()
+            delay(200)
         }
     }
 
