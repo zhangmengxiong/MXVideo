@@ -23,7 +23,7 @@ internal class MXTicket {
 
     fun setDiffTime(time: Long) {
         diffTime = time
-        diffMiles = max((time / (2.0 * playSpeed)).toLong(), 100L)
+        diffMiles = max((diffTime / (2.0 * playSpeed)).toLong(), 100L)
     }
 
     fun setPlaySpeed(speed: Float) {
