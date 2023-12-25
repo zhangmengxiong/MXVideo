@@ -170,7 +170,7 @@ class MXConfig : Serializable {
     val animatorDuration = MXObservable(200L)
 
     /**
-     * 计时器间隔 单位：毫秒
+     * 定时器执行间隔 单位：毫秒
      */
     val ticketDiff = MXObservable(1000L)
 
