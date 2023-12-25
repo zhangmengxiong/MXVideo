@@ -319,11 +319,8 @@ if (mxVideoStd.isPlaying()) {
 config.enableTouchWhenNormalScreen.set(true)
 ```
 
-
 - 播放倍数设置
 ```kotlin
 // 播放倍数设置，默认1.0倍数播放
 config.playSpeed.set(1.0)
 ```
-
-
