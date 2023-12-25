@@ -24,11 +24,13 @@ internal class MXTicket {
     fun setDiffTime(time: Long) {
         diffTime = time
         diffMiles = max((diffTime / (2.0 * playSpeed)).toLong(), 100L)
+        MXUtils.log("播放进度循环间隔：$diffMiles ms")
     }
 
     fun setPlaySpeed(speed: Float) {
         playSpeed = if (speed <= 0) 1f else speed
         diffMiles = max((diffTime / (2.0 * playSpeed)).toLong(), 100L)
+        MXUtils.log("播放进度循环间隔：$diffMiles ms")
     }
 
     fun start() {
