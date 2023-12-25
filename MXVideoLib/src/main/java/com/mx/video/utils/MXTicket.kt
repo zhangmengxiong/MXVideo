@@ -42,7 +42,7 @@ internal class MXTicket {
                     launch(Dispatchers.Main) {
                         if (isStartTicket) ticketRun?.ticket()
                     }
-                    Thread.sleep(diffTime)
+                    Thread.sleep(diffMiles)
                 }
             }
         }
