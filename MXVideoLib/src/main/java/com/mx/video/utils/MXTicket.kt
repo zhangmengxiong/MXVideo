@@ -37,8 +37,7 @@ internal class MXTicket {
             scope?.cancel()
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
             scope?.launch(Dispatchers.IO) {
-                while (true) {
-                    if (!isActive || !isStartTicket) return@launch
+                while (isActive && isStartTicket) {
                     launch(Dispatchers.Main) {
                         if (isStartTicket) ticketRun?.ticket()
                     }
