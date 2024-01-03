@@ -280,7 +280,7 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         val callback = playerCallback ?: return@withContext
 
         isPrepared = true
-        callback.onPlayerPrepared()
+        callback.onPlayerPrepared(this@IMXPlayer)
     }
 
     /**

@@ -31,7 +31,7 @@ data class MXPlaySource(
     /**
      * 是否存储、读取播放进度
      */
-    val enableSaveProgress: Boolean = true,
+    val enableSaveProgress: Boolean = false,
 
     /**
      * 是否直播源，当时直播时，不显示进度，无法快进快退暂停

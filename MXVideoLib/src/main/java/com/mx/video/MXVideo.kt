@@ -237,8 +237,7 @@ abstract class MXVideo @JvmOverloads constructor(
     }
 
     private val playerCallback = object : IMXPlayerCallback {
-        override suspend fun onPlayerPrepared() = withContext(Dispatchers.Main) {
-            val player = mxPlayer ?: return@withContext
+        override suspend fun onPlayerPrepared(player: IMXPlayer) = withContext(Dispatchers.Main) {
             config.volumePercent.notifyChangeSync()
             config.state.updateValue(MXState.PREPARED)
             if (config.isPreloading.get()) {
@@ -261,7 +260,9 @@ abstract class MXVideo @JvmOverloads constructor(
         override suspend fun onPlayerCompletion() = withContext(Dispatchers.Main) {
             val source = config.source.get() ?: return@withContext
             MXUtils.log("MXVideo: onPlayerCompletion()")
-            source.playUri.let { MXUtils.saveProgress(it, 0) }
+            if (source.enableSaveProgress) {
+                MXUtils.saveProgress(source.playUri, 0)
+            }
             mxPlayer?.release()
             mxPlayer = null
             if (source.isLooping) {

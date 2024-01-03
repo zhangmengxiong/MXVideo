@@ -1,12 +1,13 @@
 package com.mx.video.base
 
 import com.mx.video.beans.MXPlaySource
+import com.mx.video.player.IMXPlayer
 
 interface IMXPlayerCallback {
     /**
      * 播放器回调：准备完成
      */
-    suspend fun onPlayerPrepared()
+    suspend fun onPlayerPrepared(player: IMXPlayer)
 
     /**
      * 播放器回调：开始播放
