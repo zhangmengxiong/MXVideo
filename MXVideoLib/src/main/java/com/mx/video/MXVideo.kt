@@ -239,9 +239,9 @@ abstract class MXVideo @JvmOverloads constructor(
     private val playerCallback = object : IMXPlayerCallback {
         override suspend fun onPlayerPrepared(player: IMXPlayer) = withContext(Dispatchers.Main) {
             config.volumePercent.notifyChangeSync()
-            config.state.updateValue(MXState.PREPARED)
             if (config.isPreloading.get()) {
                 MXUtils.log("MXVideo: onPlayerPrepared -> need click start button to play")
+                config.state.updateValue(MXState.PREPARED)
             } else {
                 MXUtils.log("MXVideo: onPlayerPrepared -> start play")
                 player.start()
@@ -737,12 +737,15 @@ abstract class MXVideo @JvmOverloads constructor(
         // 宽高比=0，宽度=match_parent, 高度!=?px 设置默认宽高比
         if (ratio <= 0.0 && widthMode == MeasureSpec.EXACTLY && heightMode != MeasureSpec.EXACTLY) {
             // 高度自适应、且没有宽高比，设置宽高比为 16：9
-            ratio = 16.0 / 9.0
+            ratio = (16.0 / 9.0)
         }
 
         if (config.screen.get() == MXScreen.NORMAL) {
-            var height = (widthSize / ratio).toInt()
+            var height = if (ratio > 0) (widthSize / ratio).toInt() else heightSize
             if (heightSize != 0 && height > heightSize) {
+                height = heightSize
+            }
+            if (heightMode == MeasureSpec.EXACTLY) {
                 height = heightSize
             }
             // MXUtils.log("MXVideo: onMeasure($widthMode,$heightMode,$widthSize,$heightSize) $height --> $ratio")

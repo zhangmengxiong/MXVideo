@@ -48,7 +48,7 @@ class MXObservable<T>(defaultValue: T) {
         synchronized(lock) {
             observerList.add(observer)
         }
-        scope?.launch { observer.update(_value) }
+        scope?.launch(Dispatchers.Main) { observer.update(_value) }
     }
 
     internal fun deleteObserver(observer: IMXObserver<T>) {

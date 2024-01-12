@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mxPlayerRootLay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:soundEffectsEnabled="false">
+
+    <FrameLayout
+        android:id="@+id/mxSurfaceContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:soundEffectsEnabled="false">
+
+        <com.mx.video.views.MXTextureView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
+    </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/mxBottomSeekProgress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0.6dp"
+        android:layout_alignParentBottom="true"
+        android:alpha="0.55"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:max="100"
+        android:progress="50"
+        android:progressDrawable="@drawable/mx_video_bottom_progressbar"
+        android:soundEffectsEnabled="false"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/mxPlaceImg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:scaleType="fitXY"
+        android:soundEffectsEnabled="false" />
+
+    <ProgressBar
+        android:id="@+id/mxLoading"
+        android:layout_width="@dimen/mx_video_size_icon_width"
+        android:layout_height="@dimen/mx_video_size_icon_width"
+        android:layout_centerInParent="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:indeterminateDrawable="@drawable/mx_video_progress_loading"
+        android:indeterminateTint="@color/mx_video_color_main"
+        android:soundEffectsEnabled="false"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/mxNetSpeedTxv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/mxLoading"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="3dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:paddingHorizontal="5dp"
+        android:paddingVertical="3dp"
+        android:shadowColor="@color/mx_video_color_background"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="3"
+        android:soundEffectsEnabled="false"
+        android:text="0 Kb/s"
+        android:textColor="@color/mx_video_color_main"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/mxPlayPauseBtn"
+        android:layout_width="@dimen/mx_video_size_icon_width"
+        android:layout_height="@dimen/mx_video_size_icon_width"
+        android:layout_centerInParent="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:scaleType="centerCrop"
+        android:soundEffectsEnabled="false"
+        android:src="@drawable/mx_video_icon_player_play" />
+
+    <LinearLayout
+        android:id="@+id/mxRetryLay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="22dp"
+        android:paddingVertical="12dp"
+        android:soundEffectsEnabled="false"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="5dp"
+            android:shadowColor="@color/mx_video_color_background"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="3"
+            android:soundEffectsEnabled="false"
+            android:text="@string/mx_video_error"
+            android:textColor="@color/mx_video_color_main"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/mx_video_bg_btn_retry"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="5dp"
+            android:shadowColor="@color/mx_video_color_background"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="3"
+            android:soundEffectsEnabled="false"
+            android:text="@string/mx_video_retry"
+            android:textColor="@color/mx_video_color_main"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mxReplayLay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="22dp"
+        android:paddingVertical="12dp"
+        android:soundEffectsEnabled="false"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/mxReplayImg"
+            android:layout_width="@dimen/mx_video_size_icon_width"
+            android:layout_height="@dimen/mx_video_size_icon_width"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:soundEffectsEnabled="false"
+            android:src="@drawable/mx_video_icon_replay" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:padding="5dp"
+            android:shadowColor="@color/mx_video_color_background"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="3"
+            android:soundEffectsEnabled="false"
+            android:text="@string/mx_video_complete_replay"
+            android:textColor="@color/mx_video_color_main"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mxQuickSeekLay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/mx_video_bg_float_layout"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="22dp"
+        android:paddingVertical="15dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/mxQuickSeekCurrentTxv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="00:00"
+            android:textColor="@color/mx_video_color_main"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="6dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="/"
+            android:textColor="@color/mx_video_color_main_tint"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/mxQuickSeekMaxTxv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="00:00"
+            android:textColor="@color/mx_video_color_main_tint"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mxVolumeLightLay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/mx_video_bg_float_layout"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="22dp"
+        android:paddingVertical="15dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/mxVolumeLightTypeTxv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="@string/mx_video_volume"
+            android:textColor="@color/mx_video_color_main_tint"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="："
+            android:textColor="@color/mx_video_color_main_tint"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/mxVolumeLightTxv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="50%"
+            android:textColor="@color/mx_video_color_main"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+</RelativeLayout>

@@ -4,10 +4,10 @@ import android.content.Context
 import com.fasterxml.jackson.databind.ObjectMapper
 
 class SourceItem {
-    val type: String = ""
-    val name: String = ""
-    val url: String = ""
-    val img: String = ""
+    var type: String = ""
+    var name: String = ""
+    var url: String = ""
+    var img: String = ""
 
     fun live() = (type == "live")
 

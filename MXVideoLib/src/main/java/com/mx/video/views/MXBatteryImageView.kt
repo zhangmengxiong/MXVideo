@@ -88,7 +88,7 @@ internal class MXBatteryImageView @JvmOverloads constructor(
     fun release() {
         try {
             context.unregisterReceiver(batteryReceiver)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
         }
     }
 }

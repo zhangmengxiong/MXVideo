@@ -6,6 +6,7 @@ import android.widget.Toast
 import com.mx.video.beans.MXPlaySource
 import com.mx.video.beans.MXState
 import com.mx.video.listener.MXVideoListener
+import com.mx.video.utils.MXUtils
 import com.mx.video.views.MXViewSet
 
 open class MXVideoStd @JvmOverloads constructor(
@@ -16,6 +17,7 @@ open class MXVideoStd @JvmOverloads constructor(
     }
 
     private var onStateListener: ((MXState) -> Unit)? = null
+    private var onStateChangeListener: ((oldState: MXState, newState: MXState) -> Unit)? = null
     private var onPrepareStartListener: (() -> Unit)? = null
     private var onPreparedListener: (() -> Unit)? = null
     private var onCompleteListener: (() -> Unit)? = null
@@ -29,6 +31,11 @@ open class MXVideoStd @JvmOverloads constructor(
     init {
         addOnVideoListener(object : MXVideoListener() {
             override fun onStateChange(state: MXState, viewSet: MXViewSet) {
+                if (oldState != state) {
+                    MXUtils.log("onStateChange($oldState -> $state)")
+                    onStateChangeListener?.invoke(oldState, state)
+                    oldState = state
+                }
                 onStateListener?.invoke(state)
                 when (state) {
                     MXState.PREPARING -> {
@@ -82,6 +89,15 @@ open class MXVideoStd @JvmOverloads constructor(
      */
     fun setOnStateListener(listener: ((state: MXState) -> Unit)?) {
         onStateListener = listener
+    }
+
+    private var oldState: MXState = MXState.IDLE
+
+    /**
+     * 回调：状态变化监听
+     */
+    fun setOnStateChangeListener(listener: ((oldState: MXState, newState: MXState) -> Unit)?) {
+        onStateChangeListener = listener
     }
 
     /**
@@ -142,6 +158,7 @@ open class MXVideoStd @JvmOverloads constructor(
 
     override fun release() {
         onStateListener = null
+        onStateChangeListener = null
         onPrepareStartListener = null
         onPreparedListener = null
         onCompleteListener = null

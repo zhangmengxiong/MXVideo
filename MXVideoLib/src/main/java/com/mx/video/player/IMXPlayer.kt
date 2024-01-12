@@ -171,7 +171,6 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
         mTextureView?.release()
         mTextureView = null
         mSurfaceTexture = null
-        Runtime.getRuntime().gc()
     }
 
     /**
