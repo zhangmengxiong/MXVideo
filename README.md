@@ -1,7 +1,7 @@
 # MXVideo
 
 #### Introduce
-The player developed based on Kotlin supports MediaPlayer by default, and can be extended with IJK player, EXO player, Alibaba Cloud player, and any player that uses TextureView
+The player developed based on Kotlin supports MediaPlayer by default, and can be extended with VLC player, IJK player, EXO player, Alibaba Cloud player, and any player that uses TextureView
 > Introduction to the book (to be completed)：https://www.jianshu.com/nb/50294642
 
 The latest version：[![](https://jitpack.io/v/zhangmengxiong/MXVideo.svg)](https://jitpack.io/#zhangmengxiong/MXVideo)
@@ -125,6 +125,9 @@ com.mx.video.player.MXSystemPlayer
 
 // Google's Exo Player
 com.mx.mxvideo_demo.player.exo.MXExoPlayer
+
+// VLC Player
+com.mx.mxvideo_demo.player.vlc.MXVLCPlayer
 
 // IJK Player
 com.mx.mxvideo_demo.player.MXIJKPlayer
