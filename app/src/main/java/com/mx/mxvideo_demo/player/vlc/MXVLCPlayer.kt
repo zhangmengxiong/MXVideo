@@ -10,35 +10,39 @@ import kotlinx.coroutines.withContext
 import org.videolan.libvlc.LibVLC
 import org.videolan.libvlc.Media
 import org.videolan.libvlc.MediaPlayer
-import kotlin.math.roundToInt
 
 class MXVLCPlayer : IMXPlayer() {
     private var mLibVLC: LibVLC? = null
-    private var mediaPlayer: MediaPlayer? = null
+    private var mMediaPlayer: MediaPlayer? = null
     private var lastSeekTime = 0f
 
-    override suspend fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) {
-        lastSeekTime = 0f
-        val options: ArrayList<String> = VlcOptions.getLibOptions(context)
-        mLibVLC = LibVLC(context, options)
-        val mediaPlayer = MediaPlayer(mLibVLC)
-        mediaPlayer.setEventListener { event ->
+    override suspend fun prepare(context: Context, source: MXPlaySource, surface: SurfaceTexture) =
+        withContext(Dispatchers.IO) {
+            lastSeekTime = 0f
+            val options: ArrayList<String> = VlcOptions.getLibOptions(context)
+            val libVLC = LibVLC(context, options)
+            val mediaPlayer = MediaPlayer(libVLC)
+            mediaPlayer.setEventListener { event ->
+                when (event.type) {
+                    MediaPlayer.Event.EndReached -> launch {
+                        notifyPlayerCompletion()
+                    }
 
-            when (event.type) {
-                MediaPlayer.Event.EndReached -> launch { notifyPlayerCompletion() }
-                MediaPlayer.Event.Playing -> launch {
-                    notifyPrepared()
-                    notifyBuffering(false)
-                }
+                    MediaPlayer.Event.Playing -> launch {
+                        notifyPrepared()
+                        notifyBuffering(false)
+                    }
 
-                MediaPlayer.Event.Opening -> launch {
-                    notifyBuffering(true)
-                }
+                    MediaPlayer.Event.Opening -> launch {
+                        notifyBuffering(true)
+                    }
 
-                MediaPlayer.Event.EncounteredError -> launch { notifyError("what = $event ") }
-                MediaPlayer.Event.Buffering -> {
-                    val buffering = event.buffering.toInt()
-                    launch {
+                    MediaPlayer.Event.EncounteredError -> launch {
+                        notifyError("what = $event ")
+                    }
+
+                    MediaPlayer.Event.Buffering -> launch {
+                        val buffering = event.buffering.toInt()
                         if (buffering >= 100) {
                             notifyBuffering(false)
                         } else {
@@ -46,56 +50,58 @@ class MXVLCPlayer : IMXPlayer() {
                             notifyBufferingUpdate(buffering)
                         }
                     }
-                }
 
-                else -> Unit
+                    else -> Unit
+                }
             }
 
-        }
-        this@MXVLCPlayer.mediaPlayer = mediaPlayer
-        val media = Media(mLibVLC, source.playUri)
-        media.parse()
-        mediaPlayer.media = media
-        media.release()
-        mediaPlayer.videoScale = MediaPlayer.ScaleType.SURFACE_FILL
-        mediaPlayer.play()
+            this@MXVLCPlayer.mLibVLC = libVLC
+            this@MXVLCPlayer.mMediaPlayer = mediaPlayer
 
-        mediaPlayer.vlcVout.detachViews()
-        mediaPlayer.vlcVout.setVideoSurface(surface)
-        mediaPlayer.vlcVout.attachViews { _, width, height, _, _, _, _ ->
-            if (width <= 0 || height <= 0) return@attachViews
-            launch { notifyVideoSize(width, height) }
+            val media = Media(libVLC, source.playUri)
+            media.parse()
+            mediaPlayer.media = media
+            media.release()
+            mediaPlayer.videoScale = MediaPlayer.ScaleType.SURFACE_FILL
+            mediaPlayer.play()
+
+            mediaPlayer.vlcVout.detachViews()
+            mediaPlayer.vlcVout.setVideoSurface(surface)
+            mediaPlayer.vlcVout.attachViews { _, width, height, _, _, _, _ ->
+                if (width <= 0 || height <= 0) return@attachViews
+                launch { notifyVideoSize(width, height) }
+            }
+            mediaPlayer.scale = 0f
         }
-        mediaPlayer.scale = 0f
-    }
 
     override fun enablePreload(): Boolean {
-        return true
+        return false
     }
 
     override suspend fun start() {
         if (!active) return
-        withContext(Dispatchers.IO) { mediaPlayer?.play() }
+        withContext(Dispatchers.IO) { mMediaPlayer?.play() }
         notifyStartPlay()
         postBuffering()
     }
 
     override suspend fun pause() {
         if (!active) return
-        withContext(Dispatchers.IO) {
-            mediaPlayer?.pause()
-        }
+        withContext(Dispatchers.IO) { mMediaPlayer?.pause() }
     }
 
     override fun isPlaying(): Boolean {
         if (!active) return false
-        return (mediaPlayer?.isPlaying == true)
+        return (mMediaPlayer?.isPlaying == true)
     }
 
     // 这里不需要处理未播放状态的快进快退，MXVideo会判断。
     override fun seekTo(time: Int) {
         val source = source ?: return
         if (!active || source.isLiveSource) return
+        val mediaPlayer = mMediaPlayer ?: return
+        if (!mediaPlayer.isSeekable) return
+
         launch(Dispatchers.IO) {
             val duration = getDuration().toInt()
             if (duration != 0 && time >= duration) {
@@ -104,15 +110,15 @@ class MXVLCPlayer : IMXPlayer() {
                 return@launch
             }
             lastSeekTime = time.toFloat()
-            mediaPlayer?.setTime(time * 1000L, true)
+            mediaPlayer.setTime(time * 1000L, true)
         }
     }
 
     override suspend fun release() {
         super.release() // 释放父类资源，必不可少
         this.lastSeekTime = -1f
-        val mediaPlayer = mediaPlayer ?: return
-        this.mediaPlayer = null
+        val mediaPlayer = mMediaPlayer ?: return
+        this.mMediaPlayer = null
         mediaPlayer.stop();
         mediaPlayer.setEventListener(null);
         mediaPlayer.vlcVout.detachViews();
@@ -126,7 +132,7 @@ class MXVLCPlayer : IMXPlayer() {
 
     override fun getPosition(): Float {
         if (!active) return 0f
-        val mediaPlayer = mediaPlayer ?: return 0f
+        val mediaPlayer = mMediaPlayer ?: return 0f
         val position = mediaPlayer.time.div(1000f)
         if (position.toInt() <= 0 && lastSeekTime > 0f) {
             // 修复BUG：seek跳转进度条后，获取进度播放器会概率性返回0的问题！
@@ -137,7 +143,7 @@ class MXVLCPlayer : IMXPlayer() {
 
     override fun getDuration(): Float {
         if (!active) return 0f
-        val mediaPlayer = mediaPlayer ?: return 0f
+        val mediaPlayer = mMediaPlayer ?: return 0f
         var duration = mediaPlayer.length
         if (duration < 0f) duration = 0
         return duration / 1000f
@@ -145,13 +151,13 @@ class MXVLCPlayer : IMXPlayer() {
 
     override fun setVolumePercent(leftVolume: Float, rightVolume: Float) {
         if (!active) return
-        val mediaPlayer = mediaPlayer ?: return
+        val mediaPlayer = mMediaPlayer ?: return
         mediaPlayer.setVolume((leftVolume * 100).toInt())
     }
 
     override fun setSpeed(speed: Float) {
         if (!active) return
-        val mediaPlayer = mediaPlayer ?: return
+        val mediaPlayer = mMediaPlayer ?: return
         mediaPlayer.rate = speed
     }
 
