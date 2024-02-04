@@ -37,11 +37,13 @@ class MXVLCPlayer : IMXPlayer() {
 
                 MediaPlayer.Event.EncounteredError -> launch { notifyError("what = $event ") }
                 MediaPlayer.Event.Buffering -> {
+                    val buffering = event.buffering.toInt()
                     launch {
-                        if (event.buffering >= 100.0) {
+                        if (buffering >= 100) {
                             notifyBuffering(false)
                         } else {
-                            notifyBufferingUpdate(event.buffering.roundToInt())
+                            notifyBuffering(true)
+                            notifyBufferingUpdate(buffering)
                         }
                     }
                 }
