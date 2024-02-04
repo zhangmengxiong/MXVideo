@@ -1,7 +1,7 @@
 # MXVideo
 
 #### 介绍
-基于Kotlin开发的播放器，默认支持MediaPlayer播放器，可扩展IJK播放器、EXO播放器、阿里云播放器、以及任何使用TextureView的播放器, 开箱即用，欢迎提 issue 和 pull request
+基于Kotlin开发的播放器，默认支持MediaPlayer播放器，可扩展VLC播放器、IJK播放器、EXO播放器、阿里云播放器、以及任何使用TextureView的播放器, 开箱即用，欢迎提 issue 和 pull request
 > 简书相关介绍（待完善）：https://www.jianshu.com/nb/50294642
 
 最新版本：[![](https://jitpack.io/v/zhangmengxiong/MXVideo.svg)](https://jitpack.io/#zhangmengxiong/MXVideo)
@@ -125,6 +125,9 @@ com.mx.video.player.MXSystemPlayer
 // 谷歌的Exo播放器
 com.mx.mxvideo_demo.player.exo.MXExoPlayer
 
+// VLC播放器
+com.mx.mxvideo_demo.player.vlc.MXVLCPlayer
+
 // IJK播放器
 com.mx.mxvideo_demo.player.MXIJKPlayer
 
@@ -172,13 +175,13 @@ mxVideoStd.setScaleType(MXScale.CENTER_CROP)
 > 在页面xml中添加，layout_width一般设置match_parent，高度wrap_content
 ```xml 
     <com.mx.video.MXVideoStd
-        android:id="@+id/mxVideoStd"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    android:id="@+id/mxVideoStd"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
 ```
-> 可以设置任意宽高比，如果设置宽高比，则控件高度需要设置android:layout_height="wrap_content"，否则不生效。 
+> 可以设置任意宽高比，如果设置宽高比，则控件高度需要设置android:layout_height="wrap_content"，否则不生效。
 >
-> 当取消约束、MXVideo高度自适应、填充规则=MXScale.CENTER_CROP时，控件高度会自动根据视频宽高自动填充高度 
+> 当取消约束、MXVideo高度自适应、填充规则=MXScale.CENTER_CROP时，控件高度会自动根据视频宽高自动填充高度
 ```kotlin
 // MXVideoStd控件设置宽高比= 16：9
 mxVideoStd.setDimensionRatio(16.0 / 9.0)
