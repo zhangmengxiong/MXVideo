@@ -15,7 +15,6 @@ import com.mx.mxvideo_demo.databinding.ActivityNormalBinding
 import com.mx.mxvideo_demo.player.MXAliPlayer
 import com.mx.mxvideo_demo.player.MXIJKPlayer
 import com.mx.mxvideo_demo.player.exo.MXExoPlayer
-import com.mx.mxvideo_demo.player.vlc.MXVLCPlayer
 import com.mx.video.MXVideo
 import com.mx.video.beans.MXOrientation
 import com.mx.video.beans.MXPlaySource
@@ -152,8 +151,6 @@ class NormalActivity : AppCompatActivity() {
                 playerClass = MXExoPlayer::class.java
             } else if (checkedId == R.id.playerAli) {
                 playerClass = MXAliPlayer::class.java
-            } else if (checkedId == R.id.playerVLC) {
-                playerClass = MXVLCPlayer::class.java
             } else {
                 playerClass = MXSystemPlayer::class.java
             }
