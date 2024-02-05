@@ -1,15 +1,26 @@
-[
-  {
-    "type": "16:9",
-    "name": "精选视频",
-    "url": "http://ynjt.obs.cn-north-4.myhuaweicloud.com:80/video/Record/tuiliu.danengshou.com/live/continuous_record/mp4/1650505735583_2022-04-21-01-49-40/2022-04-21-01-49-40.mp4",
-    "img": "https://ts1.cn.mm.bing.net/th/id/R-C.3745122e5760fe2283195293d76bc1e0?rik=YBMOcCcn7CX6Ig&riu=http%3a%2f%2fup.deskcity.org%2fpic%2f20%2fe4%2f4d%2f20e44dce0fe116832ba890edaf2ede32.jpg&ehk=vldj1pqTKyKgirU8ck%2f%2bJWEhtPm22Owe5VEmGNMeLpA%3d&risl=&pid=ImgRaw&r=0"
+[{
+  "type": "16:9",
+  "name": "精选视频",
+  "url": "http://ynjt.obs.cn-north-4.myhuaweicloud.com:80/video/Record/tuiliu.danengshou.com/live/continuous_record/mp4/1650505735583_2022-04-21-01-49-40/2022-04-21-01-49-40.mp4",
+  "img": "https://ts1.cn.mm.bing.net/th/id/R-C.3745122e5760fe2283195293d76bc1e0?rik=YBMOcCcn7CX6Ig&riu=http%3a%2f%2fup.deskcity.org%2fpic%2f20%2fe4%2f4d%2f20e44dce0fe116832ba890edaf2ede32.jpg&ehk=vldj1pqTKyKgirU8ck%2f%2bJWEhtPm22Owe5VEmGNMeLpA%3d&risl=&pid=ImgRaw&r=0"
   },
   {
     "type": "16:9",
     "name": "精选视频2",
-    "url": "http://video1.dgtle.com/backend%2F2020%2F3%2F0%2F%E6%88%91%E6%B2%A1%E6%9C%89%E7%BB%99%E4%B8%80%E5%8A%A08Pro%E5%81%9A%E8%AF%84%E6%B5%8B_%E5%8D%B4%E5%B8%A6%E7%9D%80%E5%AE%83%E6%BC%82%E6%B5%81.mp4_1080.mp4",
-    "img": "https://ts1.cn.mm.bing.net/th/id/R-C.2dfdaed9d3e59f8e20462202ec847723?rik=J06C3PjIKrv2gg&riu=http%3a%2f%2fup.deskcity.org%2fpic%2f202010%2fdt%2fqcyrevgybb31914.jpg&ehk=YrflT4NTtOIFDL7cWfvPYExD3esBhvVDT4en8CPqbx4%3d&risl=&pid=ImgRaw&r=0"
+    "url": "https://media.w3.org/2010/05/sintel/trailer.mp4",
+    "img": "https://ts1.cn.mm.bing.net/th/id/R-C.3465cdfb0557f441602f0fccb1148876?rik=jGMbJPol0nZVXA&riu=http%3a%2f%2ffunpicimg.loveinhere.com%2f1003%2f85%2f422630.jpg&ehk=39vFM4ThIf6ls5YtBU6M5Vr3t3grg59ohsY6fK0Wkpw%3d&risl=&pid=ImgRaw&r=0"
+  },
+  {
+    "type": "16:9",
+    "name": "实时 Akamai m3u8 (10:00分钟)",
+    "url": "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8",
+    "img": "https://sc.68design.net/photofiles/201609/QJoaESa5SR.jpg"
+  },
+  {
+    "type": "16:9",
+    "name": "钢铁之泪 MP4 m3u8 (12:14分钟)",
+    "url": "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.mp4/.m3u8",
+    "img": "https://ts1.cn.mm.bing.net/th/id/R-C.64be866d0a736e40da0b4d85f3401669?rik=fcZsUZOkTCLJPw&riu=http%3a%2f%2fpic.bizhi360.com%2fbpic%2f27%2f9727_7.jpg&ehk=wEmgoPd3kmSwAQAMT1uil6MHRX2Jo1TUuF5Z0%2blA4Hg%3d&risl=&pid=ImgRaw&r=0"
   },
   {
     "type": "16:9",
@@ -114,6 +125,12 @@
     "img": "https://ts1.cn.mm.bing.net/th/id/R-C.8b5a06e831ae5806110eb424a6f459c9?rik=nPKd57IQk5a3gw&riu=http%3a%2f%2fwww.waibao123.com%2fUploads%2fphoto%2f2014-07-16%2fff544162748b2ddf1d362b908737387f_big.jpg&ehk=bSsTClUJFllXvpJ8jjQH%2f8L6khOAnKYImCV4lSmrtYg%3d&risl=&pid=ImgRaw&r=0"
   },
   {
+    "type": "16:9",
+    "name": "Apple测试视频4",
+    "url": "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8",
+    "img": "https://ts1.cn.mm.bing.net/th/id/R-C.ea2ac099b26fcf9e276ba16c5abf69c7?rik=7DLSPKxUfCTq9Q&riu=http%3a%2f%2fimg.shejixf.com%2fuploads%2f191128%2fcc111e58-2db1-46f7-aa63-522f14624b06.jpg&ehk=imj9QvIfuSRJk19ZdIxIkdCbFfX97NVrSPvCJOzT%2fNQ%3d&risl=&pid=ImgRaw&r=0"
+  },
+  {
     "type": "4:3",
     "name": "Exexm测试视频1",
     "url": "https://res.exexm.com/cw_145225549855002",
@@ -142,5 +159,17 @@
     "name": "漳浦数字HD",
     "url": "http://220.161.87.62:8800/hls/1/index.m3u8",
     "img": "https://ts1.cn.mm.bing.net/th/id/R-C.774b9223b5a3526c61691fcc5ecb3145?rik=i7Rvf49CF7Zc4w&riu=http%3a%2f%2fseopic.699pic.com%2fphoto%2f50041%2f7432.jpg_wh1200.jpg&ehk=969PSODhgWgR359dXTJbOB4maXRx3XZ536jGL%2fUyUy0%3d&risl=&pid=ImgRaw&r=0"
+  },
+  {
+    "type": "live",
+    "name": "韩国GOOD TV",
+    "url": "rtmp://mobliestream.c3tv.com:554/live/goodtv.sdp",
+    "img": "https://wallpaperm.cmcm.com/edb3e49a6e802c6bc79809489a9f212b.jpg"
+  },
+  {
+    "type": "live",
+    "name": "伊拉克 Al Sharqiya",
+    "url": "rtmp://ns8.indexforce.com/home/mystream",
+    "img": "https://www.beihaiting.com/uploads/allimg/160218/10723-16021Q41I41R.jpg"
   }
 ]
