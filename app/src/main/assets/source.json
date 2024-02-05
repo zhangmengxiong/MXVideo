@@ -78,12 +78,6 @@
   },
   {
     "type": "16:9",
-    "name": "时光网视频5",
-    "url": "http://vfx.mtime.cn/Video/2021/07/09/mp4/210709224656837141.mp4",
-    "img": "https://img-blog.csdnimg.cn/img_convert/265d5238a2c6f7d1ff593e4dadf343c3.png"
-  },
-  {
-    "type": "16:9",
     "name": "测试视频1",
     "url": "https://sf1-hscdn-tos.pstatp.com/obj/media-fe/xgplayer_doc_video/mp4/xgplayer-demo-720p.mp4",
     "img": "https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/28bb6931ee5847e4bb0503d719c888e4~tplv-k3u1fbpfcp-zoom-crop-mark:1512:1512:1512:851.awebp"
