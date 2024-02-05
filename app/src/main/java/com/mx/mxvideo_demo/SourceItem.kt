@@ -24,8 +24,8 @@ class SourceItem {
 
         fun all() = list.toList()
 
-        fun randomLive(): SourceItem {
-            return list.filter { it.type == "live" }.random()
+        fun random(): SourceItem {
+            return list.random()
         }
 
         fun random16x9(): SourceItem {
