@@ -53,22 +53,19 @@ class NormalActivity : AppCompatActivity() {
             val source = SourceItem.all().first()
             binding.mxVideoStd.setSource(
                 MXPlaySource(
-                    Uri.parse(source.url),
-                    source.name,
-                    isLiveSource = source.live(),
+                    Uri.parse(source.url), source.name, isLiveSource = source.live(),
                     isLooping = (binding.canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
                 ), seekTo = 0
             )
             binding.mxVideoStd.startPlay()
         }
         binding.startPlayBtn.setOnClickListener {
-            val source = currentSource ?: SourceItem.random16x9()
+            val source = currentSource ?: SourceItem.random()
             Glide.with(this).load(source.img).into(binding.mxVideoStd.getPosterImageView())
             binding.mxVideoStd.setPlayer(playerClass)
             binding.mxVideoStd.setSource(
                 MXPlaySource(
-                    Uri.parse(source.url),
-                    source.name, isLiveSource = source.live(),
+                    Uri.parse(source.url), source.name, isLiveSource = source.live(),
                     isLooping = (binding.canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
                 ), seekTo = 0
             )
@@ -82,8 +79,7 @@ class NormalActivity : AppCompatActivity() {
             binding.mxVideoStd.setPlayer(playerClass)
             binding.mxVideoStd.setSource(
                 MXPlaySource(
-                    Uri.parse(source.url),
-                    source.name, isLiveSource = source.live(),
+                    Uri.parse(source.url), source.name, isLiveSource = source.live(),
                     isLooping = (binding.canLoopRG.checkedRadioButtonId == R.id.canLoopTrue)
                 ), seekTo = 0
             )
@@ -113,8 +109,7 @@ class NormalActivity : AppCompatActivity() {
                     val source = SourceItem.random16x9()
                     binding.mxVideoStd.setSource(
                         MXPlaySource(
-                            Uri.parse(source.url),
-                            source.name,
+                            Uri.parse(source.url), source.name,
                             isLiveSource = source.live()
                         )
                     )
@@ -124,8 +119,7 @@ class NormalActivity : AppCompatActivity() {
                     val source = SourceItem.random4x3()
                     binding.mxVideoStd.setSource(
                         MXPlaySource(
-                            Uri.parse(source.url),
-                            source.name,
+                            Uri.parse(source.url), source.name,
                             isLiveSource = source.live()
                         )
                     )
@@ -135,8 +129,7 @@ class NormalActivity : AppCompatActivity() {
                     val source = SourceItem.random9x16()
                     binding.mxVideoStd.setSource(
                         MXPlaySource(
-                            Uri.parse(source.url),
-                            source.name,
+                            Uri.parse(source.url), source.name,
                             isLiveSource = source.live()
                         )
                     )
