@@ -251,9 +251,13 @@ abstract class MXVideo @JvmOverloads constructor(
 
         override suspend fun onPlayerStartPlay() = withContext(Dispatchers.Main) {
             MXUtils.log("MXVideo: onPlayerStartPlay()")
-            if (config.state.get() in arrayOf(MXState.PREPARED, MXState.PREPARING)) {
+            if (config.state.get() == MXState.PREPARING) {
+                config.state.updateValue(MXState.PREPARED)
+                config.state.updateValue(MXState.PLAYING)
+            } else if (config.state.get() == MXState.PREPARED) {
                 config.state.updateValue(MXState.PLAYING)
             }
+
             config.playSpeed.notifyChange()
         }
 
