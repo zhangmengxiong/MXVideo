@@ -150,7 +150,7 @@ abstract class IMXPlayer : TextureView.SurfaceTextureListener {
     /**
      * 快进，单位：秒
      */
-    abstract fun seekTo(time: Int)
+    abstract suspend fun seekTo(time: Int)
 
     /**
      * 释放资源

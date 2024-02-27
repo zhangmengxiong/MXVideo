@@ -290,10 +290,8 @@ abstract class MXVideo @JvmOverloads constructor(
                 if (config.source.get()?.isLiveSource == true
                     && config.replayLiveSourceWhenError.get()
                     && (config.state.get() in arrayOf(
-                        MXState.PLAYING,
-                        MXState.PAUSE,
-                        MXState.PREPARING,
-                        MXState.PREPARED
+                        MXState.PLAYING, MXState.PAUSE,
+                        MXState.PREPARING, MXState.PREPARED
                     ))
                 ) {
                     MXUtils.log("MXVideo: onPlayerError() ---> 直播重试")
@@ -460,11 +458,13 @@ abstract class MXVideo @JvmOverloads constructor(
     override fun seekTo(seek: Int) {
         MXUtils.log("MXVideo: seekTo(${MXUtils.stringForTime(seek)})")
         val player = mxPlayer
-        if (player != null && config.state.get() in arrayOf(MXState.PLAYING, MXState.PAUSE)) {
-            player.seekTo(seek)
-            viewSet.processLoading()
-        } else {
-            config.seekWhenPlay.set(seek)
+        scope.launch {
+            if (player != null && config.state.get() in arrayOf(MXState.PLAYING, MXState.PAUSE)) {
+                player.seekTo(seek)
+                viewSet.processLoading()
+            } else {
+                config.seekWhenPlay.set(seek)
+            }
         }
     }
 

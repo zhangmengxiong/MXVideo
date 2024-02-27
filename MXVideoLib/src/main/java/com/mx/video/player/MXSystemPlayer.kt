@@ -69,22 +69,21 @@ class MXSystemPlayer : IMXPlayer(), MediaPlayer.OnPreparedListener,
     }
 
     // 这里不需要处理未播放状态的快进快退，MXVideo会判断。
-    override fun seekTo(time: Int) {
-        val source = source ?: return
-        if (!active || source.isLiveSource) return
-        launch(Dispatchers.IO) {
-            val duration = getDuration().toInt()
-            if (duration != 0 && time >= duration) {
-                // 如果直接跳转到结束位置，则直接complete
-                notifyPlayerCompletion()
-                return@launch
-            }
-            lastSeekTime = time.toFloat()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                mediaPlayer?.seekTo(time * 1000L, MediaPlayer.SEEK_CLOSEST)
-            } else {
-                mediaPlayer?.seekTo(time * 1000)
-            }
+    override suspend fun seekTo(time: Int) = withContext(Dispatchers.IO) {
+        val source = source ?: return@withContext
+        if (!active || source.isLiveSource) return@withContext
+
+        val duration = getDuration().toInt()
+        if (duration != 0 && time >= duration) {
+            // 如果直接跳转到结束位置，则直接complete
+            notifyPlayerCompletion()
+            return@withContext
+        }
+        lastSeekTime = time.toFloat()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mediaPlayer?.seekTo(time * 1000L, MediaPlayer.SEEK_CLOSEST)
+        } else {
+            mediaPlayer?.seekTo(time * 1000)
         }
     }
 

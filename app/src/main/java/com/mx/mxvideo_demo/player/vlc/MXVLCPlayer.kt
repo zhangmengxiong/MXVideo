@@ -96,22 +96,20 @@ class MXVLCPlayer : IMXPlayer() {
     }
 
     // 这里不需要处理未播放状态的快进快退，MXVideo会判断。
-    override fun seekTo(time: Int) {
-        val source = source ?: return
-        if (!active || source.isLiveSource) return
-        val mediaPlayer = mMediaPlayer ?: return
-        if (!mediaPlayer.isSeekable) return
+    override suspend fun seekTo(time: Int) = withContext(Dispatchers.IO) {
+        val source = source ?: return@withContext
+        if (!active || source.isLiveSource) return@withContext
+        val mediaPlayer = mMediaPlayer ?: return@withContext
+        if (!mediaPlayer.isSeekable) return@withContext
 
-        launch(Dispatchers.IO) {
-            val duration = getDuration().toInt()
-            if (duration != 0 && time >= duration) {
-                // 如果直接跳转到结束位置，则直接complete
-                notifyPlayerCompletion()
-                return@launch
-            }
-            lastSeekTime = time.toFloat()
-            mediaPlayer.setTime(time * 1000L, true)
+        val duration = getDuration().toInt()
+        if (duration != 0 && time >= duration) {
+            // 如果直接跳转到结束位置，则直接complete
+            notifyPlayerCompletion()
+            return@withContext
         }
+        lastSeekTime = time.toFloat()
+        mediaPlayer.setTime(time * 1000L, true)
     }
 
     override suspend fun release() {

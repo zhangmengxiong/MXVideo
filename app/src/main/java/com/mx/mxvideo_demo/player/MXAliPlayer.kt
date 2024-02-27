@@ -74,20 +74,18 @@ class MXAliPlayer : IMXPlayer(), IPlayer.OnPreparedListener, IPlayer.OnCompletio
     }
 
     // 这里不需要处理未播放状态的快进快退，MXVideo会判断。
-    override fun seekTo(time: Int) {
-        val source = source ?: return
-        if (!active || source.isLiveSource) return
+    override suspend fun seekTo(time: Int) = withContext(Dispatchers.IO) {
+        val source = source ?: return@withContext
+        if (!active || source.isLiveSource) return@withContext
 
-        launch(Dispatchers.IO) {
-            val duration = getDuration()
-            if (duration != 0f && time >= duration) {
-                // 如果直接跳转到结束位置，则直接complete
-                notifyPlayerCompletion()
-                return@launch
-            }
-            mediaPlayer?.seekTo(time * 1000L, IPlayer.SeekMode.Accurate)
-            currentPosition = time.toFloat()
+        val duration = getDuration()
+        if (duration != 0f && time >= duration) {
+            // 如果直接跳转到结束位置，则直接complete
+            notifyPlayerCompletion()
+            return@withContext
         }
+        mediaPlayer?.seekTo(time * 1000L, IPlayer.SeekMode.Accurate)
+        currentPosition = time.toFloat()
     }
 
     override suspend fun release() {
