@@ -6,7 +6,7 @@ The player developed based on Kotlin supports MediaPlayer by default, and can be
 
 The latest version：[![](https://jitpack.io/v/zhangmengxiong/MXVideo.svg)](https://jitpack.io/#zhangmengxiong/MXVideo)
 ```groovy
-    implementation 'com.github.zhangmengxiong:MXVideo:1.9.1'
+    implementation 'com.github.zhangmengxiong:MXVideo:1.9.2'
 ```
 
 ![Normal](https://gitee.com/zhangmengxiong/MXVideo/raw/master/imgs/1.png)
