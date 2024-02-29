@@ -1,6 +1,5 @@
 package com.mx.video.views
 
-import android.os.Build
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
@@ -141,9 +140,7 @@ class MXViewSet(val rootView: View, val config: MXConfig) {
     fun setViewShow(view: View, show: Boolean?) {
         show ?: return
         if (view.parent == null) return
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (!view.isAttachedToWindow) return
-        }
+        if (!view.isAttachedToWindow) return
 
         val duration = config.animatorDuration.get()
         val prop = animatorPropSet[view.id]
